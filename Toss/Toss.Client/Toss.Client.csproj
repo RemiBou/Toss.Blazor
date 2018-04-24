@@ -23,5 +23,14 @@
   <ItemGroup>
     <BlazorGenerate Remove="Pages\Account.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Shared\AccountNav.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Shared\AccountNav.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shared\AccountNav.cshtml" />
+  </ItemGroup>
 
 </Project>
