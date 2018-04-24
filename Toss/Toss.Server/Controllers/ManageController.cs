@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using AuthenticationSample.Models;
 using AuthenticationSample.Models.ManageViewModels;
 using AuthenticationSample.Services;
+using Toss.Shared;
 
 namespace AuthenticationSample.Controllers
 {
@@ -47,7 +48,7 @@ namespace AuthenticationSample.Controllers
         public string StatusMessage { get; set; }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<AccountViewModel> Index()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -55,7 +56,7 @@ namespace AuthenticationSample.Controllers
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
-            var model = new IndexViewModel
+            var model = new AccountViewModel
             {
                 Username = user.UserName,
                 Email = user.Email,
@@ -64,12 +65,12 @@ namespace AuthenticationSample.Controllers
                 StatusMessage = StatusMessage
             };
 
-            return View(model);
+            return model;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(IndexViewModel model)
+        public async Task<IActionResult> Index(AccountViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -116,7 +117,7 @@ namespace AuthenticationSample.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendVerificationEmail(IndexViewModel model)
+        public async Task<IActionResult> SendVerificationEmail(AccountViewModel model)
         {
             if (!ModelState.IsValid)
             {

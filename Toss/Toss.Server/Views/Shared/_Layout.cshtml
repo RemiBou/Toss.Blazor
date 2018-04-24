@@ -17,22 +17,40 @@
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="nav navbar-nav"><li class="active"><a asp-area="" asp-controller="Home" asp-action="Index" title="Manage">Home</a></li></div>
-            <div class="navbar-collapse collapse">
 
-                @await Html.PartialAsync("_LoginPartial")
+    <div class='container-fluid'>
+        <div class='row'>
+            <div class='col-sm-3'>
+                <div class='main-nav'>
+                    <div class='navbar navbar-inverse'>
+                        <div class='navbar-header'>
+                            <a class='navbar-brand' href='/'>Home</a>
+                        </div>
+                        <div class='clearfix'></div>
+                        <div class='navbar-collapse collapse'>
+                            <ul class='nav navbar-nav'>
+                                <li>
+
+                                    <a href='/manage/index'>
+                                        <span class='glyphicon glyphicon-education'></span> Account
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="/a/counter">
+                                        <span class='glyphicon glyphicon-education'></span> Counter
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class='col-sm-9'>
+                @RenderBody()
             </div>
         </div>
-    </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2018 - TOSS</p>
-        </footer>
     </div>
+
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>

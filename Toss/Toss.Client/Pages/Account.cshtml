@@ -1,0 +1,19 @@
+﻿@page "/account"
+@inject HttpClient Http
+<h1>Your TOSS account</h1>
+
+
+<div class="row">
+    <div class="col-md-6">
+       
+    </div>
+</div>
+
+@functions {
+private Toss.Shared.AccountViewModel _account;
+protected override async Task OnInitAsync()
+{
+    _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+}
+}
+
