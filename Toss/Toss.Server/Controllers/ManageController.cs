@@ -69,12 +69,11 @@ namespace AuthenticationSample.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(AccountViewModel model)
+        public async Task<IActionResult> Index([FromBody] AccountViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return new BadRequestObjectResult(ModelState);
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -111,13 +110,11 @@ namespace AuthenticationSample.Controllers
                     throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : "+string.Join(",", userNameResult.Errors.Select(e => e.Description)));
                 }
             }
-            StatusMessage = "Your profile has been updated";
-            return RedirectToAction(nameof(Index));
+            return new OkResult();
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SendVerificationEmail(AccountViewModel model)
+        public async Task<IActionResult> SendVerificationEmail([FromBody] AccountViewModel model)
         {
             if (!ModelState.IsValid)
             {

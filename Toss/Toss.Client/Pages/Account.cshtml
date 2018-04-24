@@ -2,18 +2,48 @@
 @inject HttpClient Http
 <h1>Your TOSS account</h1>
 
-
-<div class="row">
-    <div class="col-md-6">
-       
-    </div>
-</div>
-
-@functions {
-private Toss.Shared.AccountViewModel _account;
-protected override async Task OnInitAsync()
+@if (_account != null)
 {
-    _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+    <div class="row">
+        <div class="col-md-6">
+            <form method="post">
+                <div class="form-group">
+                    <label for="Username">Username</label>
+                    <input id="Username" bind="@_account.Username" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="Email">Email</label>
+                    <div class="input-group">
+                        <input for="Email" class="form-control" bind="@_account.Email" />
+                        @if (_account.IsEmailConfirmed)
+                        {
+                            <span class="input-group-addon" aria-hidden="true">
+                                <span class="glyphicon glyphicon-ok text-success"></span>
+                            </span>
+                        }
+                    </div>
+
+                    @*<button asp-action="SendVerificationEmail" class="btn btn-link">Send verification email</button>*@
+
+                </div>
+                <div class="form-group">
+                    <label for="PhoneNumber">Phone number</label>
+                    <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
+                </div>
+                <button type="button"  onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
+            </form>
+        </div>
+    </div>
 }
+@functions {
+    private Toss.Shared.AccountViewModel _account;
+    protected override async Task OnInitAsync()
+    {
+        _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+    }
+    async Task PostAccount()
+    {
+         await Http.PostJsonAsync("/manage/index", _account);
+    }
 }
 
