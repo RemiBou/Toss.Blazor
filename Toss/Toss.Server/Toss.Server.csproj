@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="0.2.1" />
+    <PackageReference Include="ElCamino.AspNetCore.Identity.AzureTable" Version="2.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Toss.Client\Toss.Client.csproj" />
+    <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,21 @@
+﻿@inject SignInManager<ApplicationUser>    SignInManager
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="row">
+    @if (!SignInManager.IsSignedIn(User))
+    {
+        <div class="col-md-6">
+
+            @Html.Partial("Login")
+        </div>
+        <div class="col-md-6">
+            @Html.Partial("Register")
+        </div>
+    }
+    else
+    {
+
+    }
+
+</div>
