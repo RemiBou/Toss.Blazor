@@ -1,16 +1,24 @@
 ﻿@page "/account"
 @inject HttpClient Http
+@using Toss.Client.Services
 <h1>Your TOSS account</h1>
 
 @if (_account != null)
 {
     <AccountNav></AccountNav>
+
+    @if (_errors != null)
+    {
+        <span class="alert alert-danger">BOOoM</span>
+
+    }
     <div class="row">
         <div class="col-md-6">
             <form method="post">
                 <div class="form-group">
                     <label for="Username">Username</label>
                     <input id="Username" bind="@_account.Username" class="form-control" />
+
                 </div>
                 <div class="form-group">
                     <label for="Email">Email</label>
@@ -31,20 +39,31 @@
                     <label for="PhoneNumber">Phone number</label>
                     <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
                 </div>
-                <button type="button"  onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
+                <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
             </form>
         </div>
     </div>
 }
 @functions {
-    private Toss.Shared.AccountViewModel _account;
+    Toss.Shared.AccountViewModel _account;
+    Dictionary<string,string> _errors;
     protected override async Task OnInitAsync()
     {
         _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
     }
     async Task PostAccount()
     {
-         await Http.PostJsonAsync("/manage/index", _account);
+        try
+        {
+            Utils.ConsoleLog("PostAccount");
+            _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
+
+            Utils.ConsoleLog(string.Join(",",_errors.Keys));
+        }
+        catch (Exception e)
+        {
+            Utils.ConsoleLog("Exception");
+        }
     }
 }
 

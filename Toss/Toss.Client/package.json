@@ -15,5 +15,6 @@
     "start": "webpack --config webpack.config.js --watch --progress --profile",
     "build": "webpack --config webpack.config.js --progress --profile",
     "prod": "webpack --env.NODE_ENV=production --config webpack.config.js --progress"
-  }
+  },
+  "dependencies": {}
 }
