@@ -1,0 +1,14 @@
+﻿@if ((Errors?.ContainsKey(FieldName)).GetValueOrDefault(false))
+{
+    <span class="label label-danger">@Errors[FieldName]</span>
+
+}
+else
+{
+    <span class="label label-success">Ok</span>
+
+}
+@functions{
+public string FieldName { get; set; }
+public Dictionary<string, string> Errors { get; set; }
+}

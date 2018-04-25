@@ -31,6 +31,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Shared\AccountNav.cshtml" />
+    <None Include="Shared\ValidationError.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Shared\ValidationError.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Shared\ValidationError.cshtml" />
   </ItemGroup>
 
 </Project>

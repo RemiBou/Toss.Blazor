@@ -1,69 +1,59 @@
 ﻿@page "/account"
 @inject HttpClient Http
 @using Toss.Client.Services
+@using Toss.Shared
+
 <h1>Your TOSS account</h1>
+<AccountNav></AccountNav>
 
-@if (_account != null)
-{
-    <AccountNav></AccountNav>
-
-    @if (_errors != null)
+<div class="row">
+    @if (_account != null)
     {
-        <span class="alert alert-danger">BOOoM</span>
 
-    }
-    <div class="row">
+
         <div class="col-md-6">
             <form method="post">
                 <div class="form-group">
                     <label for="Username">Username</label>
                     <input id="Username" bind="@_account.Username" class="form-control" />
-
+                    <ValidationError FieldName="Username" Errors="@_errors"/>
                 </div>
                 <div class="form-group">
                     <label for="Email">Email</label>
-                    <div class="input-group">
+                    
                         <input for="Email" class="form-control" bind="@_account.Email" />
-                        @if (_account.IsEmailConfirmed)
-                        {
-                            <span class="input-group-addon" aria-hidden="true">
-                                <span class="glyphicon glyphicon-ok text-success"></span>
-                            </span>
-                        }
-                    </div>
-
-                    @*<button asp-action="SendVerificationEmail" class="btn btn-link">Send verification email</button>*@
-
+                        <ValidationError FieldName="Email" Errors="@_errors" />
+                    
                 </div>
                 <div class="form-group">
                     <label for="PhoneNumber">Phone number</label>
                     <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
+                    <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
                 </div>
                 <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
             </form>
         </div>
-    </div>
-}
-@functions {
-    Toss.Shared.AccountViewModel _account;
-    Dictionary<string,string> _errors;
-    protected override async Task OnInitAsync()
-    {
-        _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
     }
-    async Task PostAccount()
+    else
     {
-        try
-        {
-            Utils.ConsoleLog("PostAccount");
-            _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
+        <div class="alert alert-info">Loading...</div>
 
-            Utils.ConsoleLog(string.Join(",",_errors.Keys));
-        }
-        catch (Exception e)
-        {
-            Utils.ConsoleLog("Exception");
-        }
     }
+</div>
+@functions {
+AccountViewModel _account;
+Dictionary<string, string> _errors;
+protected override async Task OnInitAsync()
+{
+    _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+    StateHasChanged();
+}
+async Task PostAccount()
+{
+
+    Utils.ConsoleLog("PostAccount");
+    _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
+    StateHasChanged();
+}
 }
 
