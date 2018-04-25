@@ -64,8 +64,8 @@ namespace AuthenticationSample
             services.AddAuthentication()
                 .AddGoogle(o =>
                 {
-                    o.ClientId = "160749917187-us17f40a89uu77r1lhbqdvgb5idutfrh.apps.googleusercontent.com";
-                    o.ClientSecret = "b6dySZ0MTJLEOrWyxNC-PkOC";
+                    o.ClientId = Configuration["GoogleClientId"];
+                    o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
             services.AddMvc().AddJsonOptions(options =>
             {
