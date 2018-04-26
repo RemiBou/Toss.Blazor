@@ -1,1 +1,1 @@
-﻿import 'jquery-validation';
+﻿import 'toastr';

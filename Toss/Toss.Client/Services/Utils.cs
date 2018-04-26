@@ -6,11 +6,18 @@ using System.Threading.Tasks;
 
 namespace Toss.Client.Services
 {
-    public static class Utils
+    /// <summary>
+    /// Utility class for calling JS function declared in index.html
+    /// </summary>
+    public static class JsInterop
     {
         public static void ConsoleLog(string message)
         {
             RegisteredFunction.Invoke<bool>("log", message);
+        }
+        public static void Toastr(string toastType,string message)
+        {
+            RegisteredFunction.Invoke<bool>("toastr",toastType, message);
         }
     }
 }

@@ -5,7 +5,6 @@
     <title>TOSS</title>
 
     <link href="/css/_site.css" rel="stylesheet" />
-    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <base href="/" />
 </head>
 <body>
@@ -21,12 +20,15 @@
         </div>
     </app>
     <script src="dist/main.js"></script>
-    <script src="css/bootstrap/bootstrap-native.min.js"></script>
     <script type="blazor-boot">
     </script>
     <script type="text/javascript">
         Blazor.registerFunction('log', function (message) {
             console.log(message);
+            return true;
+        });
+        Blazor.registerFunction('toastr', function (toastType,message) {
+            toastr[toastType](message)
             return true;
         });
     </script>
