@@ -6,19 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="main.js" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.0-preview2-final" PrivateAssets="all" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.2.1" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.2.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="wwwroot\js\" />
   </ItemGroup>
   <ItemGroup>
     <BlazorGenerate Remove="Pages\Account.cshtml" />

@@ -5,23 +5,22 @@
     <title>TOSS</title>
 
     <link href="/css/_site.css" rel="stylesheet" />
-    <link href="/css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <base href="/" />
 </head>
 <body>
-    <app>
-        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
+    <div class="container">
+        <app>
+            <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 col-lg-4 col-lg-offset-4">
 
-            <h1>
-                TOSS
-            </h1>
-            <p class="loading-status text-info" style="text-align:center">
-                Loading things ...
-            </p>
-        </div>
-    </app>
-    <script src="dist/main.js"></script>
-    <script src="css/bootstrap/bootstrap-native.min.js"></script>
+                <h1>
+                    TOSS
+                </h1>
+                <p class="loading-status text-info" style="text-align:center">
+                    Loading things ...
+                </p>
+            </div>
+        </app>
+    </div>
     <script type="blazor-boot">
     </script>
     <script type="text/javascript">
@@ -30,5 +29,12 @@
             return true;
         });
     </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha256-ENFZrbVzylNbgnXx0n3I1g//2WeO47XxoPe0vkp3NC8=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha256-3blsJd4Hli/7wCQ+bmgXfOdK7p/ZUMtPXY08jmxSSgk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha256-NJWeQ+bs82iAeoT5Ktmqbi3NXwxcHlfaVejzJI2dklU=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha256-C8oQVJ33cKtnkARnmeWp6SDChkU+u7KvsNMFUzkkUzk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
 </body>
 </html>

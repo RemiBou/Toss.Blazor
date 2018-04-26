@@ -6,40 +6,37 @@
 <h1>Your TOSS account</h1>
 <AccountNav></AccountNav>
 
-<div class="row">
-    @if (_account != null)
-    {
+@if (_account != null)
+{
 
-
-        <div class="col-md-6">
-            <form method="post">
-                <div class="form-group">
-                    <label for="Username">Username</label>
-                    <input id="Username" bind="@_account.Username" class="form-control" />
-                    <ValidationError FieldName="Username" Errors="@_errors"/>
-                </div>
-                <div class="form-group">
-                    <label for="Email">Email</label>
-                    
-                        <input for="Email" class="form-control" bind="@_account.Email" />
-                        <ValidationError FieldName="Email" Errors="@_errors" />
-                    
-                </div>
-                <div class="form-group">
-                    <label for="PhoneNumber">Phone number</label>
-                    <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
-                    <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
-                </div>
-                <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
-            </form>
+    <form>
+        <div class="form-group">
+            <label for="Username">Username</label>
+            <input id="Username" bind="@_account.Username" class="form-control" />
+            <ValidationError FieldName="Username" Errors="@_errors" />
         </div>
-    }
-    else
-    {
-        <div class="alert alert-info">Loading...</div>
+        <div class="form-group">
+            <label for="Email">Email</label>
 
-    }
-</div>
+            <input for="Email" class="form-control" bind="@_account.Email" />
+            <ValidationError FieldName="Email" Errors="@_errors" />
+
+        </div>
+        <div class="form-group">
+            <label for="PhoneNumber">Phone number</label>
+            <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
+            <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
+        </div>
+        <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
+    </form>
+
+}
+else
+{
+    <div class="alert alert-info">Loading...</div>
+
+}
+
 @functions {
 AccountViewModel _account;
 Dictionary<string, string> _errors;
