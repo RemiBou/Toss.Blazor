@@ -28,6 +28,10 @@
             console.log(message);
             return true;
         });
+        Blazor.registerFunction('toastr', function (toastType,message) {
+            toastr[toastType](message)
+            return true;
+        });
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" integrity="sha256-ENFZrbVzylNbgnXx0n3I1g//2WeO47XxoPe0vkp3NC8=" crossorigin="anonymous" />

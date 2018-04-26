@@ -38,19 +38,20 @@ else
 }
 
 @functions {
-AccountViewModel _account;
-Dictionary<string, string> _errors;
-protected override async Task OnInitAsync()
-{
-    _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
-    StateHasChanged();
-}
-async Task PostAccount()
-{
+    AccountViewModel _account;
+    Dictionary<string, string> _errors;
+    protected override async Task OnInitAsync()
+    {
+        _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+        StateHasChanged();
+    }
+    async Task PostAccount()
+    {
 
-    Utils.ConsoleLog("PostAccount");
-    _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
-    StateHasChanged();
-}
+        JsInterop.ConsoleLog("PostAccount");
+        _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
+        StateHasChanged();
+        JsInterop.ConsoleLog("PostAccount done, errors.Count = "+_errors?.Count);
+    }
 }
 
