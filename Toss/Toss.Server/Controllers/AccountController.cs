@@ -17,7 +17,6 @@ using AuthenticationSample.Services;
 namespace AuthenticationSample.Controllers
 {
     [Authorize]
-    [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -38,16 +37,7 @@ namespace AuthenticationSample.Controllers
         }
         
 
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnUrl = null)
-        {
-            // Clear the existing external cookie to ensure a clean login process
-            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
-        }
+        
 
         [HttpPost]
         [AllowAnonymous]
@@ -82,9 +72,7 @@ namespace AuthenticationSample.Controllers
 
             // If we got this far, something failed, redisplay form
             return BadRequest(ModelState);
-        }
-
-        
+        }      
      
 
         [HttpPost]

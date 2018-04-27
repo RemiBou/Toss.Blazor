@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
 </Project>

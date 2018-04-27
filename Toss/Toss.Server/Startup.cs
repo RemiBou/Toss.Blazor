@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AuthenticationSample.Data;
 using AuthenticationSample.Models;
 using AuthenticationSample.Services;
 using ElCamino.AspNetCore.Identity.AzureTable.Model;
@@ -15,6 +14,7 @@ using Newtonsoft.Json.Serialization;
 using System.Net.Mime;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Blazor.Server;
+using AuthenticationSample.Data;
 
 namespace AuthenticationSample
 {
@@ -96,7 +96,7 @@ namespace AuthenticationSample
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller}/{action}/{id?}");
             });
 
             app.UseBlazor<Toss.Client.Program>();

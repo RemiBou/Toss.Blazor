@@ -2,18 +2,17 @@
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using AuthenticationSample.Models;
+using AuthenticationSample.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using AuthenticationSample.Models;
-using AuthenticationSample.Services;
 using Toss.Shared;
 
 namespace AuthenticationSample.Controllers
 {
     [Authorize]
-    [Route("[controller]/[action]")]
     public class ManageController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -114,7 +113,7 @@ namespace AuthenticationSample.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return BadRequest(ModelState);
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -126,7 +125,7 @@ namespace AuthenticationSample.Controllers
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                return View(model);
+                return BadRequest(changePasswordResult);
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
