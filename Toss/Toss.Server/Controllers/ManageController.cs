@@ -73,7 +73,7 @@ namespace AuthenticationSample.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return new OkObjectResult(ModelState.ToDictionary(s => s.Key,s => string.Join(" ",s.Value.Errors.Select(e => e.ErrorMessage))));
+                return BadRequest(ModelState.ToDictionary(s => s.Key,s => string.Join(" ",s.Value.Errors.Select(e => e.ErrorMessage))));
             }
 
             var user = await _userManager.GetUserAsync(User);

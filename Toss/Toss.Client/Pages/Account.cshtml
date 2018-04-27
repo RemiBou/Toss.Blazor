@@ -3,7 +3,6 @@
 @using Toss.Client.Services
 @using Toss.Shared
 
-<h1>Your TOSS account</h1>
 <AccountNav></AccountNav>
 
 @if (_account != null)
@@ -38,8 +37,8 @@ else
 }
 
 @functions {
-    AccountViewModel _account;
-    Dictionary<string, string> _errors;
+        AccountViewModel _account;
+        Dictionary<string, string> _errors;
     protected override async Task OnInitAsync()
     {
         _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
@@ -49,9 +48,16 @@ else
     {
 
         JsInterop.ConsoleLog("PostAccount");
-        _errors = await Http.PostJsonAsync<Dictionary<string, string>>("/manage/index", _account);
+        await new HttpApiClientRequestBuilder( Http,"/manage/index")
+            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+            .OnOK(async () =>
+            {
+                JsInterop.Toastr("success", "Informations saved successfully");
+                _errors = null;
+            })
+            .Post(_account);
         StateHasChanged();
-        JsInterop.ConsoleLog("PostAccount done, errors.Count = "+_errors?.Count);
+        JsInterop.ConsoleLog("PostAccount done");
     }
 }
 
