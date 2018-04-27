@@ -24,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Pages\AccountChangePassword.cshtml" />
+    <None Include="Pages\Login.cshtml" />
     <None Include="Shared\AccountNav.cshtml" />
     <None Include="Shared\ValidationError.cshtml" />
   </ItemGroup>
@@ -38,6 +39,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Pages\AccountChangePassword.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\Login.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\Login.cshtml" />
   </ItemGroup>
 
 </Project>

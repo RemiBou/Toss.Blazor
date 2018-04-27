@@ -1,0 +1,68 @@
+﻿@page "/login"
+@inject HttpClient Http
+@using Toss.Client.Services;
+@using Toss.Shared;
+<h4>Use a Toss account to log in.</h4>
+
+<form method="post">
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input bind="@loginViewModel.Email" id="Email" class="form-control" />
+        <ValidationError Errors="@_errors" FieldName="Email" />
+    </div>
+    <div class="form-group">
+        <label asp-for="Password">Password</label>
+        <input bind="@loginViewModel.Password" id="Password" class="form-control" />
+        <ValidationError Errors="@_errors" FieldName="Password"/>
+    </div>
+    <div class="form-group">
+        <div class="checkbox">
+            <label asp-for="RememberMe">
+                <input bind="@loginViewModel.RememberMe" type="checkbox" />
+                <label for="RememberMe">Remember me</label>
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <button type="button" onclick="@(async () => await TryLogin())" class="btn btn-default">Log in</button>
+        <a href="/account/forgotPassword">Forgot your password?</a>
+    </div>
+</form>
+
+
+<h4>Use another service to log in.</h4>
+@foreach (var provider in loginProviders)
+{
+    <button type="button" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.Name</button>
+}
+
+
+
+@functions{
+    LoginViewModel loginViewModel = new LoginViewModel();
+    IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
+    Dictionary<string, string> _errors;
+    protected override async Task OnInitAsync()
+    {
+        await new HttpApiClientRequestBuilder(Http, "/api/account/loginProviders")
+            .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
+            .Get();
+
+        StateHasChanged();
+    }
+    async Task TryLogin()
+    {
+        
+        await new HttpApiClientRequestBuilder(Http, "/api/account/login")
+            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+            .OnOK(async () =>
+            {
+                JsInterop.Redirect("/");
+                _errors = null;
+            })
+            .Post(loginViewModel);
+        StateHasChanged();
+    }
+}

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthenticationSample.Models.AccountViewModels
+namespace Toss.Shared
 {
     public class LoginViewModel
     {

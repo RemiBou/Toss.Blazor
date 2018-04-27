@@ -15,6 +15,9 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Blazor.Server;
 using AuthenticationSample.Data;
+using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace AuthenticationSample
 {
@@ -45,7 +48,7 @@ namespace AuthenticationSample
                     (options) =>
                     {
                         options.User.RequireUniqueEmail = true;
-                       
+
                     })
                 .AddAzureTableStoresV2<ApplicationDbContext>(
                     () =>
@@ -71,16 +74,29 @@ namespace AuthenticationSample
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
-
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
+                options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
+            });
         }
-
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+            context =>
+            {
+                if (context.Request.Path.StartsWithSegments("/api"))
+                {
+                    context.Response.StatusCode = (int)statusCode;
+                    return Task.CompletedTask;
+                }
+                return existingRedirector(context);
+            };
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseResponseCompression();
             if (env.IsDevelopment())
             {
-                
+
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -96,7 +112,7 @@ namespace AuthenticationSample
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller}/{action}/{id?}");
+                    template: "/api/{controller}/{action}/{id?}");
             });
 
             app.UseBlazor<Toss.Client.Program>();

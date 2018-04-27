@@ -37,18 +37,20 @@ else
 }
 
 @functions {
-        AccountViewModel _account;
-        Dictionary<string, string> _errors;
+    AccountViewModel _account;
+    Dictionary<string, string> _errors;
     protected override async Task OnInitAsync()
     {
-        _account = await Http.GetJsonAsync<Toss.Shared.AccountViewModel>("/manage/index");
+        await new HttpApiClientRequestBuilder(Http, "/api/manage/index")
+            .OnOK<AccountViewModel>((a) => _account = a)
+            .Get();
         StateHasChanged();
     }
     async Task PostAccount()
     {
 
         JsInterop.ConsoleLog("PostAccount");
-        await new HttpApiClientRequestBuilder( Http,"/manage/index")
+        await new HttpApiClientRequestBuilder( Http,"/api/manage/index")
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
             .OnOK(async () =>
             {

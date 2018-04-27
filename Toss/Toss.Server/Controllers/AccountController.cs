@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using AuthenticationSample.Models;
 using AuthenticationSample.Models.AccountViewModels;
 using AuthenticationSample.Services;
+using Toss.Shared;
 
 namespace AuthenticationSample.Controllers
 {
@@ -35,14 +36,24 @@ namespace AuthenticationSample.Controllers
             _emailSender = emailSender;
             _logger = logger;
         }
-        
 
-        
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> LoginProviders()
+        {
+            return Ok((await _signInManager.GetExternalAuthenticationSchemesAsync())
+                .Select(s => new SigninProviderViewModel()
+                {
+                    Name = s.Name,
+                    DisplayName = s.DisplayName
+                }));
+        }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(Toss.Shared.LoginViewModel model)
         {
             if (ModelState.IsValid)
             {

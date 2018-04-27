@@ -11,15 +11,14 @@ namespace Toss.Client.Services
     {
         private string _uri;
         private HttpClient _httpClient;
-        private HttpMethod _httpMethod;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient,string uri)
+        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri)
         {
             _uri = uri;
             _httpClient = httpClient;
-            
+
         }
         public async Task Post<T>(T data)
         {
@@ -28,7 +27,12 @@ namespace Toss.Client.Services
             {
                 Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
             });
+            await HandleHttpResponse(response);
 
+        }
+
+        private async Task HandleHttpResponse(HttpResponseMessage response)
+        {
             switch (response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
@@ -37,9 +41,19 @@ namespace Toss.Client.Services
                 case System.Net.HttpStatusCode.BadRequest:
                     await _onBadRequest(response);
                     break;
+                case System.Net.HttpStatusCode.Unauthorized:
+                case System.Net.HttpStatusCode.Forbidden:
+                    JsInterop.Redirect("/login");
+                    break;
                     //other case , we do nothing, I'll add this case as needed
             }
+        }
 
+        public async Task Get()
+        {
+
+            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri));
+            await HandleHttpResponse(response);
         }
 
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)
@@ -63,7 +77,7 @@ namespace Toss.Client.Services
         public HttpApiClientRequestBuilder OnOK(Action todo)
         {
             _onOK = async (HttpResponseMessage r) =>
-            {              
+            {
                 todo();
             };
             return this;

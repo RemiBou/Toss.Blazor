@@ -15,6 +15,10 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("log", message);
         }
+        public static void Redirect(string url)
+        {
+            RegisteredFunction.Invoke<bool>("redirect", url);
+        }
         public static void Toastr(string toastType,string message)
         {
             RegisteredFunction.Invoke<bool>("toastr",toastType, message);

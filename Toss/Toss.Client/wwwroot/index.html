@@ -32,6 +32,10 @@
             toastr[toastType](message)
             return true;
         });
+        Blazor.registerFunction('redirect', function (url) {
+            document.location = url;
+            return true;
+        });
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha256-NJWeQ+bs82iAeoT5Ktmqbi3NXwxcHlfaVejzJI2dklU=" crossorigin="anonymous" />
