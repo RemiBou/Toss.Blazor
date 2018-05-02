@@ -1,0 +1,31 @@
+﻿@inject HttpClient Http
+@using Toss.Client.Services
+@using Toss.Shared
+<nav class="navbar navbar-light bg-light">
+
+
+    <NavLink class="btn btn-primary" href="/" Match="NavLinkMatch.All">
+        <i class="fas fa-home"></i>
+    </NavLink>
+
+    <NavLink class="btn btn-primary" href="/account" Match="NavLinkMatch.Prefix">
+        <i class="fas fa-user"></i>
+    </NavLink>
+    <form method="post" class="form-inline" action="/api/account/logout">
+
+        <button class="btn  btn-primary" type="submit">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </form>
+
+
+
+</nav>
+@functions {
+AccountViewModel _account;
+protected override async Task OnInitAsync()
+{
+   
+}
+}
+

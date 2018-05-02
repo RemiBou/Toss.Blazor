@@ -1,12 +1,12 @@
-﻿@implements ILayoutComponent
-
+﻿
 <div class='container-fluid'>
 
-    <NavMenu />
+    <TopMenu />
 
     @Body
 </div>
 
 @functions {
-public RenderFragment Body { get; set; }
+[Parameter]
+RenderFragment Body { get; set; }
 }

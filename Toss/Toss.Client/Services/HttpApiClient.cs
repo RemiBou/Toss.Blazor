@@ -34,7 +34,7 @@ namespace Toss.Client.Services
         {
             var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
             {
-             });
+            });
             await HandleHttpResponse(response);
 
         }

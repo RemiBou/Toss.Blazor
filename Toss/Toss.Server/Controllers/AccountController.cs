@@ -113,11 +113,12 @@ namespace AuthenticationSample.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task Logout()
+        public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            return Redirect("/login");
+
         }
 
         [HttpPost]
