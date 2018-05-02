@@ -6,7 +6,6 @@
 
 <form method="post">
 
-    <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label for="Email">Email</label>
         <input bind="@loginViewModel.Email" id="Email" class="form-control" />
@@ -15,7 +14,7 @@
     <div class="form-group">
         <label asp-for="Password">Password</label>
         <input bind="@loginViewModel.Password" id="Password" class="form-control" />
-        <ValidationError Errors="@_errors" FieldName="Password"/>
+        <ValidationError Errors="@_errors" FieldName="Password" />
     </div>
     <div class="form-group">
         <div class="checkbox">
@@ -35,7 +34,16 @@
 <h4>Use another service to log in.</h4>
 @foreach (var provider in loginProviders)
 {
-    <button type="button" class="btn btn-default" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">@provider.Name</button>
+    <form action="/api/account/externalLogin" method="post">
+        <button type="submit"
+                class="btn btn-default"
+               
+                name="provider"
+                value="@provider.Name"
+                title="@("Log in using your "+provider.DisplayName+" account")">
+            @provider.Name
+        </button>
+    </form>
 }
 
 
@@ -54,7 +62,7 @@
     }
     async Task TryLogin()
     {
-        
+
         await new HttpApiClientRequestBuilder(Http, "/api/account/login")
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
             .OnOK(async () =>
@@ -65,4 +73,6 @@
             .Post(loginViewModel);
         StateHasChanged();
     }
+
+
 }

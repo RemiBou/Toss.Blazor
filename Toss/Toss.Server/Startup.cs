@@ -114,7 +114,7 @@ namespace AuthenticationSample
                     name: "default",
                     template: "/api/{controller}/{action}/{id?}");
             });
-
+         
             app.UseBlazor<Toss.Client.Program>();
         }
     }

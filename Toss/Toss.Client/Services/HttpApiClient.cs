@@ -30,7 +30,14 @@ namespace Toss.Client.Services
             await HandleHttpResponse(response);
 
         }
+        public async Task Post()
+        {
+            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+            {
+             });
+            await HandleHttpResponse(response);
 
+        }
         private async Task HandleHttpResponse(HttpResponseMessage response)
         {
             switch (response.StatusCode)
