@@ -22,10 +22,12 @@
 
 </nav>
 @functions {
-AccountViewModel _account;
+
 protected override async Task OnInitAsync()
 {
-   
+    await new HttpApiClientRequestBuilder(Http, "/api/manage/index")
+            .Get();
+    StateHasChanged();
 }
 }
 

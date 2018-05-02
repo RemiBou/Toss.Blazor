@@ -52,5 +52,8 @@
   <ItemGroup>
     <BlazorGenerate Remove="Shared\AccountMenu.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Shared\LoginLayout.cshtml" />
+  </ItemGroup>
 
 </Project>
