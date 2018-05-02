@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Blazor;
+using Microsoft.AspNetCore.Blazor.Browser.Services;
+using Microsoft.AspNetCore.Blazor.Services;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -10,13 +10,15 @@ namespace Toss.Client.Services
     public class HttpApiClientRequestBuilder
     {
         private string _uri;
+        private readonly IUriHelper uriHelper;
         private HttpClient _httpClient;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri)
+        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper)
         {
             _uri = uri;
+            this.uriHelper = uriHelper;
             _httpClient = httpClient;
 
         }
@@ -43,14 +45,16 @@ namespace Toss.Client.Services
             switch (response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
-                    await _onOK(response);
+                    if (_onOK != null)
+                        await _onOK(response);
                     break;
                 case System.Net.HttpStatusCode.BadRequest:
-                    await _onBadRequest(response);
+                    if (_onBadRequest != null)
+                        await _onBadRequest(response);
                     break;
                 case System.Net.HttpStatusCode.Unauthorized:
                 case System.Net.HttpStatusCode.Forbidden:
-                    JsInterop.Redirect("/login");
+                    uriHelper.NavigateTo("/login");
                     break;
                     //other case , we do nothing, I'll add this case as needed
             }

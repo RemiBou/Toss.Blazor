@@ -1,6 +1,5 @@
 ﻿@inject HttpClient Http
-@using Toss.Client.Services
-@using Toss.Shared
+@inject IUriHelper UriHelper;
 <nav class="navbar navbar-light bg-light">
 
 
@@ -25,7 +24,7 @@
 
 protected override async Task OnInitAsync()
 {
-    await new HttpApiClientRequestBuilder(Http, "/api/manage/index")
+    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
             .Get();
     StateHasChanged();
 }

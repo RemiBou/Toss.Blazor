@@ -1,33 +1,32 @@
 ﻿@page "/account"
 @inject HttpClient Http
-@using Toss.Client.Services
-@using Toss.Shared
+@inject IUriHelper UriHelper;
 
 <AccountMenu></AccountMenu>
 
 @if (_account != null)
 {
 
-<form>
-    <div class="form-group">
-        <label for="Username">Username</label>
-        <input id="Username" bind="@_account.Username" class="form-control" />
-        <ValidationError FieldName="Username" Errors="@_errors" />
-    </div>
-    <div class="form-group">
-        <label for="Email">Email</label>
+    <form>
+        <div class="form-group">
+            <label for="Username">Username</label>
+            <input id="Username" bind="@_account.Username" class="form-control" />
+            <ValidationError FieldName="Username" Errors="@_errors" />
+        </div>
+        <div class="form-group">
+            <label for="Email">Email</label>
 
-        <input for="Email" class="form-control" bind="@_account.Email" />
-        <ValidationError FieldName="Email" Errors="@_errors" />
+            <input for="Email" class="form-control" bind="@_account.Email" />
+            <ValidationError FieldName="Email" Errors="@_errors" />
 
-    </div>
-    <div class="form-group">
-        <label for="PhoneNumber">Phone number</label>
-        <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
-        <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
-    </div>
-    <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
-</form>
+        </div>
+        <div class="form-group">
+            <label for="PhoneNumber">Phone number</label>
+            <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
+            <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
+        </div>
+        <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
+    </form>
 
 }
 else
@@ -37,29 +36,29 @@ else
 }
 
 @functions {
-    AccountViewModel _account;
-    Dictionary<string, string> _errors;
-    protected override async Task OnInitAsync()
-    {
-        await new HttpApiClientRequestBuilder(Http, "/api/manage/index")
-            .OnOK<AccountViewModel>((a) => _account = a)
-            .Get();
-        StateHasChanged();
-    }
-    async Task PostAccount()
-    {
+AccountViewModel _account;
+Dictionary<string, string> _errors;
+protected override async Task OnInitAsync()
+{
+    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
+        .OnOK<AccountViewModel>((a) => _account = a)
+        .Get();
+    StateHasChanged();
+}
+async Task PostAccount()
+{
 
-        JsInterop.ConsoleLog("PostAccount");
-        await new HttpApiClientRequestBuilder( Http,"/api/manage/index")
-            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-            .OnOK(async () =>
-            {
-                JsInterop.Toastr("success", "Informations saved successfully");
-                _errors = null;
-            })
-            .Post(_account);
-        StateHasChanged();
-        JsInterop.ConsoleLog("PostAccount done");
-    }
+    JsInterop.ConsoleLog("PostAccount");
+    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
+        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+        .OnOK(async () =>
+        {
+            JsInterop.Toastr("success", "Informations saved successfully");
+            _errors = null;
+        })
+        .Post(_account);
+    StateHasChanged();
+    JsInterop.ConsoleLog("PostAccount done");
+}
 }
 

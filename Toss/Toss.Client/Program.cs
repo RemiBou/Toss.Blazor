@@ -11,6 +11,7 @@ namespace Toss.Client
             var serviceProvider = new BrowserServiceProvider(configure =>
             {
                 // Add any custom services here
+
             });
 
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");

@@ -53,7 +53,7 @@ namespace AuthenticationSample.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(Toss.Shared.LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] Toss.Shared.LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +76,8 @@ namespace AuthenticationSample.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                    ModelState.AddModelError("Email", "Invalid login attempt.");
                     return BadRequest(ModelState.ToFlatDictionary());
                 }
             }

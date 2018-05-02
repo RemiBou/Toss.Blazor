@@ -1,6 +1,5 @@
 ﻿@inject HttpClient Http
-@using Toss.Client.Services
-@using Toss.Shared
+@inject IUriHelper UriHelper;
 <h4>Create a Toss account</h4>
 
 <form onsubmit="@(async () => await CreateAccount())">
@@ -34,12 +33,12 @@
     async Task CreateAccount()
     {
         JsInterop.ConsoleLog("PostAccount");
-        await new HttpApiClientRequestBuilder(Http, "/api/account/register")
+        await new HttpApiClientRequestBuilder(Http, "/api/account/register", UriHelper)
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
             .OnOK(async () =>
             {
                 JsInterop.Toastr("success", "Successfully registered");
-                JsInterop.Redirect("/login");
+                registerViewModel = new RegisterViewModel();
                 _errors = null;
             })
             .Post(registerViewModel);

@@ -1,6 +1,5 @@
-﻿@inject HttpClient Http
-@using Toss.Client.Services;
-@using Toss.Shared;
+﻿@inject HttpClient Http;
+@inject IUriHelper UriHelper;
 <h4>Use another service to log in.</h4>
 @foreach (var provider in loginProviders)
 {
@@ -18,7 +17,7 @@
     IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
     protected override async Task OnInitAsync()
     {
-        await new HttpApiClientRequestBuilder(Http, "/api/account/loginProviders")
+        await new HttpApiClientRequestBuilder(Http, "/api/account/loginProviders",UriHelper)
             .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
             .Get();
 
