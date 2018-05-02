@@ -14,6 +14,7 @@ using AuthenticationSample.Models;
 using AuthenticationSample.Models.AccountViewModels;
 using AuthenticationSample.Services;
 using Toss.Shared;
+using Toss.Server.Extensions;
 
 namespace AuthenticationSample.Controllers
 {
@@ -52,7 +53,6 @@ namespace AuthenticationSample.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(Toss.Shared.LoginViewModel model)
         {
             if (ModelState.IsValid)
@@ -67,33 +67,32 @@ namespace AuthenticationSample.Controllers
                 }
                 if (result.RequiresTwoFactor)
                 {
-                    return RedirectToAction("LoginWith2fa");
+                    return RedirectToAction("/loginWith2fa");
                 }
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning("User account locked out.");
-                    return RedirectToAction("Lockout");
+                    return Redirect("/lockout");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return BadRequest(ModelState);
+                    return BadRequest(ModelState.ToFlatDictionary());
                 }
             }
 
             // If we got this far, something failed, redisplay form
-            return BadRequest(ModelState);
+            return BadRequest(ModelState.ToFlatDictionary());
         }      
      
 
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromBody] Toss.Shared.RegisterViewModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Name };
+                var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -107,9 +106,9 @@ namespace AuthenticationSample.Controllers
                     _logger.LogInformation("User created a new account with password.");
                     return Ok();
                 }
-                return BadRequest(result);
+                return BadRequest(result.ToFlatDictionary());
             }
-            return BadRequest(ModelState);
+            return BadRequest(ModelState.ToFlatDictionary());
         }
 
         [HttpPost]

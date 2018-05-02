@@ -17,7 +17,7 @@ namespace Toss.Client.Services
         }
         public static void Redirect(string url)
         {
-            RegisteredFunction.Invoke<bool>("redirect", url);
+            RegisteredFunction.Invoke<bool>("Blazor.navigateTo", url);
         }
         public static void Toastr(string toastType,string message)
         {

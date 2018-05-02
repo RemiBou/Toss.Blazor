@@ -20,7 +20,7 @@
     <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
     <None Include="Shared\AccountMenu.cshtml" />
-    <None Include="Shared\CreateAccount.cshtml" />
+    <None Include="Shared\Register.cshtml" />
     <None Include="Shared\LoginClassic.cshtml" />
     <None Include="Shared\LoginExternal.cshtml" />
     <None Include="Shared\ValidationError.cshtml" />
@@ -71,10 +71,7 @@
     <Content Remove="Shared\LoginExternal.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <BlazorGenerate Remove="Shared\CreateAccount.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Shared\CreateAccount.cshtml" />
+    <BlazorGenerate Remove="Shared\Register.cshtml" />
   </ItemGroup>
 
 </Project>

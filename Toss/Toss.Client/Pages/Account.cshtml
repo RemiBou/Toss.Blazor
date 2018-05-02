@@ -8,26 +8,26 @@
 @if (_account != null)
 {
 
-    <form>
-        <div class="form-group">
-            <label for="Username">Username</label>
-            <input id="Username" bind="@_account.Username" class="form-control" />
-            <ValidationError FieldName="Username" Errors="@_errors" />
-        </div>
-        <div class="form-group">
-            <label for="Email">Email</label>
+<form>
+    <div class="form-group">
+        <label for="Username">Username</label>
+        <input id="Username" bind="@_account.Username" class="form-control" />
+        <ValidationError FieldName="Username" Errors="@_errors" />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
 
-            <input for="Email" class="form-control" bind="@_account.Email" />
-            <ValidationError FieldName="Email" Errors="@_errors" />
+        <input for="Email" class="form-control" bind="@_account.Email" />
+        <ValidationError FieldName="Email" Errors="@_errors" />
 
-        </div>
-        <div class="form-group">
-            <label for="PhoneNumber">Phone number</label>
-            <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
-            <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
-        </div>
-        <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
-    </form>
+    </div>
+    <div class="form-group">
+        <label for="PhoneNumber">Phone number</label>
+        <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
+        <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
+    </div>
+    <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
+</form>
 
 }
 else

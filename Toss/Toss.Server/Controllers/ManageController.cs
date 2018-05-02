@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Toss.Server.Extensions;
 using Toss.Shared;
 
 namespace AuthenticationSample.Controllers
@@ -65,7 +66,7 @@ namespace AuthenticationSample.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState.ToDictionary(s => s.Key,s => string.Join(" ",s.Value.Errors.Select(e => e.ErrorMessage))));
+                return BadRequest(ModelState.ToFlatDictionary());
             }
 
             var user = await _userManager.GetUserAsync(User);
@@ -113,7 +114,7 @@ namespace AuthenticationSample.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                return BadRequest(ModelState.ToFlatDictionary());
             }
 
             var user = await _userManager.GetUserAsync(User);

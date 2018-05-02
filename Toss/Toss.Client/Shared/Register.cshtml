@@ -1,0 +1,50 @@
+﻿@inject HttpClient Http
+@using Toss.Client.Services
+@using Toss.Shared
+<h4>Create a Toss account</h4>
+
+<form onsubmit="@(async () => await CreateAccount())">
+    <div asp-validation-summary="All" class="text-danger"></div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input id="Email" bind="@registerViewModel.Email" class="form-control" />
+        <ValidationError FieldName="Email" Errors="@_errors" />
+    </div>
+    <div class="form-group">
+        <label for="Name">Name</label>
+        <input id="Name" bind="@registerViewModel.Name" class="form-control" />
+        <ValidationError FieldName="Name" Errors="@_errors" />
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input id="Password" bind="@registerViewModel.Password" class="form-control" />
+        <ValidationError FieldName="Password" Errors="@_errors" />
+    </div>
+    <div class="form-group">
+        <label for="ConfirmPassword">Confirm your password</label>
+        <input id="ConfirmPassword" bind="@registerViewModel.ConfirmPassword" class="form-control" />
+        <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
+    </div>
+    <button type="submit" class="btn btn-default">Register</button>
+    <ValidationError FieldName="Other" Errors="@_errors" />
+</form>
+@functions{
+    RegisterViewModel registerViewModel = new RegisterViewModel();
+    Dictionary<string, string> _errors;
+    async Task CreateAccount()
+    {
+        JsInterop.ConsoleLog("PostAccount");
+        await new HttpApiClientRequestBuilder(Http, "/api/account/register")
+            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+            .OnOK(async () =>
+            {
+                JsInterop.Toastr("success", "Successfully registered");
+                JsInterop.Redirect("/login");
+                _errors = null;
+            })
+            .Post(registerViewModel);
+        StateHasChanged();
+        JsInterop.ConsoleLog("PostAccount done");
+
+    }
+}
