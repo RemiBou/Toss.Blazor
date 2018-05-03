@@ -3,44 +3,27 @@
 @inject IUriHelper UriHelper;
 
 <AccountMenu></AccountMenu>
+<form method="post" onsubmit="@(async () => await PostAccount())">
+    <div class="form-group">
+        <label for="Username">Username</label>
+        <input id="Username" bind="@_account.Username" class="form-control" />
+        <ValidationError FieldName="Username" Errors="@_errors" />
+    </div>
+    <div class="form-group">
+        <label for="Email">Email</label>
+        <input for="Email" class="form-control" bind="@_account.Email" />
+        <ValidationError FieldName="Email" Errors="@_errors" />
+    </div>
+    <button type="submit" class="btn btn-default">Save</button>
+</form>
 
-@if (_account != null)
-{
-
-    <form>
-        <div class="form-group">
-            <label for="Username">Username</label>
-            <input id="Username" bind="@_account.Username" class="form-control" />
-            <ValidationError FieldName="Username" Errors="@_errors" />
-        </div>
-        <div class="form-group">
-            <label for="Email">Email</label>
-
-            <input for="Email" class="form-control" bind="@_account.Email" />
-            <ValidationError FieldName="Email" Errors="@_errors" />
-
-        </div>
-        <div class="form-group">
-            <label for="PhoneNumber">Phone number</label>
-            <input id="PhoneNumber" class="form-control" bind="@_account.PhoneNumber" />
-            <ValidationError FieldName="PhoneNumber" Errors="@_errors" />
-        </div>
-        <button type="button" onclick="@(async () => await PostAccount())" class="btn btn-default">Save</button>
-    </form>
-
-}
-else
-{
-    <div class="alert alert-info">Loading...</div>
-
-}
 
 @functions {
-AccountViewModel _account;
+AccountViewModel _account = new AccountViewModel();
 Dictionary<string, string> _errors;
 protected override async Task OnInitAsync()
 {
-    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
+    await new HttpApiClientRequestBuilder(Http, "/api/account/details", UriHelper)
         .OnOK<AccountViewModel>((a) => _account = a)
         .Get();
     StateHasChanged();
@@ -49,7 +32,7 @@ async Task PostAccount()
 {
 
     JsInterop.ConsoleLog("PostAccount");
-    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
+    await new HttpApiClientRequestBuilder(Http, "/api/account/edit", UriHelper)
         .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
         .OnOK(() =>
         {

@@ -271,5 +271,89 @@ namespace AuthenticationSample.Controllers
 
             return BadRequest(result.ToFlatDictionary());
         }
+
+        [HttpGet]
+        public async Task<AccountViewModel> Details()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var model = new AccountViewModel
+            {
+                Username = user.UserName,
+                Email = user.Email,
+                IsEmailConfirmed = user.EmailConfirmed
+            };
+
+            return model;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromBody] AccountViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToFlatDictionary());
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var email = user.Email;
+            if (model.Email != email)
+            {
+                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
+                if (!setEmailResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                }
+            }
+
+
+            var setName = user.UserName;
+            if (model.Username != setName)
+            {
+                var userNameResult = (await _userManager.SetUserNameAsync(user, model.Username));
+                if (!userNameResult.Succeeded)
+                {
+                    throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : " + string.Join(",", userNameResult.Errors.Select(e => e.Description)));
+                }
+            }
+            return new OkResult();
+        }
+
+
+
+        [HttpPost]        
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToFlatDictionary());
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            }
+
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                return BadRequest(changePasswordResult);
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            _logger.LogInformation("User changed their password successfully.");
+
+            return RedirectToAction(nameof(ChangePassword));
+        }
     }
 }

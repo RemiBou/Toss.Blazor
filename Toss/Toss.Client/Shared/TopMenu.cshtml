@@ -24,7 +24,7 @@
 
 protected override async Task OnInitAsync()
 {
-    await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
+    await new HttpApiClientRequestBuilder(Http, "/api/account/details", UriHelper)
             .Get();
     StateHasChanged();
 }
