@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mailjet.Api" Version="1.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="0.3.0" />
     <PackageReference Include="ElCamino.AspNetCore.Identity.AzureTable" Version="2.1.0" />

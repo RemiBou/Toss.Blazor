@@ -51,7 +51,7 @@ async Task PostAccount()
     JsInterop.ConsoleLog("PostAccount");
     await new HttpApiClientRequestBuilder(Http, "/api/manage/index", UriHelper)
         .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-        .OnOK(async () =>
+        .OnOK(() =>
         {
             JsInterop.Toastr("success", "Informations saved successfully");
             _errors = null;

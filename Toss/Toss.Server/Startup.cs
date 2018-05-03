@@ -48,7 +48,7 @@ namespace AuthenticationSample
                     (options) =>
                     {
                         options.User.RequireUniqueEmail = true;
-
+                        options.SignIn.RequireConfirmedEmail = true;
                     })
                 .AddAzureTableStoresV2<ApplicationDbContext>(
                     () =>

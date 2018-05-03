@@ -16,12 +16,12 @@
     </div>
     <div class="form-group">
         <label for="Password">Password</label>
-        <input id="Password" bind="@registerViewModel.Password" class="form-control" />
+        <input id="Password" bind="@registerViewModel.Password" type="password" class="form-control" />
         <ValidationError FieldName="Password" Errors="@_errors" />
     </div>
     <div class="form-group">
         <label for="ConfirmPassword">Confirm your password</label>
-        <input id="ConfirmPassword" bind="@registerViewModel.ConfirmPassword" class="form-control" />
+        <input id="ConfirmPassword" bind="@registerViewModel.ConfirmPassword" type="password"  class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
     <button type="submit" class="btn btn-default">Register</button>
@@ -35,7 +35,7 @@
         JsInterop.ConsoleLog("PostAccount");
         await new HttpApiClientRequestBuilder(Http, "/api/account/register", UriHelper)
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-            .OnOK(async () =>
+            .OnOK(() =>
             {
                 JsInterop.Toastr("success", "Successfully registered");
                 registerViewModel = new RegisterViewModel();
