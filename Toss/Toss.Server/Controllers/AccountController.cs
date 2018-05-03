@@ -15,6 +15,7 @@ using AuthenticationSample.Models.AccountViewModels;
 using AuthenticationSample.Services;
 using Toss.Shared;
 using Toss.Server.Extensions;
+using System.Net;
 
 namespace AuthenticationSample.Controllers
 {
@@ -84,8 +85,8 @@ namespace AuthenticationSample.Controllers
 
             // If we got this far, something failed, redisplay form
             return BadRequest(ModelState.ToFlatDictionary());
-        }      
-     
+        }
+
 
         [HttpPost]
         [AllowAnonymous]
@@ -128,7 +129,7 @@ namespace AuthenticationSample.Controllers
             // Request a redirect to the external login provider.
             var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            
+
             return Challenge(properties, provider);
         }
 
@@ -160,7 +161,7 @@ namespace AuthenticationSample.Controllers
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
-               
+
                 return Redirect("/externalLogin");
             }
         }
@@ -245,6 +246,30 @@ namespace AuthenticationSample.Controllers
 
             // If we got this far, something failed, redisplay form
             return BadRequest(ModelState.ToFlatDictionary());
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ResetPassword([FromBody]Toss.Shared.ResetPasswordViewModel model)
+        {
+            model.Code = WebUtility.UrlDecode(model.Code);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.ToFlatDictionary());
+            }
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                // Don't reveal that the user does not exist
+                return Ok();
+            }
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(result.ToFlatDictionary());
         }
     }
 }
