@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Pages\AccountChangePassword.cshtml" />
+    <None Include="Pages\AccountConfirmation.cshtml" />
     <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
     <None Include="Shared\AccountMenu.cshtml" />
@@ -73,6 +74,12 @@
   </ItemGroup>
   <ItemGroup>
     <BlazorGenerate Remove="Shared\Register.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AccountConfirmation.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\AccountConfirmation.cshtml" />
   </ItemGroup>
 
 </Project>

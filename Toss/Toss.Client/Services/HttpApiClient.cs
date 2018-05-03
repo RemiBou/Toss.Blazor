@@ -93,6 +93,13 @@ namespace Toss.Client.Services
             };
             return this;
         }
-
+        public HttpApiClientRequestBuilder OnBadRequest(Action todo)
+        {
+            _onBadRequest = async (HttpResponseMessage r) =>
+            {
+                todo();
+            };
+            return this;
+        }
     }
 }

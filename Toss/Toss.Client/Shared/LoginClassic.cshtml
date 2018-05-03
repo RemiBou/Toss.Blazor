@@ -4,9 +4,9 @@
 <form method="post" onsubmit="@(async () => await TryLogin())">
 
     <div class="form-group">
-        <label for="Email">Email</label>
-        <input bind="@loginViewModel.Email" id="Email" class="form-control" />
-        <ValidationError Errors="@_errors" FieldName="Email" />
+        <label for="UserName">UserName</label>
+        <input bind="@loginViewModel.UserName" id="UserName" class="form-control" />
+        <ValidationError Errors="@_errors" FieldName="UserName" />
     </div>
     <div class="form-group">
         <label asp-for="Password">Password</label>

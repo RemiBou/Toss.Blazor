@@ -5,23 +5,23 @@
 <form onsubmit="@(async () => await CreateAccount())">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
-        <label for="Email">Email</label>
-        <input id="Email" bind="@registerViewModel.Email" class="form-control" />
+        <label for="NewEmail">Email</label>
+        <input id="NewEmail" bind="@registerViewModel.Email" class="form-control" />
         <ValidationError FieldName="Email" Errors="@_errors" />
     </div>
     <div class="form-group">
-        <label for="Name">Name</label>
-        <input id="Name" bind="@registerViewModel.Name" class="form-control" />
+        <label for="NewName">Name</label>
+        <input id="NewName" bind="@registerViewModel.Name" class="form-control" />
         <ValidationError FieldName="Name" Errors="@_errors" />
     </div>
     <div class="form-group">
-        <label for="Password">Password</label>
-        <input id="Password" bind="@registerViewModel.Password" type="password" class="form-control" />
+        <label for="NewPassword">Password</label>
+        <input id="NewPassword" bind="@registerViewModel.Password" type="password" class="form-control" />
         <ValidationError FieldName="Password" Errors="@_errors" />
     </div>
     <div class="form-group">
-        <label for="ConfirmPassword">Confirm your password</label>
-        <input id="ConfirmPassword" bind="@registerViewModel.ConfirmPassword" type="password"  class="form-control" />
+        <label for="NewConfirmPassword">Confirm your password</label>
+        <input id="NewConfirmPassword" bind="@registerViewModel.ConfirmPassword" type="password"  class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
     <button type="submit" class="btn btn-default">Register</button>

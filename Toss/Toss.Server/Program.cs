@@ -21,6 +21,7 @@ namespace AuthenticationSample
             WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(new ConfigurationBuilder()
                     .AddCommandLine(args)
+
                     .Build())
                 .UseStartup<Startup>()
                 .Build();
