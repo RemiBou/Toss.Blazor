@@ -19,6 +19,7 @@
   <ItemGroup>
     <None Include="Pages\AccountChangePassword.cshtml" />
     <None Include="Pages\AccountConfirmation.cshtml" />
+    <None Include="Pages\AccountForgetPassword.cshtml" />
     <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
     <None Include="Shared\AccountMenu.cshtml" />
@@ -80,6 +81,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Pages\AccountConfirmation.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AccountForgetPassword.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\AccountForgetPassword.cshtml" />
   </ItemGroup>
 
 </Project>

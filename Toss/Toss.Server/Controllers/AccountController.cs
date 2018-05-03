@@ -220,5 +220,31 @@ namespace AuthenticationSample.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             return result.Succeeded ? (IActionResult)Ok() : BadRequest();
         }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword([FromBody] Toss.Shared.ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    // Don't reveal that the user does not exist or is not confirmed
+                    return Ok();
+                }
+
+                // For more information on how to enable account confirmation and password reset please
+                // visit https://go.microsoft.com/fwlink/?LinkID=532713
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
+                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+                return Ok();
+            }
+
+            // If we got this far, something failed, redisplay form
+            return BadRequest(ModelState.ToFlatDictionary());
+        }
     }
 }
