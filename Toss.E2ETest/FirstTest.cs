@@ -17,8 +17,8 @@ namespace Toss.E2ETest
 {
     public class HostedInAspNetTest : ServerTestBase<AspNetSiteServerFixture>
     {
-        private WebDriverWait _webDriveWaitDefault = new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange));
-        private const int DefaultWaitSecondsForPageChange = 2; 
+        private WebDriverWait _webDriveWaitDefault;
+        private const int DefaultWaitSecondsForPageChange = 2;
         public HostedInAspNetTest(
             BrowserFixture browserFixture,
             AspNetSiteServerFixture serverFixture,
@@ -29,6 +29,7 @@ namespace Toss.E2ETest
             serverFixture.Environment = AspNetEnvironment.Development;
             Navigate("/", noReload: true);
             WaitUntilLoaded();
+            _webDriveWaitDefault = new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange));
         }
 
         [Fact]
@@ -49,10 +50,15 @@ namespace Toss.E2ETest
         public void when_register_ok_empty_form_and_cannot_log()
         {
             Navigate("/login");
+
+            _webDriveWaitDefault.Until(driver => driver.FindElements(By.Id("NewEmail")).Any());
             Browser.FindElement(By.Id("NewEmail")).SendKeys("toto@yopmail.com");
-            Browser.FindElement(By.Id("NewName")).SendKeys("toto");
+            Browser.FindElement(By.Id("NewName")).SendKeys("tototo");
             Browser.FindElement(By.Id("NewPassword")).SendKeys("056187Aa!");
-            Browser.FindElement(By.Id("ConfirmPassword")).SendKeys("056187Aa!");
+            Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys("056187Aa!");
+            Browser.FindElement(By.Id("BtnRegister")).Click();
+            _webDriveWaitDefault.Until(driver => driver.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
+           
         }
 
         private void WaitUntilLoaded()
@@ -187,7 +193,7 @@ namespace Toss.E2ETest
             var opts = new ChromeOptions();
 
             // Comment this out if you want to watch or interact with the browser (e.g., for debugging)
-            opts.AddArgument("--headless");
+            //opts.AddArgument("--headless");
 
             // Log errors
             opts.SetLoggingPreference(LogType.Browser, LogLevel.All);
