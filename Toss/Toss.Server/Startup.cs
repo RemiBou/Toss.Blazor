@@ -19,7 +19,7 @@ using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
-namespace AuthenticationSample
+namespace Toss.Server
 {
     public class Startup
     {

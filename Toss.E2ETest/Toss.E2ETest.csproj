@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Selenium.Support" Version="3.11.2" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.11.2" />
+    <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Toss\Toss.Client\Toss.Client.csproj" />
+    <ProjectReference Include="..\Toss\Toss.Server\Toss.Server.csproj" />
+    <ProjectReference Include="..\Toss\Toss.Shared\Toss.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
