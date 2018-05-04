@@ -19,6 +19,7 @@
   <ItemGroup>
     <None Include="Pages\AccountChangePassword.cshtml" />
     <None Include="Pages\AccountConfirmation.cshtml" />
+    <None Include="Pages\AccountExternalLogin.cshtml" />
     <None Include="Pages\AccountForgetPassword.cshtml" />
     <None Include="Pages\AccountResetPassword.cshtml" />
     <None Include="Pages\Index.cshtml" />
@@ -94,6 +95,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Pages\AccountResetPassword.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Pages\AccountExternalLogin.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Pages\AccountExternalLogin.cshtml" />
   </ItemGroup>
 
 </Project>

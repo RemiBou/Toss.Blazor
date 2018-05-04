@@ -1,12 +1,9 @@
 ﻿@inject HttpClient Http
 @inject IUriHelper UriHelper;
 <nav class="navbar navbar-light bg-light">
-
-
     <NavLink class="btn btn-primary" href="/" Match="NavLinkMatch.All">
         <i class="fas fa-home"></i>
     </NavLink>
-
     <NavLink class="btn btn-primary" href="/account" Match="NavLinkMatch.Prefix">
         <i class="fas fa-user"></i>
     </NavLink>
@@ -16,9 +13,6 @@
             <i class="fas fa-sign-out-alt"></i>
         </button>
     </form>
-
-
-
 </nav>
 @functions {
 

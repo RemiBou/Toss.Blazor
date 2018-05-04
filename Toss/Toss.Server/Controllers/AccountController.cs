@@ -10,6 +10,7 @@ using Toss.Server.Extensions;
 using Toss.Server.Models;
 using System.Net;
 using Toss.Shared.Services;
+using System.Security.Claims;
 
 namespace Toss.Server.Controllers
 {
@@ -48,7 +49,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] Toss.Shared.LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -84,7 +85,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] Toss.Shared.RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromBody] RegisterViewModel model, string returnUrl = null)
         {
             if (ModelState.IsValid)
             {
@@ -150,20 +151,34 @@ namespace Toss.Server.Controllers
             }
             if (result.IsLockedOut)
             {
-                return Redirect("/lockout");
+                return Redirect("/account/lockout");
             }
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
 
-                return Redirect("/externalLogin");
+                return Redirect("/account/externalLogin");
             }
         }
-
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginDetails()
+        {
+            // Get the information about the user from the external login provider
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                throw new ApplicationException("Error loading external login information during confirmation.");
+            }
+            return Ok(new ExternalLoginViewModel()
+            {
+                Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                Provider = info.LoginProvider
+            });
+        }
         [HttpPost]
         [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(Shared.ExternalLoginViewModel model)
+        public async Task<IActionResult> ExternalLoginConfirmation([FromBody] ExternalLoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -173,7 +188,7 @@ namespace Toss.Server.Controllers
                 {
                     throw new ApplicationException("Error loading external login information during confirmation.");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -185,8 +200,9 @@ namespace Toss.Server.Controllers
                         return Ok();
                     }
                 }
+                return BadRequest(result.ToFlatDictionary());
             }
-            return BadRequest();
+            return BadRequest(ModelState.ToFlatDictionary());
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -219,7 +235,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] Toss.Shared.ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -245,7 +261,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword([FromBody]Toss.Shared.ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel model)
         {
             model.Code = WebUtility.UrlDecode(model.Code);
             if (!ModelState.IsValid)

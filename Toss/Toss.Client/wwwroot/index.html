@@ -4,19 +4,14 @@
     <meta charset="utf-8" />
     <title>TOSS</title>
 
-    <link href="/css/_site.css" rel="stylesheet" />
     <base href="/" />
 </head>
 <body>
     <div class="container">
         <app>
-            <div class="row">
-                <h1>
-                    Welcome to TOSS
-                </h1>
-                <div class="loading-status text-info">
-                    Loading things ...
-                </div>
+            <div class="jumbotron">
+                <h1 class="display-4">Welcome to TOSS</h1>
+                <p class="lead">Loading all the things ....</p>
             </div>
         </app>
     </div>
@@ -31,10 +26,7 @@
             toastr[toastType](message)
             return true;
         });
-        Blazor.registerFunction('redirect', function (url) {
-            document.location = url;
-            return true;
-        });
+      
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha256-NJWeQ+bs82iAeoT5Ktmqbi3NXwxcHlfaVejzJI2dklU=" crossorigin="anonymous" />
