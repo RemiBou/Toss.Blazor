@@ -10,6 +10,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toss.Shared", "Toss\Toss.Shared\Toss.Shared.csproj", "{321C4A67-4B89-4F1E-A01C-B4539F52D79E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{280F26F1-02B7-4697-8CB4-3B8287B9AEFD}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toss.E2ETest", "Toss.E2ETest\Toss.E2ETest.csproj", "{5E3D3794-968C-4888-A31F-B10AD45274B6}"
 EndProject

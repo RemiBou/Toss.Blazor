@@ -17,6 +17,7 @@ namespace Toss.E2ETest
 {
     public class HostedInAspNetTest : ServerTestBase<AspNetSiteServerFixture>
     {
+        private const int DefaultWaitSecondsForPageChange = 2; 
         public HostedInAspNetTest(
             BrowserFixture browserFixture,
             AspNetSiteServerFixture serverFixture,
@@ -35,11 +36,27 @@ namespace Toss.E2ETest
             Assert.Equal("TOSS", Browser.Title);
         }
 
+        [Fact]
+        public void WhenAcessingAccountAndNotLoggedRedirectToHome()
+        {
+            Navigate("/account");
+            new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange))
+                .Until(driver => driver.Url.EndsWith("/login"));
+        }
+
+        [Fact]
+        public void WhenRegistering()
+        {
+            Navigate("/account");
+            new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange))
+                .Until(driver => driver.Url.EndsWith("/login"));
+        }
 
         private void WaitUntilLoaded()
         {
             new WebDriverWait(Browser, TimeSpan.FromSeconds(30)).Until(
-                driver => driver.FindElement(By.TagName("app")).Text != "Loading...");
+                 driver => !driver.FindElement(By.TagName("app")).Text.Contains("Loading...")
+                );
         }
     }
     public abstract class ServerTestBase<TServerFixture>
