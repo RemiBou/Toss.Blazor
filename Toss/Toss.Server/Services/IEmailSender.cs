@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthenticationSample.Services
+namespace Toss.Shared.Services
 {
     public interface IEmailSender
     {

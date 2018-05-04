@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using AuthenticationSample.Models;
-using AuthenticationSample.Models.AccountViewModels;
-using AuthenticationSample.Services;
 using Toss.Shared;
 using Toss.Server.Extensions;
+using Toss.Server.Models;
 using System.Net;
+using Toss.Shared.Services;
 
-namespace AuthenticationSample.Controllers
+namespace Toss.Server.Controllers
 {
     [Authorize]
     public class AccountController : Controller
@@ -169,7 +163,7 @@ namespace AuthenticationSample.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model)
+        public async Task<IActionResult> ExternalLoginConfirmation(Shared.ExternalLoginViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -194,6 +188,7 @@ namespace AuthenticationSample.Controllers
             }
             return BadRequest();
         }
+
         private IActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

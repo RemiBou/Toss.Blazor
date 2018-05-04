@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
@@ -7,17 +6,17 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using AuthenticationSample.Models;
-using AuthenticationSample.Services;
 using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Newtonsoft.Json.Serialization;
 using System.Net.Mime;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Blazor.Server;
-using AuthenticationSample.Data;
 using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Toss.Server.Models;
+using Toss.Server.Data;
+using Toss.Shared.Services;
 
 namespace Toss.Server
 {

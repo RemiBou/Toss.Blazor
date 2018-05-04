@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using AuthenticationSample.Services;
 
-namespace AuthenticationSample.Services
+namespace Toss.Shared.Services
 {
     public static class EmailSenderExtensions
     {
