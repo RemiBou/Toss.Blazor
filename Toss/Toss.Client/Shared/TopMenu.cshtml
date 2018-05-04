@@ -1,5 +1,4 @@
-﻿@inject HttpClient Http
-@inject IUriHelper UriHelper;
+﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 <nav class="navbar navbar-light bg-light">
     <NavLink class="btn btn-primary" href="/" Match="NavLinkMatch.All">
         <i class="fas fa-home"></i>
@@ -18,7 +17,7 @@
 
 protected override async Task OnInitAsync()
 {
-    await new HttpApiClientRequestBuilder(Http, "/api/account/details", UriHelper)
+    await ClientFactory.Create("/api/account/details")
             .Get();
     StateHasChanged();
 }

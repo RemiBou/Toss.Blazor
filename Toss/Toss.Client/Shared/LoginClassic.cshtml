@@ -1,5 +1,5 @@
-﻿@inject HttpClient Http
-@inject IUriHelper UriHelper;
+﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IUriHelper UriHelper
 <h4>Use a Toss account to log in.</h4>
 <form method="post" onsubmit="@(async () => await TryLogin())">
 
@@ -33,15 +33,11 @@
     Dictionary<string, string> _errors;
     async Task TryLogin()
     {
-
-        await new HttpApiClientRequestBuilder(Http, "/api/account/login", UriHelper)
-            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-            .OnOK(() =>
-            {
-                UriHelper.NavigateTo("/");
-                _errors = null;
-            })
-            .Post(loginViewModel);
+        _errors = null;
+        await ClientFactory.Create("/api/account/login")
+        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+        .OnOK(null,"/")
+        .Post(loginViewModel);
         StateHasChanged();
     }
 }

@@ -1,28 +1,24 @@
 ﻿@page "/account/confirmationEmail/{userId}/{code}"
-@inject HttpClient Http
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IUriHelper UriHelper
 @layout LoginLayout
 
 @functions {
-    [Parameter]
-    private string userId { get; set; }
-    [Parameter]
-    private string code { get; set; }
-    protected override async Task OnInitAsync()
-    {
-        await new HttpApiClientRequestBuilder(Http, $"/api/account/confirmEmail?userId={userId}&code={code}", UriHelper)
-            .OnOK(() =>
-            {
-                JsInterop.Toastr("success", "Your email address is now confirmed, you can loggin");
-                UriHelper.NavigateTo("/login");
-            })
-            .OnBadRequest(() =>
-            {
-                JsInterop.Toastr("error", "Your email address cannot be confirmed, please check the link was not changed by your email provider");
-                UriHelper.NavigateTo("/api/account/logout");
+[Parameter]
+private string userId { get; set; }
+[Parameter]
+private string code { get; set; }
+protected override async Task OnInitAsync()
+{
+    await ClientFactory.Create($"/api/account/confirmEmail?userId={userId}&code={code}")
+        .OnOK("Your email address is now confirmed, you can loggin", "/login")
+        .OnBadRequest(() =>
+        {
+            JsInterop.Toastr("error", "Your email address cannot be confirmed, please check the link was not changed by your email provider");
+            UriHelper.NavigateTo("/api/account/logout");
 
-            })
-            .Get();
-        StateHasChanged();
-    }
+        })
+        .Get();
+    StateHasChanged();
+}
 }

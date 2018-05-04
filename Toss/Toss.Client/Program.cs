@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Blazor.Browser.Rendering;
 using Microsoft.AspNetCore.Blazor.Browser.Services;
-using System;
+using Microsoft.Extensions.DependencyInjection;
+using Toss.Client.Services;
 
 namespace Toss.Client
 {
@@ -10,7 +11,10 @@ namespace Toss.Client
         {
             var serviceProvider = new BrowserServiceProvider(configure =>
             {
-                // Add any custom services here
+                configure.Add(new ServiceDescriptor(
+                    typeof(IHttpApiClientRequestBuilderFactory),
+                    typeof(HttpApiClientRequestBuilderFactory),
+                    ServiceLifetime.Scoped));
 
             });
 

@@ -1,6 +1,5 @@
 ﻿@page "/account/externalLogin"
-@inject HttpClient Http
-@inject IUriHelper UriHelper
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @layout LoginLayout
 
 <h4>Associate your @model.Provider account.</h4>
@@ -19,12 +18,7 @@
                 <label for="Email">Email</label>
                 <input id="Email" bind="@model.Email" class="form-control" />
                 <ValidationError FieldName="Email" Errors="@_errors" />
-            </div>
-            <div class="form-group">
-                <label for="Name">User Name</label>
-                <input id="Name" bind="@model.Name" class="form-control" />
-                <ValidationError FieldName="Name" Errors="@_errors" />
-            </div>
+            </div>           
             <button type="submit" class="btn btn-default">Register</button>
             <ValidationError FieldName="Other" Errors="@_errors" />
         </form>
@@ -35,26 +29,22 @@
 @functions {
 
 
-    Dictionary<string, string> _errors;
-    ExternalLoginViewModel model = new ExternalLoginViewModel();
-    protected override async Task OnInitAsync()
-    {
-        await new HttpApiClientRequestBuilder(Http, "/api/account/externalLoginDetails", UriHelper)
-            .OnOK<ExternalLoginViewModel>(a => model = a)
-            .Get();
-        StateHasChanged();
-    }
-    async Task ExternalLoginConfirm()
-    {
-        await new HttpApiClientRequestBuilder(Http, "/api/account/externalLoginConfirmation", UriHelper)
-            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-            .OnOK(() =>
-            {
-                JsInterop.Toastr("success", "Account successfully set");
-                _errors = null;
-                UriHelper.NavigateTo("/");
-            })
-            .Post(model);
-        StateHasChanged();
-    }
+Dictionary<string, string> _errors;
+ExternalLoginViewModel model = new ExternalLoginViewModel();
+protected override async Task OnInitAsync()
+{
+    await ClientFactory.Create("/api/account/externalLoginDetails")
+        .OnOK<ExternalLoginViewModel>(a => model = a)
+        .Get();
+    StateHasChanged();
+}
+async Task ExternalLoginConfirm()
+{
+    _errors = null;
+    await ClientFactory.Create("/api/account/externalLoginConfirmation")
+        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+        .OnOK("Account successfully set", "/")
+        .Post(model);
+    StateHasChanged();
+}
 }

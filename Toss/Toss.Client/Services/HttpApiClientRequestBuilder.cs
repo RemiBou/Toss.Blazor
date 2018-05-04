@@ -2,12 +2,13 @@
 using Microsoft.AspNetCore.Blazor.Browser.Services;
 using Microsoft.AspNetCore.Blazor.Services;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Toss.Client.Services
 {
-    public class HttpApiClientRequestBuilder
+    public class HttpApiClientRequestBuilder : IHttpApiClientRequestBuilder
     {
         private string _uri;
         private readonly IUriHelper uriHelper;
@@ -101,5 +102,16 @@ namespace Toss.Client.Services
             };
             return this;
         }
+        public HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null)
+        {
+            OnOK(() =>
+            {
+                if (!string.IsNullOrEmpty(successMessage))
+                    JsInterop.Toastr("success", successMessage);
+                uriHelper.NavigateTo(navigateTo);
+            });
+            return this;
+        }
+
     }
 }
