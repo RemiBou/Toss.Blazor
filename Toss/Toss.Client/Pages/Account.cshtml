@@ -3,6 +3,7 @@
 @inject IUriHelper UriHelper
 
 <AccountMenu></AccountMenu>
+
 <form method="post" onsubmit="@(async () => await PostAccount())">
     <div class="form-group">
         <label for="Username">Username</label>
@@ -16,7 +17,6 @@
     </div>
     <button type="submit" class="btn btn-default">Save</button>
 </form>
-
 
 @functions {
     AccountViewModel _account = new AccountViewModel();

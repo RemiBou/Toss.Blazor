@@ -153,6 +153,11 @@ namespace Toss.Server.Controllers
             {
                 return Redirect("/account/lockout");
             }
+            else if (result.IsNotAllowed)
+            {
+                return Redirect("/login");
+
+            }
             else
             {
                 // If the user does not have an account, then ask the user to create an account.
