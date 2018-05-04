@@ -17,6 +17,7 @@ namespace Toss.E2ETest
 {
     public class HostedInAspNetTest : ServerTestBase<AspNetSiteServerFixture>
     {
+        private WebDriverWait _webDriveWaitDefault = new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange));
         private const int DefaultWaitSecondsForPageChange = 2; 
         public HostedInAspNetTest(
             BrowserFixture browserFixture,
@@ -37,19 +38,21 @@ namespace Toss.E2ETest
         }
 
         [Fact]
-        public void WhenAcessingAccountAndNotLoggedRedirectToHome()
+        public void when_accessing_accountpage_and_not_logged_redirect_to_login()
         {
             Navigate("/account");
-            new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange))
-                .Until(driver => driver.Url.EndsWith("/login"));
+            
+            _webDriveWaitDefault.Until(driver => driver.Url.EndsWith("/login"));
         }
 
         [Fact]
-        public void WhenRegistering()
+        public void when_register_ok_empty_form_and_cannot_log()
         {
-            Navigate("/account");
-            new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange))
-                .Until(driver => driver.Url.EndsWith("/login"));
+            Navigate("/login");
+            Browser.FindElement(By.Id("NewEmail")).SendKeys("toto@yopmail.com");
+            Browser.FindElement(By.Id("NewName")).SendKeys("toto");
+            Browser.FindElement(By.Id("NewPassword")).SendKeys("056187Aa!");
+            Browser.FindElement(By.Id("ConfirmPassword")).SendKeys("056187Aa!");
         }
 
         private void WaitUntilLoaded()
