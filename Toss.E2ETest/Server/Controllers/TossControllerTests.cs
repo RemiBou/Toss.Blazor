@@ -1,0 +1,169 @@
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Toss.Server;
+using Toss.Server.Controllers;
+using Toss.Server.Data;
+using Toss.Shared;
+using Xunit;
+
+namespace Toss.Tests.Server.Controllers
+{
+    public class TossControllerTests
+    {
+        private TossController _sut;
+        private Mock<ITossRepository> mockTossRepository;
+        public TossControllerTests()
+        {
+            mockTossRepository = new Mock<ITossRepository>();
+            _sut = new TossController(mockTossRepository.Object);
+            _sut.ControllerContext = new ControllerContext
+            {
+                HttpContext = new DefaultHttpContext
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+                     {
+                            new Claim(ClaimTypes.Name, "username")
+                     }, "someAuthTypeName"))
+                }
+            };
+        }
+
+        [Fact]
+        public async Task last_return_50_toss_from_repo()
+        {
+            mockTossRepository
+                .Setup(m => m.Last(50))
+                .ReturnsAsync(Enumerable.Range(0, 50)
+                .Select(i => new TossLastQueryItem()));
+
+
+            var res = await _sut.Last() as OkObjectResult;
+            var resValue = (res.Value as List<TossLastQueryItem>);
+
+            Assert.Equal(50, resValue.Count());
+        }
+        [Fact]
+        public async Task last_map_toss_to_viewmodel()
+        {
+            mockTossRepository
+               .Setup(m => m.Last(50))
+               .ReturnsAsync(Enumerable.Range(0, 1)
+               .Select(i => new TossLastQueryItem()
+               {
+                   UserName = "toss@yopmail.com",
+                   Content = "lorem ipsum",
+                   DateOfPost = new System.DateTime(2018, 1, 1)
+               })
+               .ToList());
+
+            var res = await _sut.Last() as OkObjectResult;
+            var first = (res.Value as List<TossLastQueryItem>).First();
+            var firstTyped = Assert.IsType<TossLastQueryItem>(first);
+            Assert.Equal("toss@yopmail.com", firstTyped.UserName);
+            Assert.Equal("lorem ipsum", firstTyped.Content);
+            Assert.Equal(new System.DateTime(2018, 1, 1), firstTyped.DateOfPost);
+
+        }
+
+        [Fact]
+        public async Task last_return_http_200()
+        {
+            var res = await _sut.Last();
+
+            var resOkObject = Assert.IsType<OkObjectResult>(res);
+            Assert.IsType<List<TossLastQueryItem>>(resOkObject.Value);
+
+        }
+
+        [Fact]
+        public async Task create_calls_repo_with_command()
+        {
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
+            };
+            var res = await _sut.Create(command);
+
+            mockTossRepository.Verify(r => r.Create(command));
+
+        }
+        [Fact]
+        public async Task create_return_ok_if_valid()
+        {
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
+            };
+            var res = await _sut.Create(command);
+
+            Assert.IsType<OkResult>(res);
+
+        }
+        [Fact]
+        public async Task create_return_400_if_content_not_valid()
+        {
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum"
+            };
+            _sut.ModelState.AddModelError("test", "test");
+            var res = await _sut.Create(command);
+
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
+            var dico = Assert.IsType<Dictionary<string, string>>(badRequestResult.Value);
+            Assert.True(dico.ContainsKey("test"));
+        }
+        //[Fact]
+        //public async Task create_invalid_if_length_over_32000()
+        //{
+        //    var command = new TossCreateCommand()
+        //    {
+        //        Content = string.Join(" ", Enumerable.Range(0, 1000).Select(i => "lorem ipsum"))
+        //    };
+        //    Assert.False(_sut.TryValidateModel(command));
+
+        //    var res = await _sut.Create(command);
+
+        //    Assert.True(((Dictionary<string, string>)((BadRequestObjectResult)res).Value).ContainsKey("Content"));
+
+        //}
+
+        [Fact]
+        public async Task create_setup_username_to_current_user()
+        {
+
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
+                UserName="jeanmichel"
+            };
+            var res = await _sut.Create(command);
+
+            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.UserName == "username")));
+
+        }
+        [Fact]
+        public async Task create_setup_date_of_post_to_today()
+        {
+
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
+                UserName = "jeanmichel"
+            };
+            var now = DateTime.Now;
+            var res = await _sut.Create(command);
+
+            var now2 = DateTime.Now;
+            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.CreatedOn >= now && c.CreatedOn <= now2)));
+
+        }
+    }
+}

@@ -32,13 +32,13 @@ namespace Toss.E2ETest
             _webDriveWaitDefault = new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange));
         }
 
-        [Fact]
+  //      [Fact]
         public void HasTitle()
         {
             Assert.Equal("TOSS", Browser.Title);
         }
 
-        [Fact]
+ //       [Fact]
         public void when_accessing_accountpage_and_not_logged_redirect_to_login()
         {
             Navigate("/account");
@@ -46,7 +46,7 @@ namespace Toss.E2ETest
             _webDriveWaitDefault.Until(driver => driver.Url.EndsWith("/login"));
         }
 
-        [Fact]
+//        [Fact]
         public void when_register_ok_empty_form_and_cannot_log()
         {
             Navigate("/login");

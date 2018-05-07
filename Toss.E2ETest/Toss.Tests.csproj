@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Moq" Version="4.8.2" />
     <PackageReference Include="Selenium.Support" Version="3.11.2" />
     <PackageReference Include="Selenium.WebDriver" Version="3.11.2" />
     <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
@@ -16,6 +17,10 @@
     <ProjectReference Include="..\Toss\Toss.Client\Toss.Client.csproj" />
     <ProjectReference Include="..\Toss\Toss.Server\Toss.Server.csproj" />
     <ProjectReference Include="..\Toss\Toss.Shared\Toss.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Infrastructure\" />
   </ItemGroup>
 
 </Project>

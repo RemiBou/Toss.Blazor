@@ -49,8 +49,8 @@
     }
 </div>
 @functions{
-    List<OneTossViewModel> Tosses = new List<OneTossViewModel>();
-    NewTossViewModel newToss = new NewTossViewModel();
+    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
+    TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string, string> _errors;
     bool loading = false;
     protected override async Task OnInitAsync()
@@ -62,7 +62,7 @@
         loading = true;
         StateHasChanged();
         Tosses = Enumerable.Range(0, 50)
-        .Select(i => new OneTossViewModel()
+        .Select(i => new TossLastQueryItem()
         {
             Content = "lorem ipsum mfoksdlkf,sdlk,sdlfkjdsl lkd lfjd lkjsdlkfj sd",
             DateOfPost = DateTime.Now.AddMinutes(-i * 5),
@@ -78,7 +78,7 @@
         await ClientFactory.Create("/toss/create")
             .OnOK(async () =>
             {
-                newToss = new NewTossViewModel();
+                newToss = new TossCreateCommand();
                 await RefreshTossList();
             })
             .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
