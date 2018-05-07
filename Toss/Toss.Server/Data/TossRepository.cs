@@ -6,8 +6,15 @@ using Toss.Shared;
 
 namespace Toss.Server.Data
 {
-    public class TossRepository : ITossRepository
+    public class TossAzureTableRepository : ITossRepository
     {
+        private string azureStorageConnectionString;
+
+        public TossAzureTableRepository(string azureStorageConnectionString)
+        {
+            this.azureStorageConnectionString = azureStorageConnectionString;
+        }
+
         public async Task<IEnumerable<TossLastQueryItem>> Last(int count)
         {
             throw new NotImplementedException();
