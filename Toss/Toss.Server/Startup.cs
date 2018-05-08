@@ -12,7 +12,6 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Blazor.Server;
 using System.Net;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Toss.Server.Models;
 using Toss.Server.Data;
@@ -43,20 +42,21 @@ namespace Toss.Server
             // Add Elcamino Azure Table Identity services.
 
             services
-                .AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>(
-                    (options) =>
-                    {
-                        options.User.RequireUniqueEmail = true;
-                        options.SignIn.RequireConfirmedEmail = true;
-                    })
+                .AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>(                    
+                    options =>
+                     {
+                         options.User.RequireUniqueEmail = true;
+                         options.SignIn.RequireConfirmedEmail = true;
+                     })
                 .AddAzureTableStoresV2<ApplicationDbContext>(
                     () =>
                     {
-                        IdentityConfiguration idconfig = new IdentityConfiguration();
-                        idconfig.TablePrefix = "Auth";
-                        idconfig.StorageConnectionString = "UseDevelopmentStorage=true;";
-                        idconfig.LocationMode = "PrimaryOnly";
-                        return idconfig;
+                        return new IdentityConfiguration
+                        {
+                            TablePrefix = "Auth",
+                            StorageConnectionString = "UseDevelopmentStorage=true;",
+                            LocationMode = "PrimaryOnly"
+                        };
                     })
                 .AddDefaultTokenProviders()
                 .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
@@ -79,7 +79,7 @@ namespace Toss.Server
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
         }
-        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {
                 if (context.Request.Path.StartsWithSegments("/api"))
@@ -113,7 +113,7 @@ namespace Toss.Server
                     name: "default",
                     template: "/api/{controller}/{action}/{id?}");
             });
-         
+
             app.UseBlazor<Toss.Client.Program>();
         }
     }
