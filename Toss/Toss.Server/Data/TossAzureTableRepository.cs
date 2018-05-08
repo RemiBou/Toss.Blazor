@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Toss.Shared;
 
@@ -19,11 +15,14 @@ namespace Toss.Server.Data
         private readonly IUserRepository userRepository;
         private CloudTable mainTable;
 
-        public TossAzureTableRepository(CloudTableClient storageClient, IUserRepository userRepository)
+        public TossAzureTableRepository(
+            CloudTableClient storageClient,
+            IUserRepository userRepository,
+            string tablePrefix = null)
         {
             this.storageClient = storageClient;
             this.userRepository = userRepository;
-            mainTable = storageClient.GetTableReference("Toss");
+            mainTable = storageClient.GetTableReference(tablePrefix+"Toss");
             
         }
 
