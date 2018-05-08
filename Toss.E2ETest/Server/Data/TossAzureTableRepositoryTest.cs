@@ -23,7 +23,7 @@ namespace Toss.Tests.Server.Data
             storageClient = storageAccount.CreateCloudTableClient();
             mockUserRepository = new Mock<IUserRepository>();
             _sut = new TossAzureTableRepository(storageClient, mockUserRepository.Object,tablePrefix:"UnitTests");
-            _tableReference = storageClient.GetTableReference("Toss");
+            _tableReference = storageClient.GetTableReference("UnitTestsToss");
             _tableReference.CreateIfNotExistsAsync().Wait();
             mockUserRepository.Setup(r => r.GetUserNames(It.IsAny<IEnumerable<string>>()))
                .ReturnsAsync(new Dictionary<string, string>
