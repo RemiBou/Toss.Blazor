@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Toss.Server.Models;
 using Toss.Server.Data;
 using Toss.Shared.Services;
+using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.WindowsAzure.Storage;
 
 namespace Toss.Server
 {
@@ -54,7 +56,7 @@ namespace Toss.Server
                         return new IdentityConfiguration
                         {
                             TablePrefix = "Auth",
-                            StorageConnectionString = "UseDevelopmentStorage=true;",
+                            StorageConnectionString = Configuration["AzureStorage"],
                             LocationMode = "PrimaryOnly"
                         };
                     })
@@ -78,6 +80,14 @@ namespace Toss.Server
                 options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
+
+            services.AddScoped(s =>
+                CloudStorageAccount
+                    .Parse(Configuration["AzureStorage"])
+                    .CreateCloudTableClient()
+            );
+            services.AddScoped<ITossRepository, TossAzureTableRepository>();
+            services.AddScoped<IUserRepository, UserAzureTableRepository>();
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>

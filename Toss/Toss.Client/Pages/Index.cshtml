@@ -61,29 +61,25 @@
     {
         loading = true;
         StateHasChanged();
-        Tosses = Enumerable.Range(0, 50)
-        .Select(i => new TossLastQueryItem()
-        {
-            Content = "lorem ipsum mfoksdlkf,sdlk,sdlfkjdsl lkd lfjd lkjsdlkfj sd",
-            CreatedOn = DateTime.Now.AddMinutes(-i * 5),
-            UserName = "Tosster-" + i
-        })
-        .ToList();
-        await Task.Delay(1000);
+        await ClientFactory.Create("/api/toss/last")
+            .OnOK<List<TossLastQueryItem>>(async (l) =>
+            {
+                Tosses = l;
+            })
+            .Get();
         loading = false;
         StateHasChanged();
     }
     protected async Task SendToss()
     {
-        await ClientFactory.Create("/toss/create")
+        await ClientFactory.Create("/api/toss/create")
             .OnOK(async () =>
             {
                 newToss = new TossCreateCommand();
                 await RefreshTossList();
             })
             .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
-            .Post();
-        await RefreshTossList();
+            .Post(newToss);
         StateHasChanged();
 
     }

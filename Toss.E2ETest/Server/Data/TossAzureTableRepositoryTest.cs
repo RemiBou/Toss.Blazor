@@ -98,7 +98,6 @@ namespace Toss.Tests.Server.Data
                 .First();
 
             Assert.Equal("lorem ipsum", toss.Content);
-            Assert.Equal("usernametest", toss.UserId);
             Assert.Equal(command.CreatedOn, toss.CreatedOn);
 
 

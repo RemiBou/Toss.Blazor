@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
+﻿using ElCamino.AspNetCore.Identity.AzureTable.Helpers;
+using Microsoft.WindowsAzure.Storage.Table;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -17,20 +18,23 @@ namespace Toss.Server.Data
         }
 
         /// <summary>
-        /// Return the user name for each user key send,
+        /// Return the user name for each user id send,
         /// If a user key doesn't exists, it's not in the output
         /// </summary>
-        /// <param name="rowKeys"></param>
+        /// <param name="userIds"></param>
         /// <returns></returns>
-        public async Task<Dictionary<string, string>> GetUserNames(IEnumerable<string> rowKeys)
+        public async Task<Dictionary<string, string>> GetUserNames(IEnumerable<string> userIds)
         {
             var res = new ConcurrentDictionary<string, string>();
-            var tasks = rowKeys.Select(k => appDbContext.UserTable
-             .ExecuteAsync(TableOperation.Retrieve(k, k, new List<string> { "UserName" }))
+            var tasks = userIds
+                .Select(k => new { userId = k, key = KeyHelper.GenerateRowKeyUserName(k) })
+                .Select(k => appDbContext.UserTable
+             .ExecuteAsync(TableOperation.Retrieve(k.key, k.key, new List<string> { "UserName" }))
              .ContinueWith((t) =>
              {
                  var tableEntity = (DynamicTableEntity)t.Result.Result;
-                 res.TryAdd(k, tableEntity.Properties["UserName"].StringValue);
+                 if (tableEntity != null)
+                     res.TryAdd(k.userId, tableEntity.Properties["UserName"].StringValue);
              }))
              .ToList();
             foreach (var task in tasks)

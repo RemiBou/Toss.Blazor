@@ -23,7 +23,7 @@ namespace Toss.Server.Controllers
         /// Returns the last created Toss for the homepage
         /// </summary>
         /// <returns></returns>
-        [HttpGet]       
+        [HttpGet]
         public async Task<IActionResult> Last()
         {
             return Ok((await tossRepository.Last(50)).ToList());
@@ -35,12 +35,12 @@ namespace Toss.Server.Controllers
         /// <param name="createTossCommand"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(TossCreateCommand createTossCommand)
+        public async Task<IActionResult> Create([FromBody]TossCreateCommand createTossCommand)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.ToFlatDictionary());
             createTossCommand.UserId = User.Identity.Name;
-            createTossCommand.CreatedOn = DateTime.Now;
+            createTossCommand.CreatedOn = DateTimeOffset.Now;
             await tossRepository.Create(createTossCommand);
             return Ok();
         }

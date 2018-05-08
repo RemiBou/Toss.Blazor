@@ -18,7 +18,22 @@ namespace Toss.Tests.Server.Data
                        StorageConnectionString = "UseDevelopmentStorage=true;",
                        TablePrefix = "UnitTests"
                    });
+        private UserAzureTableRepository _sut;
+        private IdentityUserV2 _identity;
 
+        public UserAzureTableRepositoryTest()
+        {
+            _identity = new IdentityUserV2("user test");
+
+             appDbContext.UserTable.CreateIfNotExistsAsync().Wait();
+            var store = new UserStoreV2<IdentityUserV2, IdentityRole, ApplicationDbContext>(appDbContext);
+            store.CreateAsync(
+                _identity
+                ).Wait();
+
+
+            _sut = new UserAzureTableRepository(appDbContext);
+        }
         public void Dispose()
         {
             appDbContext.UserTable.DeleteIfExistsAsync().Wait();
@@ -27,25 +42,23 @@ namespace Toss.Tests.Server.Data
         [Fact]
         public async Task GetUserNames_when_user_exists_return_its_non_hashed_name()
         {
-            var identity = new IdentityUserV2("user test");
-
-            await appDbContext.UserTable.CreateIfNotExistsAsync();
-            var store = new UserStoreV2<IdentityUserV2, IdentityRole, ApplicationDbContext>(appDbContext);
-            await store.CreateAsync(
-                identity
-                );
 
 
-            var sut = new UserAzureTableRepository(appDbContext);
+            var res = await _sut.GetUserNames(new[] { _identity.UserName });
 
-            var res = await sut.GetUserNames(new[] { identity.RowKey });
+            Assert.True(res.ContainsKey(_identity.UserName));
 
-            Assert.True(res.ContainsKey(identity.RowKey));
-
-            Assert.Equal("user test", res[identity.RowKey]);
+            Assert.Equal("user test", res[_identity.UserName]);
             Assert.Single(res);
 
 
+        }
+        [Fact]
+        public async Task GetUserNames_dot_not_throw_if_user_doesnot_exists()
+        {
+            var res = await _sut.GetUserNames(new[] { "blank" });
+
+            Assert.Empty(res);
         }
     }
 }
