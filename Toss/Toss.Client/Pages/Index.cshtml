@@ -34,7 +34,7 @@
         </div>
 
     }
-    @foreach (var toss in Tosses.OrderByDescending(t => t.DateOfPost))
+    @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
         <div class="card">
             <div class="card-body p-2">
@@ -43,7 +43,7 @@
 
             </div>
             <div class="card-footer p-1">
-                <small class="text-muted"><b>@toss.UserName</b> - @toss.DateOfPost</small>
+                <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
             </div>
         </div>
     }
@@ -65,7 +65,7 @@
         .Select(i => new TossLastQueryItem()
         {
             Content = "lorem ipsum mfoksdlkf,sdlk,sdlfkjdsl lkd lfjd lkjsdlkfj sd",
-            DateOfPost = DateTime.Now.AddMinutes(-i * 5),
+            CreatedOn = DateTime.Now.AddMinutes(-i * 5),
             UserName = "Tosster-" + i
         })
         .ToList();

@@ -39,7 +39,7 @@ namespace Toss.Server.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.ToFlatDictionary());
-            createTossCommand.UserName = User.Identity.Name;
+            createTossCommand.UserId = User.Identity.Name;
             createTossCommand.CreatedOn = DateTime.Now;
             await tossRepository.Create(createTossCommand);
             return Ok();

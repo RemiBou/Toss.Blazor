@@ -59,7 +59,7 @@ namespace Toss.Tests.Server.Controllers
                {
                    UserName = "toss@yopmail.com",
                    Content = "lorem ipsum",
-                   DateOfPost = new System.DateTime(2018, 1, 1)
+                   CreatedOn = new System.DateTime(2018, 1, 1)
                })
                .ToList());
 
@@ -68,7 +68,7 @@ namespace Toss.Tests.Server.Controllers
             var firstTyped = Assert.IsType<TossLastQueryItem>(first);
             Assert.Equal("toss@yopmail.com", firstTyped.UserName);
             Assert.Equal("lorem ipsum", firstTyped.Content);
-            Assert.Equal(new System.DateTime(2018, 1, 1), firstTyped.DateOfPost);
+            Assert.Equal(new System.DateTime(2018, 1, 1), firstTyped.CreatedOn);
 
         }
 
@@ -142,11 +142,11 @@ namespace Toss.Tests.Server.Controllers
             var command = new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserName="jeanmichel"
+                UserId="jeanmichel"
             };
             var res = await _sut.Create(command);
 
-            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.UserName == "username")));
+            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.UserId == "username")));
 
         }
         [Fact]
@@ -156,7 +156,7 @@ namespace Toss.Tests.Server.Controllers
             var command = new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserName = "jeanmichel"
+                UserId = "jeanmichel"
             };
             var now = DateTime.Now;
             var res = await _sut.Create(command);
