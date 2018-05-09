@@ -81,6 +81,18 @@ namespace Toss.Tests.Server.Data
 
         }
 
+        [Fact]
+        public async Task create_saves_corresponding_hashtag_index()
+        {
+
+        } 
+
+        [Fact]
+        public async Task last_returns_toss_matching_hashtag()
+        {
+
+        }
+
         public void Dispose()
         {
             _tableReference.DeleteAsync().Wait();

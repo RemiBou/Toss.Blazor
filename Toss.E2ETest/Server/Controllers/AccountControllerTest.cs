@@ -26,7 +26,7 @@ namespace Toss.Tests.Server.Controllers
         public AccountControllerTest()
         {
             _userManager = MockHelpers.MockUserManager<ApplicationUser>();
-            _signInManager = MockHelpers.MockSigninManager<ApplicationUser>(_userManager.Object);
+            _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
             _emailSender = new Mock<IEmailSender>();
             _logger = new Mock<ILogger<AccountController>>();
             _sut = new AccountController(_userManager.Object, _signInManager.Object, _emailSender.Object, _logger.Object);

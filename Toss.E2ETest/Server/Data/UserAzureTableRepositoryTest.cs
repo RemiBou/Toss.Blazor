@@ -6,18 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Tests.Infrastructure;
 using Xunit;
 
 namespace Toss.Tests.Server.Data
 {
     public class UserAzureTableRepositoryTest : IDisposable
     {
-        ApplicationDbContext appDbContext = new ApplicationDbContext(
-                   new IdentityConfiguration()
-                   {
-                       StorageConnectionString = "UseDevelopmentStorage=true;",
-                       TablePrefix = "UnitTests"
-                   });
+        ApplicationDbContext appDbContext = AzureTableHelper.GetApplicationDbContext();
         private UserAzureTableRepository _sut;
         private IdentityUserV2 _identity;
 
