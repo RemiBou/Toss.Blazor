@@ -20,8 +20,4 @@
     <ProjectReference Include="..\Toss\Toss.Shared\Toss.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Infrastructure\" />
-  </ItemGroup>
-
 </Project>

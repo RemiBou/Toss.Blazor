@@ -193,7 +193,7 @@ namespace Toss.Server.Controllers
                 {
                     throw new ApplicationException("Error loading external login information during confirmation.");
                 }
-                var user = new ApplicationUser {UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
@@ -289,12 +289,12 @@ namespace Toss.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<AccountViewModel> Details()
+        public async Task<IActionResult> Details()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return Unauthorized();
             }
 
             var model = new AccountViewModel
@@ -304,7 +304,7 @@ namespace Toss.Server.Controllers
                 IsEmailConfirmed = user.EmailConfirmed
             };
 
-            return model;
+            return Ok(model);
         }
 
         [HttpPost]
@@ -346,7 +346,7 @@ namespace Toss.Server.Controllers
 
 
 
-        [HttpPost]        
+        [HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
         {
             if (!ModelState.IsValid)
