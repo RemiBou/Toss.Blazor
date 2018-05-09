@@ -5,11 +5,11 @@
 <AccountMenu></AccountMenu>
 
 <form method="post" onsubmit="@(async () => await PostAccount())">
-    <div class="form-group">
+    @*<div class="form-group">
         <label for="Username">Username</label>
         <input id="Username" bind="@_account.Username" class="form-control" />
         <ValidationError FieldName="Username" Errors="@_errors" />
-    </div>
+    </div>*@
     <div class="form-group">
         <label for="Email">Email</label>
         <input for="Email" class="form-control" bind="@_account.Email" />

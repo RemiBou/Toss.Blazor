@@ -9,10 +9,10 @@ namespace Toss.Shared
     public class AccountViewModel
     {
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        //[Required]
+        //[StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
 
-        public string Username { get; set; }
+        //public string Username { get; set; }
 
         public bool IsEmailConfirmed { get; set; }
 

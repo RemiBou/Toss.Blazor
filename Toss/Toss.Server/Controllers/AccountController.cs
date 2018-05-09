@@ -299,7 +299,7 @@ namespace Toss.Server.Controllers
 
             var model = new AccountViewModel
             {
-                Username = user.UserName,
+                //Username = user.UserName,
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed
             };
@@ -332,15 +332,15 @@ namespace Toss.Server.Controllers
             }
 
 
-            var setName = user.UserName;
-            if (model.Username != setName)
-            {
-                var userNameResult = (await _userManager.SetUserNameAsync(user, model.Username));
-                if (!userNameResult.Succeeded)
-                {
-                    throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : " + string.Join(",", userNameResult.Errors.Select(e => e.Description)));
-                }
-            }
+            //var setName = user.UserName;
+            //if (model.Username != setName)
+            //{
+            //    var userNameResult = (await _userManager.SetUserNameAsync(user, model.Username));
+            //    if (!userNameResult.Succeeded)
+            //    {
+            //        throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : " + string.Join(",", userNameResult.Errors.Select(e => e.Description)));
+            //    }
+            //}
             return new OkResult();
         }
 
