@@ -9,12 +9,12 @@ namespace Toss.Server.Data
     public class OneTossEntity : TableEntity
     {
         public string Content { get; set; }
-        public string UserId { get; set; }
+        public string UserName { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
         public OneTossEntity(string content, string userId, DateTimeOffset dateOfPost)
         {
             Content = content;
-            UserId = userId;
+            UserName = userId;
             CreatedOn = dateOfPost;
             PartitionKey = "AllToss";
             //cf https://docs.microsoft.com/en-us/azure/cosmos-db/table-storage-design-guide#log-tail-pattern

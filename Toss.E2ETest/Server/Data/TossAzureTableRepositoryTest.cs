@@ -16,20 +16,13 @@ namespace Toss.Tests.Server.Data
         private TossAzureTableRepository _sut;
         private CloudTable _tableReference;
         private readonly CloudTableClient storageClient;
-        private Mock<IUserRepository> mockUserRepository;
         public TossAzureTableRepositoryTest()
         {
             var storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
             storageClient = storageAccount.CreateCloudTableClient();
-            mockUserRepository = new Mock<IUserRepository>();
-            _sut = new TossAzureTableRepository(storageClient, mockUserRepository.Object,tablePrefix:"UnitTests");
+            _sut = new TossAzureTableRepository(storageClient, tablePrefix:"UnitTests");
             _tableReference = storageClient.GetTableReference("UnitTestsToss");
             _tableReference.CreateIfNotExistsAsync().Wait();
-            mockUserRepository.Setup(r => r.GetUserNames(It.IsAny<IEnumerable<string>>()))
-               .ReturnsAsync(new Dictionary<string, string>
-               {
-                    {"blabla","user test" }
-               });
         }
 
         [Fact]
@@ -50,23 +43,7 @@ namespace Toss.Tests.Server.Data
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
         }
 
-        [Fact]
-        public async Task last_toss_field_mapped_to_toss_last_item_query()
-        {
-            var dateOfCreation = new DateTimeOffset(new DateTime(2017, 12, 31).AddDays(-10));
-            var toss = new OneTossEntity("lorem ipsum", "blabla", dateOfCreation);
-
-            await _tableReference.ExecuteAsync(TableOperation.Insert(toss));
-
-
-            var res = (await _sut.Last(50)).First();
-
-            Assert.Equal("lorem ipsum", res.Content);
-            Assert.Equal("user test", res.UserName);
-            Assert.Equal(dateOfCreation, res.CreatedOn);
-            mockUserRepository.Verify(r => r.GetUserNames(It.Is<IEnumerable<string>>(d => d.Count() == 1 && d.Contains("blabla"))));
-
-        }
+       
         [Fact]
         public async Task last_create_the_table_if_not_exists()
         {

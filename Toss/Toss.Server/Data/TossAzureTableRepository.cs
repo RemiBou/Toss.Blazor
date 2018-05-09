@@ -12,16 +12,13 @@ namespace Toss.Server.Data
     public class TossAzureTableRepository : ITossRepository
     {
         private readonly CloudTableClient storageClient;
-        private readonly IUserRepository userRepository;
         private CloudTable mainTable;
 
         public TossAzureTableRepository(
             CloudTableClient storageClient,
-            IUserRepository userRepository,
             string tablePrefix = null)
         {
             this.storageClient = storageClient;
-            this.userRepository = userRepository;
             mainTable = storageClient.GetTableReference(tablePrefix+"Toss");
             
         }
@@ -39,7 +36,7 @@ namespace Toss.Server.Data
             // Create the table query.
             var query = new TableQuery<OneTossEntity>()
                 .Where(TableQuery.GenerateFilterCondition("PartitionKey", QueryComparisons.Equal, "AllToss"))
-                .Select(new List<string> { "Content", "UserId", "CreatedOn" });
+                .Select(new List<string> { "Content", "UserName", "CreatedOn" });
             
             query.TakeCount = count;
             TableContinuationToken tableContinuationToken = null;
@@ -52,7 +49,7 @@ namespace Toss.Server.Data
                 {
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
-                    UserName = t.UserId
+                    UserName = t.UserName
                 })
                 .Take(count - result.Count));
                 //with ExecuteQuerySegmentedAsync we must keep track of the number of item currently taken from DB
@@ -60,11 +57,7 @@ namespace Toss.Server.Data
                 if (result.Count == count)
                     break;
             } while (tableContinuationToken != null);
-            var userNameMapping = await userRepository.GetUserNames(result.Select(r => r.UserName).Distinct().ToList());
-            foreach (var item in result)
-            {
-                item.UserName = userNameMapping[item.UserName];
-            }
+           
             return result;
 
 
