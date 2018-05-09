@@ -81,7 +81,18 @@ namespace Toss.Server.Controllers
             // If we got this far, something failed, redisplay form
             return BadRequest(ModelState.ToFlatDictionary());
         }
-
+        /// <summary>
+        /// Adds a hashtag to a user
+        /// </summary>
+        /// <param name="newTag"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> AddHashTag(string newTag)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            user.AddHashTag(newTag);
+            await _userManager.UpdateAsync(user);
+            return Ok();
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -301,7 +312,8 @@ namespace Toss.Server.Controllers
             {
                 //Username = user.UserName,
                 Email = user.Email,
-                IsEmailConfirmed = user.EmailConfirmed
+                IsEmailConfirmed = user.EmailConfirmed,
+                Hashtags = user.Hashtags
             };
 
             return Ok(model);

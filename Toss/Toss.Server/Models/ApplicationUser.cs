@@ -1,5 +1,6 @@
 ﻿using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Toss.Server.Models
@@ -19,6 +20,16 @@ namespace Toss.Server.Models
             {
                 Hashtags = JsonConvert.DeserializeObject<HashSet<string>>(value);
             }
+        }
+        /// <summary>
+        /// Add the tag to the list of hashtags
+        /// </summary>
+        /// <param name="newTag"></param>
+        public void AddHashTag(string newTag)
+        {
+            if (Hashtags == null)
+                Hashtags = new HashSet<string>();
+            Hashtags.Add(newTag);
         }
     }
 }
