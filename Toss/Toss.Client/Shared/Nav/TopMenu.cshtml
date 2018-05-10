@@ -1,4 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IAccountService AccountService
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2">
     <a class="navbar-brand" href="#"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,18 +29,18 @@
 </nav>
 @functions {
 
-protected override async Task OnInitAsync()
-{
-    await ClientFactory.Create("/api/account/details")
-            .Get();
-    StateHasChanged();
-}
-protected async Task LogOff()
-{
-    await ClientFactory.Create("/api/account/logout")
-        .OnOK("You have successfuly logged off.", "/login")
-        .Post();
+    protected override async Task OnInitAsync()
+    {
+        //forces call to get current account details so the user get redirected if not logged (TODO : make a batter abstraction)
+        var account = await AccountService.CurrentAccount();
+        StateHasChanged();
+    }
+    protected async Task LogOff()
+    {
+        await ClientFactory.Create("/api/account/logout")
+            .OnOK("You have successfuly logged off.", "/login")
+            .Post();
 
-}
+    }
 }
 

@@ -15,7 +15,10 @@ namespace Toss.Client
                     typeof(IHttpApiClientRequestBuilderFactory),
                     typeof(HttpApiClientRequestBuilderFactory),
                     ServiceLifetime.Scoped));
-
+                configure.Add(new ServiceDescriptor(
+                  typeof(IAccountService),
+                  typeof(AccountService),
+                  ServiceLifetime.Scoped));
             });
 
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");

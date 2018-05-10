@@ -1,15 +1,16 @@
 ﻿@page "/account"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IAccountService AccountService;
 @inject IUriHelper UriHelper
 
 <AccountMenu></AccountMenu>
 
 <form method="post" onsubmit="@(async () => await PostAccount())">
     @*<div class="form-group">
-        <label for="Username">Username</label>
-        <input id="Username" bind="@_account.Username" class="form-control" />
-        <ValidationError FieldName="Username" Errors="@_errors" />
-    </div>*@
+            <label for="Username">Username</label>
+            <input id="Username" bind="@_account.Username" class="form-control" />
+            <ValidationError FieldName="Username" Errors="@_errors" />
+        </div>*@
     <div class="form-group">
         <label for="Email">Email</label>
         <input for="Email" class="form-control" bind="@_account.Email" />
@@ -19,23 +20,21 @@
 </form>
 
 @functions {
-    AccountViewModel _account = new AccountViewModel();
-    Dictionary<string, string> _errors;
-    protected override async Task OnInitAsync()
-    {
-        await ClientFactory.Create("/api/account/details")
-            .OnOK<AccountViewModel>((a) => _account = a)
-            .Get();
-        StateHasChanged();
-    }
-    async Task PostAccount()
-    {
-        _errors = null;
-        await ClientFactory.Create("/api/account/edit")
-            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-            .OnOK("Informations saved successfully")
-            .Post(_account);
-        StateHasChanged();
-    }
+AccountViewModel _account = new AccountViewModel();
+Dictionary<string, string> _errors;
+protected override async Task OnInitAsync()
+{
+    _account = await AccountService.CurrentAccount();
+    StateHasChanged();
+}
+async Task PostAccount()
+{
+    _errors = null;
+    await ClientFactory.Create("/api/account/edit")
+        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+        .OnOK("Informations saved successfully")
+        .Post(_account);
+    StateHasChanged();
+}
 }
 

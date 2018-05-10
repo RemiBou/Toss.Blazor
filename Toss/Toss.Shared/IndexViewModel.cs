@@ -19,6 +19,6 @@ namespace Toss.Shared
         [EmailAddress]
         public string Email { get; set; }
 
-        public HashSet<string> Hashtags { get; set; }
+        public HashSet<string> Hashtags { get; set; } = new HashSet<string>();
     }
 }
