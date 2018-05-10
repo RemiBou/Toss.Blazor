@@ -24,7 +24,7 @@
     <None Include="Pages\AccountResetPassword.cshtml" />
     <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
-    <None Include="Shared\AccountMenu.cshtml" />
+    <None Include="Shared\Nav\AccountMenu.cshtml" />
     <None Include="Shared\Register.cshtml" />
     <None Include="Shared\LoginClassic.cshtml" />
     <None Include="Shared\LoginExternal.cshtml" />

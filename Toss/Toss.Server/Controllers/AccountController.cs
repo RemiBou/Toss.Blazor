@@ -86,6 +86,7 @@ namespace Toss.Server.Controllers
         /// </summary>
         /// <param name="newTag"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<IActionResult> AddHashTag(string newTag)
         {
             var user = await _userManager.GetUserAsync(User);
