@@ -39,12 +39,12 @@ namespace Toss.Tests.Server.Controllers
         public async Task last_return_50_toss_from_repo()
         {
             mockTossRepository
-                .Setup(m => m.Last(50))
+                .Setup(m => m.Last(50,"toto"))
                 .ReturnsAsync(Enumerable.Range(0, 50)
                 .Select(i => new TossLastQueryItem()));
 
 
-            var res = await _sut.Last() as OkObjectResult;
+            var res = await _sut.Last("toto") as OkObjectResult;
             var resValue = (res.Value as List<TossLastQueryItem>);
 
             Assert.Equal(50, resValue.Count());
@@ -53,7 +53,7 @@ namespace Toss.Tests.Server.Controllers
         public async Task last_map_toss_to_viewmodel()
         {
             mockTossRepository
-               .Setup(m => m.Last(50))
+               .Setup(m => m.Last(50,null))
                .ReturnsAsync(Enumerable.Range(0, 1)
                .Select(i => new TossLastQueryItem()
                {
@@ -63,7 +63,7 @@ namespace Toss.Tests.Server.Controllers
                })
                .ToList());
 
-            var res = await _sut.Last() as OkObjectResult;
+            var res = await _sut.Last(null) as OkObjectResult;
             var first = (res.Value as List<TossLastQueryItem>).First();
             var firstTyped = Assert.IsType<TossLastQueryItem>(first);
             Assert.Equal("toss@yopmail.com", firstTyped.UserName);
@@ -75,7 +75,7 @@ namespace Toss.Tests.Server.Controllers
         [Fact]
         public async Task last_return_http_200()
         {
-            var res = await _sut.Last();
+            var res = await _sut.Last(null);
 
             var resOkObject = Assert.IsType<OkObjectResult>(res);
             Assert.IsType<List<TossLastQueryItem>>(resOkObject.Value);

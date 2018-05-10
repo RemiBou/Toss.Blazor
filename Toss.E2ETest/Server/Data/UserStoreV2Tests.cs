@@ -11,31 +11,30 @@ using Xunit;
 
 namespace Toss.Tests.Server.Data
 {
-    public class UserStoreV2Tests : IDisposable
+    [Collection("AzureTablecollection")]
+    public class UserStoreV2Tests 
     {
-        ApplicationDbContext applicationDbContext = AzureTableHelper.GetApplicationDbContext();
-        public void Dispose()
+        private AzureTableFixture azureTableFixture;
+
+        public UserStoreV2Tests(AzureTableFixture azureTableFixture)
         {
-            applicationDbContext.IndexTable.DeleteAsync().Wait();
-            applicationDbContext.RoleTable.DeleteAsync().Wait();
-            applicationDbContext.UserTable.DeleteAsync().Wait();
+            this.azureTableFixture = azureTableFixture;
         }
 
         [Fact]
         public async Task UpdateAsync_saves_hashtags()
         {
-            var sut = new UserStoreV2<ApplicationUser, IdentityRole, ApplicationDbContext>(applicationDbContext);
-
-            await sut.CreateTablesIfNotExists();
+           
+            await azureTableFixture.UserStoreV2.CreateTablesIfNotExists();
             var user = new ApplicationUser() { UserName = "toto" };
-            await sut.CreateAsync(user);
+            await azureTableFixture.UserStoreV2.CreateAsync(user);
             user.Hashtags = new HashSet<string> { "test", "test2" };
-            await sut.UpdateAsync(user);
+            await azureTableFixture.UserStoreV2.UpdateAsync(user);
 
-            var user2 = await sut.FindByNameAsync("toto");
+            var user2 = await azureTableFixture.UserStoreV2.FindByNameAsync("toto");
 
             Assert.Equal(new HashSet<string> { "test", "test2" }, user2.Hashtags);
-
+            await azureTableFixture.UserStoreV2.DeleteAsync(user);
 
         }
     }

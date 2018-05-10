@@ -7,6 +7,6 @@ namespace Toss.Server.Data
     public interface ITossRepository
     {
         Task Create(TossCreateCommand oneToss);
-        Task<IEnumerable<TossLastQueryItem>> Last(int count);
+        Task<IEnumerable<TossLastQueryItem>> Last(int count, string hashTag);
     }
 }

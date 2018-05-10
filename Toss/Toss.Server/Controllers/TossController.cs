@@ -24,9 +24,9 @@ namespace Toss.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Last()
+        public async Task<IActionResult> Last(string hashTag)
         {
-            return Ok((await tossRepository.Last(50)).ToList());
+            return Ok((await tossRepository.Last(50, hashTag)).ToList());
         }
 
         /// <summary>

@@ -7,22 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Tests.Infrastructure;
 using Xunit;
 
 namespace Toss.Tests.Server.Data
 {
-    public class TossAzureTableRepositoryTest : IDisposable
+    [Collection("AzureTablecollection")]
+    public class TossAzureTableRepositoryTest
     {
         private TossAzureTableRepository _sut;
-        private CloudTable _tableReference;
-        private readonly CloudTableClient storageClient;
-        public TossAzureTableRepositoryTest()
+        private AzureTableFixture azureTableFixture;
+
+
+        public TossAzureTableRepositoryTest(AzureTableFixture azureTableFixture)
         {
-            var storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
-            storageClient = storageAccount.CreateCloudTableClient();
-            _sut = new TossAzureTableRepository(storageClient, tablePrefix:"UnitTests");
-            _tableReference = storageClient.GetTableReference("UnitTestsToss");
-            _tableReference.CreateIfNotExistsAsync().Wait();
+            this.azureTableFixture = azureTableFixture;
+            _sut = new TossAzureTableRepository(azureTableFixture.storageClient, tablePrefix: "UnitTests");
         }
 
         [Fact]
@@ -35,32 +35,32 @@ namespace Toss.Tests.Server.Data
                 batchOperation.Insert(new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31).AddDays(-i)));
             }
 
-            await _tableReference.ExecuteBatchAsync(batchOperation);
+            await azureTableFixture.TossTable.ExecuteBatchAsync(batchOperation);
 
-            var res = await _sut.Last(50);
+            var res = await _sut.Last(50, null);
 
             Assert.Equal(50, res.Count());
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
         }
 
-       
+
         [Fact]
         public async Task last_create_the_table_if_not_exists()
         {
-            await _tableReference.DeleteAsync();
+            await azureTableFixture.TossTable.DeleteAsync();
 
-            var res =(await _sut.Last(50));
+            var res = (await _sut.Last(50, null));
 
-            Assert.True(await _tableReference.ExistsAsync());
+            Assert.True(await azureTableFixture.TossTable.ExistsAsync());
         }
         [Fact]
         public async Task create_create_the_table_if_not_exists()
         {
-            await _tableReference.DeleteAsync();
+            await azureTableFixture.TossTable.DeleteAsync();
 
             await _sut.Create(new Shared.TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
 
-            Assert.True(await _tableReference.ExistsAsync());
+            Assert.True(await azureTableFixture.TossTable.ExistsAsync());
         }
         [Fact]
         public async Task create_insert_item_in_azure_table()
@@ -69,33 +69,34 @@ namespace Toss.Tests.Server.Data
             await _sut.Create(command);
 
             TableContinuationToken tableContinuationToken = null;
-            var toss = (await _tableReference
+            var toss = (await azureTableFixture.TossTable
                 .ExecuteQuerySegmentedAsync(new TableQuery<OneTossEntity>(), tableContinuationToken))
                 .Results
                 .First();
 
             Assert.Equal("lorem ipsum", toss.Content);
             Assert.Equal(command.CreatedOn, toss.CreatedOn);
-
-
-
         }
 
-        [Fact]
-        public async Task create_saves_corresponding_hashtag_index()
-        {
 
-        } 
 
         [Fact]
         public async Task last_returns_toss_matching_hashtag()
         {
+            var tasks = new List<Task>();
+            for (int i = 0; i < 3; i++)
+            {
+                tasks.Add(_sut.Create(new Shared.TossCreateCommand() { Content = "lorem #ipsum #toto num" + i, CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
 
-        }
+            }
+            tasks.Add(_sut.Create(new Shared.TossCreateCommand() { Content = "blabla #ipsum #tutu", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
+            await Task.WhenAll(tasks);
 
-        public void Dispose()
-        {
-            _tableReference.DeleteAsync().Wait();
+            var tosses = await _sut.Last(2, "toto");
+            Assert.Equal(2, tosses.Count());
+            Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));
+            Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("num0")));
+
         }
     }
 }

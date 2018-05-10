@@ -87,7 +87,6 @@ namespace Toss.Server
                     .CreateCloudTableClient()
             );
             services.AddScoped<ITossRepository, TossAzureTableRepository>();
-            services.AddScoped<IUserRepository, UserAzureTableRepository>();
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
