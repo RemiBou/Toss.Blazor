@@ -87,9 +87,19 @@ namespace Toss.Server.Controllers
         /// <param name="newTag"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> AddHashTag(string newTag)
+        public async Task<IActionResult> AddHashTag([FromBody] string newTag)
         {
+            if (string.IsNullOrEmpty(newTag))
+            {
+                ModelState.AddModelError("newTag", "You must send a new tag");
+                return BadRequest(ModelState.ToFlatDictionary());
+            }
             var user = await _userManager.GetUserAsync(User);
+            if (user.AlreadyHasHashTag(newTag))
+            {
+                ModelState.AddModelError("newTag", "You already have this hashtag");
+                return BadRequest(ModelState.ToFlatDictionary());
+            }
             user.AddHashTag(newTag);
             await _userManager.UpdateAsync(user);
             return Ok();
@@ -314,7 +324,7 @@ namespace Toss.Server.Controllers
                 //Username = user.UserName,
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
-                Hashtags = user.Hashtags
+                Hashtags = user.Hashtags.ToList()
             };
 
             return Ok(model);

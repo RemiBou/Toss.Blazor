@@ -71,6 +71,31 @@ namespace Toss.Tests.Server.Controllers
             _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Contains("toto"))));
         }
         [Fact]
+        public async Task AddHashTag_cannot_add_null_hashtag()
+        {
+
+
+            var res = await _sut.AddHashTag(null);
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
+            var errors = Assert.IsType<Dictionary<string,string>>(badRequestResult.Value);
+            Assert.True(errors.ContainsKey("newTag"));
+            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 1)),Times.Never)    ;
+        }
+        [Fact]
+        public async Task AddHashTag_cannot_add_twice_same_hashtag()
+        {
+
+
+            var res = await _sut.AddHashTag("toto");
+            res = await _sut.AddHashTag("toto");
+            var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
+            var errors = Assert.IsType<Dictionary<string, string>>(badRequestResult.Value);
+            Assert.True(errors.ContainsKey("newTag"));
+            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 1)), Times.Once);
+            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 2)), Times.Never);
+
+        }
+        [Fact]
         public async Task AddHashTag_returns_ok()
         {
             var res = await _sut.AddHashTag("toto");

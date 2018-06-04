@@ -12,7 +12,7 @@
                 Home
             </button>
         </div>
-        @foreach (var hashTag in _account.Hashtags ?? new HashSet<string>())
+        @foreach (var hashTag in _account.Hashtags ?? new List<string>())
         {
             <div class="input-group m-1">
                 <button type="button" class="btn">
@@ -21,92 +21,115 @@
             </div>
         }
         <div class="input-group m-1">
-            <input type="text" class="form-control" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2">
+            <input type="text" class="form-control" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2"/>
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button">
+                <button class="btn btn-outline-secondary" onclick="@(async () => await AddHashtag())" type="button">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>
         </div>
     </div>
-    <div class="card-columns">
-        <div class="card">
-            <div class="card-body p-2">
-                <h5 class="card-title">New Toss</h5>
-                <form method="post" onsubmit="@(async () => await SendToss())">
-                    <p class="card-text">
+</div>
+<div class="card-columns">
+    <div class="card">
+        <div class="card-body p-2">
+            <h5 class="card-title">New Toss</h5>
+            <form method="post" onsubmit="@(async () => await SendToss())">
+                <p class="card-text">
 
-                        <textarea bind="@newToss.Content" class="form-control" style="min-width: 100%">
+                    <textarea bind="@newToss.Content" class="form-control" style="min-width: 100%">
 
                     </textarea>
 
-                    </p>
-                    <div class="card-footer p-1">
-                        <button class="btn btn-primary btn-block" type="submit">Toss-it</button>
-                    </div>
-                </form>
+                </p>
+                <div class="card-footer p-1">
+                    <button class="btn btn-primary btn-block" type="submit">Toss-it</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    @if (loading)
+    {
+        <div class="card border-secondary">
+            <div class="card-body p-2 text-secondary">
+                <h5 class="card-title">Loading</h5>
+                <p class="card-text">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </p>
 
             </div>
         </div>
-        @if (loading)
-        {
-            <div class="card border-secondary">
-                <div class="card-body p-2 text-secondary">
-                    <h5 class="card-title">Loading</h5>
-                    <p class="card-text">
-                        <i class="fas fa-spinner fa-spin"></i>
-                    </p>
 
-                </div>
-            </div>
-
-        }
-        @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
-        {
-            <div class="card">
-                <div class="card-body p-2">
-                    @*<h5 class="card-title">Toss title</h5>*@
-                    <p class="card-text">@toss.Content</p>
-
-                </div>
-                <div class="card-footer p-1">
-                    <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
-                </div>
-            </div>
-        }
-    </div>
-    @functions{
-        List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
-        TossCreateCommand newToss = new TossCreateCommand();
-        AccountViewModel _account = new AccountViewModel();
-        Dictionary<string, string> _errors;
-        bool loading = false;
-        protected override async Task OnInitAsync()
-        {
-            //_account = await AccountService.CurrentAccount();
-            await RefreshTossList();
-        }
-        protected async Task RefreshTossList()
-        {
-            loading = true;
-            StateHasChanged();
-            await ClientFactory.Create("/api/toss/last")
-                .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
-                .Get();
-            loading = false;
-            StateHasChanged();
-        }
-        protected async Task SendToss()
-        {
-            await ClientFactory.Create("/api/toss/create")
-                .OnOK(async () =>
-                {
-                    newToss = new TossCreateCommand();
-                    await RefreshTossList();
-                })
-                .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
-                .Post(newToss);
-            StateHasChanged();
-
-        }
     }
+    @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
+    {
+        <div class="card">
+            <div class="card-body p-2">
+                @*<h5 class="card-title">Toss title</h5>*@
+                <p class="card-text">@toss.Content</p>
+
+            </div>
+            <div class="card-footer p-1">
+                <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
+            </div>
+        </div>
+    }
+</div>
+@functions{
+    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
+    TossCreateCommand newToss = new TossCreateCommand();
+    AccountViewModel _account = new AccountViewModel();
+    Dictionary<string, string> _errors;
+    bool loading = false;
+    string newHashtag;
+    protected override async Task OnInitAsync()
+    {
+        _account = await AccountService.CurrentAccount();
+        if(_account.Hashtags == null){
+            JsInterop.ConsoleLog("hashtag null");
+        }
+        StateHasChanged();
+        await RefreshTossList();
+    }
+    protected async Task AddHashtag()
+    {
+        loading = true;
+        StateHasChanged();
+        await ClientFactory.Create("/api/account/addHashTag")
+            .OnOK(() =>
+            {
+                JsInterop.Toastr("success", "Hashtag added with success");
+                _account.Hashtags.Add(newHashtag);
+                newHashtag = null;
+            })
+            .OnBadRequest<Dictionary<string, string>>(e => JsInterop.Toastr("error",e["newTag"]))
+            .Post(newHashtag);
+        loading = false;
+        StateHasChanged();
+
+    }
+    protected async Task RefreshTossList()
+    {
+        loading = true;
+        StateHasChanged();
+        await ClientFactory.Create("/api/toss/last")
+            .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
+            .Get();
+        loading = false;
+        StateHasChanged();
+    }
+    protected async Task SendToss()
+    {
+        await ClientFactory.Create("/api/toss/create")
+            .OnOK(async () =>
+            {
+                newToss = new TossCreateCommand();
+                await RefreshTossList();
+            })
+            .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
+            .Post(newToss);
+        StateHasChanged();
+
+    }
+}

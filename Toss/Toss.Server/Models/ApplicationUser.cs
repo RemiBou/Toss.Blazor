@@ -31,5 +31,10 @@ namespace Toss.Server.Models
                 Hashtags = new HashSet<string>();
             Hashtags.Add(newTag);
         }
+
+        internal bool AlreadyHasHashTag(string newTag)
+        {
+            return Hashtags != null && Hashtags.Contains(newTag);
+        }
     }
 }
