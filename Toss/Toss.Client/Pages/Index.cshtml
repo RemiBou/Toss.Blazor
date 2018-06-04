@@ -3,33 +3,7 @@
 @inject IAccountService AccountService
 
 <h3>TOSS</h3>
-
-<div class="form-inline">
-
-    <div class="form-group">
-        <div class="input-group m-1">
-            <button type="button" class="btn">
-                Home
-            </button>
-        </div>
-        @foreach (var hashTag in _account.Hashtags ?? new List<string>())
-        {
-            <div class="input-group m-1">
-                <button type="button" class="btn">
-                    #@hashTag
-                </button>
-            </div>
-        }
-        <div class="input-group m-1">
-            <input type="text" class="form-control" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2"/>
-            <div class="input-group-append">
-                <button class="btn btn-outline-secondary" onclick="@(async () => await AddHashtag())" type="button">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+<HashTagBar OnHashTagChanged="LoadTossHashTag"></HashTagBar>
 <div class="card-columns">
     <div class="card">
         <div class="card-body p-2">
@@ -79,40 +53,25 @@
 @functions{
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     TossCreateCommand newToss = new TossCreateCommand();
-    AccountViewModel _account = new AccountViewModel();
     Dictionary<string, string> _errors;
     bool loading = false;
-    string newHashtag;
-    protected override async Task OnInitAsync()
-    {
-        _account = await AccountService.CurrentAccount();
-        if(_account.Hashtags == null){
-            JsInterop.ConsoleLog("hashtag null");
-        }
-        StateHasChanged();
-        await RefreshTossList();
-    }
-    protected async Task AddHashtag()
+    private async Task LoadTossHashTag(string hashtag)
     {
         loading = true;
-        StateHasChanged();
-        await ClientFactory.Create("/api/account/addHashTag")
-            .OnOK(() =>
-            {
-                JsInterop.Toastr("success", "Hashtag added with success");
-                _account.Hashtags.Add(newHashtag);
-                newHashtag = null;
-            })
-            .OnBadRequest<Dictionary<string, string>>(e => JsInterop.Toastr("error",e["newTag"]))
-            .Post(newHashtag);
+        await ClientFactory.Create("/api/toss/last?hashtag="+ hashtag)
+            .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
+            .Get();
         loading = false;
         StateHasChanged();
 
     }
+    protected override async Task OnInitAsync()
+    {
+        await RefreshTossList();
+    }
     protected async Task RefreshTossList()
     {
         loading = true;
-        StateHasChanged();
         await ClientFactory.Create("/api/toss/last")
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();
@@ -121,14 +80,15 @@
     }
     protected async Task SendToss()
     {
+        loading = true;
         await ClientFactory.Create("/api/toss/create")
             .OnOK(async () =>
             {
                 newToss = new TossCreateCommand();
-                await RefreshTossList();
             })
             .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
             .Post(newToss);
+        loading = false;
         StateHasChanged();
 
     }

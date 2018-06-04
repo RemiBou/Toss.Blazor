@@ -24,6 +24,7 @@
     <None Include="Pages\AccountResetPassword.cshtml" />
     <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
+    <None Include="Shared\HashTagBar.cshtml" />
     <None Include="Shared\Nav\AccountMenu.cshtml" />
     <None Include="Shared\Register.cshtml" />
     <None Include="Shared\LoginClassic.cshtml" />
@@ -101,6 +102,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Pages\AccountExternalLogin.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <BlazorGenerate Remove="Shared\HashTagBar.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Shared\HashTagBar.cshtml" />
   </ItemGroup>
 
 </Project>
