@@ -2,25 +2,25 @@
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
 
-<h3>TOSS</h3>
+
 <HashTagBar OnHashTagChanged="LoadTossHashTag"></HashTagBar>
-<div class="card-columns">
-    <div class="card">
-        <div class="card-body p-2">
-            <h5 class="card-title">New Toss</h5>
+<div class="row">
+    <div class="col-md-3 col-sm-6 my-2">
+        <div class="card  h-100">
             <form method="post" onsubmit="@(async () => await SendToss())">
-                <p class="card-text">
+                <div class="card-body p-2">
 
-                    <textarea bind="@newToss.Content" class="form-control" style="min-width: 100%">
+                    <p class="card-text">
+                        <textarea bind="@newToss.Content" placeholder="New Toss" class="form-control h-100" style="min-width: 100%"></textarea>
+                    </p>
 
-                    </textarea>
 
-                </p>
-                <div class="card-footer p-1">
+
+                </div>
+                <div class="card-footer p-1 ">
                     <button class="btn btn-primary btn-block" type="submit">Toss-it</button>
                 </div>
             </form>
-
         </div>
     </div>
     @if (loading)
@@ -38,14 +38,15 @@
     }
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
-        <div class="card">
-            <div class="card-body p-2">
-                @*<h5 class="card-title">Toss title</h5>*@
-                <p class="card-text">@toss.Content</p>
+        <div class="col-md-3 col-sm-6 my-2">
+            <div class="card  h-100">
+                <div class="card-body p-2">
+                    <p class="card-text text-truncate" style="max-height:200px;">@toss.Content</p>
 
-            </div>
-            <div class="card-footer p-1">
-                <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
+                </div>
+                <div class="card-footer p-1">
+                    <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
+                </div>
             </div>
         </div>
     }
@@ -58,7 +59,7 @@
     private async Task LoadTossHashTag(string hashtag)
     {
         loading = true;
-        await ClientFactory.Create("/api/toss/last?hashtag="+ hashtag)
+        await ClientFactory.Create("/api/toss/last?hashtag=" + hashtag)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();
         loading = false;
