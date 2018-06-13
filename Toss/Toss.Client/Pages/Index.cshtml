@@ -12,6 +12,7 @@
 
                     <p class="card-text">
                         <textarea bind="@newToss.Content" placeholder="New Toss" class="form-control h-100" style="min-width: 100%"></textarea>
+                        <ValidationError FieldName="Content" Errors="@_errors" />
                     </p>
 
 
@@ -41,12 +42,9 @@
         <div class="col-md-3 col-sm-6 my-2">
             <div class="card  h-100">
                 <div class="card-body p-2">
-                    <p class="card-text text-truncate" style="max-height:200px;">@toss.Content</p>
-
-                </div>
-                <div class="card-footer p-1">
-                    <small class="text-muted"><b>@toss.UserName</b> - @toss.CreatedOn</small>
-                </div>
+                    <h6 class="card-subtitle mb-2 text-muted"><b>By @toss.UserName</b>  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</h6>
+                    <p class="card-text" style="max-height:200px;">@toss.Content</p>
+                </div>               
             </div>
         </div>
     }
@@ -86,6 +84,8 @@
             .OnOK(async () =>
             {
                 newToss = new TossCreateCommand();
+                _errors = null;
+                await RefreshTossList();
             })
             .OnBadRequest<Dictionary<string, string>>(e => _errors = e)
             .Post(newToss);
