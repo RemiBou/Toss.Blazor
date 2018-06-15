@@ -5,17 +5,17 @@
 
     <div class="form-group">
         <div class="input-group m-1">
-            <button type="button" class="btn"  onclick="@(async () => await ChangeHashtag(""))">
-                Home
-            </button>
+            <NavLink href="/tag/" Match="NavLinkMatch.All"  class="btn btn-secondary">
+                All
+            </NavLink>
         </div>
         @foreach (var hashTag in _account.Hashtags ?? new List<string>())
         {
-            <div class="input-group m-1">
-                <button type="button" onclick="@(async () => await ChangeHashtag(hashTag))" class="btn">
-                    #@hashTag
-                </button>
-            </div>
+        <div class="input-group m-1">
+            <NavLink href="@GetUrl(hashTag)"  Match="NavLinkMatch.All"  class="btn btn-secondary">
+                #@hashTag
+            </NavLink>        
+        </div>
         }
         <div class="input-group m-1">
             <input type="text" class="form-control" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
@@ -33,15 +33,10 @@
     Dictionary<string, string> _errors;
     bool loading = false;
     string newHashtag;
-    string currentHashtag = null;
-    [Parameter]
-    private Func<string,Task> OnHashTagChanged { get; set; }
-
-    protected async Task ChangeHashtag(string hashtag)
+    protected string GetUrl(string hashtag)
     {
-        currentHashtag = hashtag;
-        await OnHashTagChanged(hashtag);
-        StateHasChanged();
+        return "/tag/"+hashtag;
+
     }
     protected override async Task OnInitAsync()
     {

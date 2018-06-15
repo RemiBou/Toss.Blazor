@@ -33,7 +33,6 @@
     Dictionary<string, string> _errors;
     async Task<bool> TryLogin(UIEventArgs even)
     {       
-        JsInterop.ConsoleLog(even);
         _errors = null;
         await ClientFactory.Create("/api/account/login")
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)

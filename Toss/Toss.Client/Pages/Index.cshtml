@@ -1,13 +1,15 @@
 ﻿@page "/"
+@page "/tag/{CurrentTag}"
+@page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
 
 
-<HashTagBar OnHashTagChanged="LoadTossHashTag"></HashTagBar>
+<HashTagBar></HashTagBar>
 <div class="row">
     <div class="col-md-3 col-sm-6 my-2">
         <div class="card  h-100">
-            <form method="post" >
+            <form method="post">
                 <div class="card-body p-2">
 
                     <p class="card-text">
@@ -44,7 +46,7 @@
                 <div class="card-body p-2">
                     <p class="card-text" style="max-height:200px;overflow-y: hidden;">@toss.Content</p>
                     <p class="card-text"><small class="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
-                </div>               
+                </div>
             </div>
         </div>
     }
@@ -54,24 +56,29 @@
     TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string, string> _errors;
     bool loading = false;
-    private async Task LoadTossHashTag(string hashtag)
-    {
-        loading = true;
-        await ClientFactory.Create("/api/toss/last?hashtag=" + hashtag)
-            .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
-            .Get();
-        loading = false;
-        StateHasChanged();
-
-    }
-    protected override async Task OnInitAsync()
+    [Parameter]
+    private string CurrentTag { get; set; } = "";
+    protected override async Task OnParametersSetAsync()
     {
         await RefreshTossList();
     }
+
+    public override void SetParameters(ParameterCollection parameters)
+    {
+        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
+        {
+            CurrentTag = null;
+        }
+        base.SetParameters(parameters);
+    }
+
     protected async Task RefreshTossList()
     {
         loading = true;
-        await ClientFactory.Create("/api/toss/last")
+        var parameters = "";
+        if (!string.IsNullOrEmpty(CurrentTag))
+            parameters += "?hashtag=" + CurrentTag;
+        await ClientFactory.Create("/api/toss/last" + parameters)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();
         loading = false;
