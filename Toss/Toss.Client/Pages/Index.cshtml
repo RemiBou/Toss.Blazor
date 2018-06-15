@@ -11,7 +11,7 @@
                 <div class="card-body p-2">
 
                     <p class="card-text">
-                        <textarea bind="@newToss.Content" placeholder="New Toss" class="form-control h-100" style="min-width: 100%"></textarea>
+                        <textarea bind="@newToss.Content" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
                         <ValidationError FieldName="Content" Errors="@_errors" />
                     </p>
 
@@ -42,8 +42,8 @@
         <div class="col-md-3 col-sm-6 my-2">
             <div class="card  h-100">
                 <div class="card-body p-2">
-                    <h6 class="card-subtitle mb-2 text-muted"><b>By @toss.UserName</b>  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</h6>
-                    <p class="card-text" style="max-height:200px;">@toss.Content</p>
+                    <p class="card-text" style="max-height:200px;overflow-y: hidden;">@toss.Content</p>
+                    <p class="card-text"><small class="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
                 </div>               
             </div>
         </div>

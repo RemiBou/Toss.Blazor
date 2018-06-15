@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <BlazorRebuildOnFileChange>false</BlazorRebuildOnFileChange>
+    <BlazorRebuildOnFileChange>true</BlazorRebuildOnFileChange>
   </PropertyGroup>
 
   <ItemGroup>
