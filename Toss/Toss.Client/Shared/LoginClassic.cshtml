@@ -1,7 +1,7 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IUriHelper UriHelper
 <h4>Use a Toss account to log in.</h4>
-<form method="post" onsubmit="@(async () => await TryLogin())">
+<form method="post" >
 
     <div class="form-group">
         <label for="UserName">UserName</label>
@@ -22,7 +22,7 @@
         </div>
     </div>
     <div class="form-group">
-        <button type="submit" class="btn btn-default">Log in</button>
+        <button type="button" onclick="@TryLogin" class="btn btn-default">Log in</button>
         <a href="/account/forgotPassword">Forgot your password?</a>
     </div>
 </form>
@@ -31,13 +31,15 @@
 @functions{
     LoginViewModel loginViewModel = new LoginViewModel();
     Dictionary<string, string> _errors;
-    async Task TryLogin()
-    {
+    async Task<bool> TryLogin(UIEventArgs even)
+    {       
+        JsInterop.ConsoleLog(even);
         _errors = null;
         await ClientFactory.Create("/api/account/login")
-        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-        .OnOK(null,"/")
-        .Post(loginViewModel);
+            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+            .OnOK(null,"/")
+            .Post(loginViewModel);
         StateHasChanged();
+        return false;
     }
 }

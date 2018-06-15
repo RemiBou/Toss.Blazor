@@ -58,6 +58,7 @@ namespace Toss.Server
                             TablePrefix = "Auth",
                             StorageConnectionString = Configuration["AzureStorage"],
                             LocationMode = "PrimaryOnly"
+                            
                         };
                     })
                 .AddDefaultTokenProviders()

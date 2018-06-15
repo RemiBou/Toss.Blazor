@@ -1,7 +1,7 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 <h4>Create a Toss account</h4>
 
-<form onsubmit="@(async () => await CreateAccount())">
+<form>
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label for="NewEmail">Email</label>
@@ -23,7 +23,7 @@
         <input id="NewConfirmPassword" bind="@registerViewModel.ConfirmPassword" type="password" class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
-    <button type="submit" id="BtnRegister" class="btn btn-default">Register</button>
+    <button type="button" onclick="@CreateAccount" id="BtnRegister" class="btn btn-default">Register</button>
     <ValidationError FieldName="Other" Errors="@_errors" />
 </form>
 @functions{
