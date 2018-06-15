@@ -370,27 +370,14 @@ namespace Toss.Server.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.ToFlatDictionary());
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                return BadRequest(changePasswordResult);
-            }
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            _logger.LogInformation("User changed their password successfully.");
+          
 
             return RedirectToAction(nameof(ChangePassword));
         }

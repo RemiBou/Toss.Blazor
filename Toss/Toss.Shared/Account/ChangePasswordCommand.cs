@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Toss.Shared
 {
-    public class ChangePasswordViewModel
+    public class ChangePasswordCommand
     {
         [Required]
         [DataType(DataType.Password)]

@@ -18,6 +18,8 @@ using Toss.Server.Data;
 using Toss.Shared.Services;
 using Microsoft.WindowsAzure.Storage.Table;
 using Microsoft.WindowsAzure.Storage;
+using MediatR;
+using Toss.Shared;
 
 namespace Toss.Server
 {
@@ -88,6 +90,9 @@ namespace Toss.Server
                     .CreateCloudTableClient()
             );
             services.AddScoped<ITossRepository, TossAzureTableRepository>();
+            services.AddMediatR(typeof(Startup));
+            services.AddMediatR(typeof(ChangePasswordCommand));
+
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
