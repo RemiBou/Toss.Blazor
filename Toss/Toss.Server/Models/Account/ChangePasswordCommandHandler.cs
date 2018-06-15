@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,29 +12,31 @@ using Toss.Shared.Services;
 
 namespace Toss.Server.Models.Account
 {
-    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand> 
+    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand,CommandResult> 
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
-        public async Task<Unit> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
+        private readonly IHttpContextAccessor httpContextAccessor;
+        public async Task<CommandResult> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-              var user = await _userManager.GetUserAsync(User);
+            var httpUser = httpContextAccessor.HttpContext.User;
+            var user = await _userManager.GetUserAsync(httpUser);
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(httpUser)}'.");
             }
 
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                return BadRequest(changePasswordResult);
+                return new CommandResult(changePasswordResult.Errors.ToDictionary(e => e.Code,e => e.Description));
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             _logger.LogInformation("User changed their password successfully.");
-            return Unit.
+            return CommandResult.Success();
         }
     }
 }

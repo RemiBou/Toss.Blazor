@@ -11,6 +11,7 @@ using Toss.Server.Models;
 using System.Net;
 using Toss.Shared.Services;
 using System.Security.Claims;
+using MediatR;
 
 namespace Toss.Server.Controllers
 {
@@ -21,7 +22,8 @@ namespace Toss.Server.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
-
+        
+        private readonly IMediator _mediator;
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -376,8 +378,7 @@ namespace Toss.Server.Controllers
             {
                 return BadRequest(ModelState.ToFlatDictionary());
             }
-
-          
+            await _mediator.Send(model);          
 
             return RedirectToAction(nameof(ChangePassword));
         }
