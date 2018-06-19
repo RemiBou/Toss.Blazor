@@ -18,16 +18,29 @@ namespace Toss.Server.Models.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ILogger logger, IHttpContextAccessor httpContextAccessor)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _emailSender = emailSender;
+            _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
         public async Task<CommandResult> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var httpUser = httpContextAccessor.HttpContext.User;
+            var httpUser = _httpContextAccessor.HttpContext.User;
             var user = await _userManager.GetUserAsync(httpUser);
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(httpUser)}'.");
             }
-
+            if (string.IsNullOrEmpty(user.PasswordHash))
+            {
+                return new CommandResult("User", "User has no password set");
+            }
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!changePasswordResult.Succeeded)
             {

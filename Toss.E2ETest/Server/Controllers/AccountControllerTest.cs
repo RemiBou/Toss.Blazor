@@ -22,6 +22,7 @@ namespace Toss.Tests.Server.Controllers
     {
         private AccountController _sut;
         private ClaimsPrincipal _user;
+        private ApplicationUser _applicationUser;
         private readonly Mock<UserManager<ApplicationUser>> _userManager;
         private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
         private readonly Mock<IEmailSender> _emailSender;
@@ -40,8 +41,9 @@ namespace Toss.Tests.Server.Controllers
                      {
                             new Claim(ClaimTypes.Name, "username")
                      }, "someAuthTypeName"));
+            _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash="XXX" };
             _userManager.Setup(u => u.GetUserAsync(_user))
-              .ReturnsAsync(new ApplicationUser() { UserName = "username" });
+              .ReturnsAsync(_applicationUser);
             _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -50,7 +52,22 @@ namespace Toss.Tests.Server.Controllers
                 }
             };
         }
+        [Fact]
+        public async Task Details_when_user_has_password_return_HasPassword_to_true()
+        {
+            var res = Assert.IsType<AccountViewModel>(Assert.IsType<OkObjectResult>(await _sut.Details()).Value);
 
+            Assert.True(res.HasPassword);
+        }
+        [Fact]
+        public async Task Details_when_user_has_no_password_return_HasPassword_to_false()
+        {
+            _applicationUser.PasswordHash = null;
+
+            var res = Assert.IsType<AccountViewModel>(Assert.IsType<OkObjectResult>(await _sut.Details()).Value);
+
+            Assert.False(res.HasPassword);
+        }
         [Fact]
         public async Task Details_when_user_doesnt_exists_return_404()
         {

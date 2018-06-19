@@ -316,14 +316,15 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> Details()
         {
             var user = await _userManager.GetUserAsync(User);
+            
             if (user == null)
             {
                 return Unauthorized();
             }
-
+            
             var model = new AccountViewModel
             {
-                //Username = user.UserName,
+                HasPassword= !string.IsNullOrEmpty(user.PasswordHash),
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
                 Hashtags = user.Hashtags?.ToList() ?? new System.Collections.Generic.List<string>()
@@ -355,17 +356,6 @@ namespace Toss.Server.Controllers
                     throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                 }
             }
-
-            
-            //var setName = user.UserName;
-            //if (model.Username != setName)
-            //{
-            //    var userNameResult = (await _userManager.SetUserNameAsync(user, model.Username));
-            //    if (!userNameResult.Succeeded)
-            //    {
-            //        throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : " + string.Join(",", userNameResult.Errors.Select(e => e.Description)));
-            //    }
-            //}
             return new OkResult();
         }
 
