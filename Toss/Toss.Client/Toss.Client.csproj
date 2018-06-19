@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Exe</OutputType>
-    <BlazorRebuildOnFileChange>false</BlazorRebuildOnFileChange>
+    <BlazorRebuildOnFileChange>true</BlazorRebuildOnFileChange>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.4.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
@@ -22,7 +22,6 @@
     <None Include="Pages\AccountExternalLogin.cshtml" />
     <None Include="Pages\AccountForgetPassword.cshtml" />
     <None Include="Pages\AccountResetPassword.cshtml" />
-    <None Include="Pages\Index.cshtml" />
     <None Include="Pages\Login.cshtml" />
     <None Include="Shared\HashTagBar.cshtml" />
     <None Include="Shared\Nav\AccountMenu.cshtml" />
@@ -51,9 +50,6 @@
   </ItemGroup>
   <ItemGroup>
     <BlazorGenerate Remove="Pages\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Pages\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <BlazorGenerate Remove="Shared\TopMenu.cshtml" />

@@ -6,11 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.8.2" />
-    <PackageReference Include="Selenium.Support" Version="3.11.2" />
-    <PackageReference Include="Selenium.WebDriver" Version="3.11.2" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.1.1" />
+    <PackageReference Include="Selenium.Support" Version="3.12.1" />
+    <PackageReference Include="Selenium.WebDriver" Version="3.12.1" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0-preview2-final" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />
   </ItemGroup>
 
