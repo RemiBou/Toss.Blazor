@@ -324,7 +324,7 @@ namespace Toss.Server.Controllers
                 //Username = user.UserName,
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
-                Hashtags = user.Hashtags.ToList()
+                Hashtags = user.Hashtags?.ToList() ?? new System.Collections.Generic.List<string>()
             };
 
             return Ok(model);
