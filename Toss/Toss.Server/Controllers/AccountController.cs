@@ -22,7 +22,7 @@ namespace Toss.Server.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
-        
+
         private readonly IMediator _mediator;
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -43,40 +43,32 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginProviders()
         {
-            return Ok((await _signInManager.GetExternalAuthenticationSchemesAsync())
-                .Select(s => new SigninProviderViewModel()
-                {
-                    Name = s.Name,
-                    DisplayName = s.DisplayName
-                }));
+            return Ok(await _mediator.Send(new LoginProvidersQuery()));
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginCommand model)
         {
             if (ModelState.IsValid)
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
+                var result = await _mediator.Send(model);
+                if (result.IsSuccess)
                 {
-                    _logger.LogInformation("User logged in.");
                     return Ok();
                 }
-                if (result.RequiresTwoFactor)
+                if (result.Need2FA)
                 {
                     return RedirectToAction("/loginWith2fa");
                 }
-                if (result.IsLockedOut)
+                if (result.IsLockout)
                 {
-                    _logger.LogWarning("User account locked out.");
                     return Redirect("/lockout");
                 }
                 else
                 {
-
                     ModelState.AddModelError("UserName", "Invalid login attempt.");
                     return BadRequest(ModelState.ToFlatDictionary());
                 }
@@ -318,15 +310,15 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> Details()
         {
             var user = await _userManager.GetUserAsync(User);
-            
+
             if (user == null)
             {
                 return Unauthorized();
             }
-            
+
             var model = new AccountViewModel
             {
-                HasPassword= !string.IsNullOrEmpty(user.PasswordHash),
+                HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
                 Hashtags = user.Hashtags?.ToList() ?? new System.Collections.Generic.List<string>()
@@ -370,7 +362,7 @@ namespace Toss.Server.Controllers
             {
                 return BadRequest(ModelState.ToFlatDictionary());
             }
-            await _mediator.Send(model);          
+            await _mediator.Send(model);
 
             return RedirectToAction(nameof(ChangePassword));
         }
