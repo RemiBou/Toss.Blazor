@@ -15,6 +15,9 @@ namespace Toss.Server.Controllers
 
         public async Task<LoginCommandResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
+            // This doesn't count login failures towards account lockout
+            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+
             var result = await _signInManager.PasswordSignInAsync(request.UserName, request.Password, request.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {

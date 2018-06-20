@@ -50,32 +50,30 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginCommand model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ToFlatDictionary());
+
+            var result = await _mediator.Send(model);
+            if (result.IsSuccess)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _mediator.Send(model);
-                if (result.IsSuccess)
-                {
-                    return Ok();
-                }
-                if (result.Need2FA)
-                {
-                    return RedirectToAction("/loginWith2fa");
-                }
-                if (result.IsLockout)
-                {
-                    return Redirect("/lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError("UserName", "Invalid login attempt.");
-                    return BadRequest(ModelState.ToFlatDictionary());
-                }
+                return Ok();
+            }
+            if (result.Need2FA)
+            {
+                return RedirectToAction("/loginWith2fa");
+            }
+            if (result.IsLockout)
+            {
+                return Redirect("/lockout");
+            }
+            else
+            {
+                ModelState.AddModelError("UserName", "Invalid login attempt.");
+                return BadRequest(ModelState.ToFlatDictionary());
             }
 
             // If we got this far, something failed, redisplay form
-            return BadRequest(ModelState.ToFlatDictionary());
+
         }
         /// <summary>
         /// Adds a hashtag to a user
@@ -85,45 +83,25 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHashTag([FromBody] string newTag)
         {
-            if (string.IsNullOrEmpty(newTag))
+            var res = await _mediator.Send(new AddHashtagCommand(newTag));
+            if (!res.IsSucess)
             {
-                ModelState.AddModelError("newTag", "You must send a new tag");
-                return BadRequest(ModelState.ToFlatDictionary());
+                return BadRequest(res.Errors);
             }
-            var user = await _userManager.GetUserAsync(User);
-            if (user.AlreadyHasHashTag(newTag))
-            {
-                ModelState.AddModelError("newTag", "You already have this hashtag");
-                return BadRequest(ModelState.ToFlatDictionary());
-            }
-            user.AddHashTag(newTag);
-            await _userManager.UpdateAsync(user);
             return Ok();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ToFlatDictionary());
+            var res = await _mediator.Send(model);
+            if (res.IsSucess)
+                return Ok();
+            return BadRequest(res.Errors);
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-                    //await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-                    return Ok();
-                }
-                return BadRequest(result.ToFlatDictionary());
-            }
-            return BadRequest(ModelState.ToFlatDictionary());
         }
 
         [HttpPost]
