@@ -24,7 +24,7 @@ namespace Toss.Tests.Server.Models.Account
         private readonly Mock<UserManager<ApplicationUser>> _userManager;
         private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
         private readonly Mock<IEmailSender> _emailSender;
-        private readonly Mock<ILogger<AccountController>> _logger;
+        private readonly Mock<ILogger<ChangePasswordCommandHandler>> _logger;
         private readonly Mock<IHttpContextAccessor> _httpCOntextAccessor;
         public ChangePasswordCommandHandlerTest()
         {
@@ -32,7 +32,7 @@ namespace Toss.Tests.Server.Models.Account
             _userManager = MockHelpers.MockUserManager<ApplicationUser>();
             _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
             _emailSender = new Mock<IEmailSender>();
-            _logger = new Mock<ILogger<AccountController>>();
+            _logger = new Mock<ILogger<ChangePasswordCommandHandler>>();
             _sut = new ChangePasswordCommandHandler(
                 _userManager.Object,
                 _signInManager.Object,
