@@ -20,5 +20,10 @@ namespace Toss.Shared
         public string Email { get; set; }
 
         public List<string> Hashtags { get; set; } = new List<string>();
+
+        /// <summary>
+        /// If true the user uses a password for connection, if false he uses a OpenID provider
+        /// </summary>
+        public bool HasPassword { get; set; }
     }
 }

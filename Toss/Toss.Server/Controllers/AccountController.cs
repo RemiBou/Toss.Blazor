@@ -11,6 +11,7 @@ using Toss.Server.Models;
 using System.Net;
 using Toss.Shared.Services;
 using System.Security.Claims;
+using MediatR;
 
 namespace Toss.Server.Controllers
 {
@@ -22,16 +23,19 @@ namespace Toss.Server.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
+        private readonly IMediator _mediator;
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IMediator mediator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _mediator = mediator;
         }
 
 
@@ -39,47 +43,37 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LoginProviders()
         {
-            return Ok((await _signInManager.GetExternalAuthenticationSchemesAsync())
-                .Select(s => new SigninProviderViewModel()
-                {
-                    Name = s.Name,
-                    DisplayName = s.DisplayName
-                }));
+            return Ok(await _mediator.Send(new LoginProvidersQuery()));
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginCommand model)
         {
-            if (ModelState.IsValid)
-            {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-                    return Ok();
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToAction("/loginWith2fa");
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return Redirect("/lockout");
-                }
-                else
-                {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ToFlatDictionary());
 
-                    ModelState.AddModelError("UserName", "Invalid login attempt.");
-                    return BadRequest(ModelState.ToFlatDictionary());
-                }
+            var result = await _mediator.Send(model);
+            if (result.IsSuccess)
+            {
+                return Ok();
+            }
+            if (result.Need2FA)
+            {
+                return RedirectToAction("/loginWith2fa");
+            }
+            if (result.IsLockout)
+            {
+                return Redirect("/lockout");
+            }
+            else
+            {
+                ModelState.AddModelError("UserName", "Invalid login attempt.");
+                return BadRequest(ModelState.ToFlatDictionary());
             }
 
             // If we got this far, something failed, redisplay form
-            return BadRequest(ModelState.ToFlatDictionary());
+
         }
         /// <summary>
         /// Adds a hashtag to a user
@@ -89,45 +83,25 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHashTag([FromBody] string newTag)
         {
-            if (string.IsNullOrEmpty(newTag))
+            var res = await _mediator.Send(new AddHashtagCommand(newTag));
+            if (!res.IsSucess)
             {
-                ModelState.AddModelError("newTag", "You must send a new tag");
-                return BadRequest(ModelState.ToFlatDictionary());
+                return BadRequest(res.Errors);
             }
-            var user = await _userManager.GetUserAsync(User);
-            if (user.AlreadyHasHashTag(newTag))
-            {
-                ModelState.AddModelError("newTag", "You already have this hashtag");
-                return BadRequest(ModelState.ToFlatDictionary());
-            }
-            user.AddHashTag(newTag);
-            await _userManager.UpdateAsync(user);
             return Ok();
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.ToFlatDictionary());
+            var res = await _mediator.Send(model);
+            if (res.IsSucess)
+                return Ok();
+            return BadRequest(res.Errors);
 
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.EmailConfirmationLink(user.Id, code, Request.Scheme);
-                    await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
-
-                    //await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created a new account with password.");
-                    return Ok();
-                }
-                return BadRequest(result.ToFlatDictionary());
-            }
-            return BadRequest(ModelState.ToFlatDictionary());
         }
 
         [HttpPost]
@@ -314,6 +288,7 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> Details()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 return Unauthorized();
@@ -321,7 +296,7 @@ namespace Toss.Server.Controllers
 
             var model = new AccountViewModel
             {
-                //Username = user.UserName,
+                HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
                 Hashtags = user.Hashtags?.ToList() ?? new System.Collections.Generic.List<string>()
@@ -353,44 +328,19 @@ namespace Toss.Server.Controllers
                     throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                 }
             }
-
-            
-            //var setName = user.UserName;
-            //if (model.Username != setName)
-            //{
-            //    var userNameResult = (await _userManager.SetUserNameAsync(user, model.Username));
-            //    if (!userNameResult.Succeeded)
-            //    {
-            //        throw new ApplicationException($"Unexpected error occurred setting user name for user with ID '{user.Id}' : " + string.Join(",", userNameResult.Errors.Select(e => e.Description)));
-            //    }
-            //}
             return new OkResult();
         }
 
 
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordViewModel model)
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.ToFlatDictionary());
             }
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                return BadRequest(changePasswordResult);
-            }
-
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            _logger.LogInformation("User changed their password successfully.");
+            await _mediator.Send(model);
 
             return RedirectToAction(nameof(ChangePassword));
         }
