@@ -17,17 +17,7 @@
     </div>
     <script type="blazor-boot">
     </script>
-    <script type="text/javascript">
-        Blazor.registerFunction('log', function (message) {
-            console.log(message);
-            return true;
-        });
-        Blazor.registerFunction('toastr', function (toastType, message) {
-            toastr[toastType](message)
-            return true;
-        });
-      
-    </script>
+
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha256-NJWeQ+bs82iAeoT5Ktmqbi3NXwxcHlfaVejzJI2dklU=" crossorigin="anonymous" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/solid.css" integrity="sha384-HTDlLIcgXajNzMJv5hiW5s2fwegQng6Hi+fN6t5VAcwO/9qbg2YEANIyKBlqLsiT" crossorigin="anonymous">
@@ -38,6 +28,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js" integrity="sha256-3blsJd4Hli/7wCQ+bmgXfOdK7p/ZUMtPXY08jmxSSgk=" crossorigin="anonymous"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha256-C8oQVJ33cKtnkARnmeWp6SDChkU+u7KvsNMFUzkkUzk=" crossorigin="anonymous"></script>
+    <script src="/site.js"></script>
 
+    <script type="text/javascript">
+        Blazor.registerFunction('log', function (message) {
+            console.log(message);
+            return true;
+        });
+        Blazor.registerFunction('toastr', function (toastType, message) {
+            toastr[toastType](message)
+            return true;
+        });
+        var ajaxLoader = new AjaxLoader();
+        Blazor.registerFunction('ajaxLoaderShow', function () {
+            return ajaxLoader.show();
+        });
+        Blazor.registerFunction('ajaxLoaderHide', function (id) {
+            ajaxLoader.hide(id);
+            return true;
+        });
+    </script>
 </body>
 </html>

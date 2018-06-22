@@ -25,20 +25,37 @@ namespace Toss.Client.Services
         }
         public async Task Post<T>(T data)
         {
-            var requestJson = JsonUtil.Serialize(data);
-            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+            var loaderId = JsInterop.AjaxLoaderShow();
+            try
             {
-                Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
-            });
-            await HandleHttpResponse(response);
+
+                var requestJson = JsonUtil.Serialize(data);
+                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+                {
+                    Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
+                });
+                await HandleHttpResponse(response);
+            }
+            finally
+            {
+                JsInterop.AjaxLoaderHide(loaderId);
+            }
 
         }
         public async Task Post()
-        {            
-            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+        {
+            var loaderId = JsInterop.AjaxLoaderShow();
+            try
             {
-            });
-            await HandleHttpResponse(response);
+                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+                {
+                });
+                await HandleHttpResponse(response);
+            }
+            finally
+            {
+                JsInterop.AjaxLoaderHide(loaderId);
+            }
 
         }
         private async Task HandleHttpResponse(HttpResponseMessage response)
@@ -64,8 +81,16 @@ namespace Toss.Client.Services
         public async Task Get()
         {
 
-            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri));
-            await HandleHttpResponse(response);
+            var loaderId = JsInterop.AjaxLoaderShow();
+            try
+            {
+                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri));
+                await HandleHttpResponse(response);
+            }
+            finally
+            {
+                JsInterop.AjaxLoaderHide(loaderId);
+            }
         }
 
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)
@@ -102,7 +127,7 @@ namespace Toss.Client.Services
             };
             return this;
         }
-            public HttpApiClientRequestBuilder OnOK(Action todo)
+        public HttpApiClientRequestBuilder OnOK(Action todo)
         {
             _onOK = (HttpResponseMessage r) =>
             {

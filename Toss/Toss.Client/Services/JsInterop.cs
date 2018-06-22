@@ -20,5 +20,13 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("toastr",toastType, message);
         }
+        public static int AjaxLoaderShow()
+        {
+            return RegisteredFunction.Invoke<int>("ajaxLoaderShow");
+        }
+         public static void AjaxLoaderHide(int id)
+        {
+            RegisteredFunction.Invoke<bool>("ajaxLoaderHide",id);
+        }
     }
 }

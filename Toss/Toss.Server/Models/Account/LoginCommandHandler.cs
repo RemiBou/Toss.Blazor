@@ -13,6 +13,12 @@ namespace Toss.Server.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
 
+        public LoginCommandHandler(SignInManager<ApplicationUser> signInManager, ILogger logger)
+        {
+            _signInManager = signInManager;
+            _logger = logger;
+        }
+
         public async Task<LoginCommandResult> Handle(LoginCommand request, CancellationToken cancellationToken)
         {
             // This doesn't count login failures towards account lockout

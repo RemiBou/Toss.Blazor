@@ -19,6 +19,16 @@ namespace Toss.Server.Controllers
         private readonly IEmailSender _emailSender;
         private readonly IUrlHelper urlHelper;
         private readonly IHttpContextAccessor httpContextAccessor;
+
+        public RegisterCommandHandler(UserManager<ApplicationUser> userManager, ILogger logger, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+        {
+            _userManager = userManager;
+            _logger = logger;
+            _emailSender = emailSender;
+            this.urlHelper = urlHelper;
+            this.httpContextAccessor = httpContextAccessor;
+        }
+
         public async Task<CommandResult> Handle(RegisterCommand model, CancellationToken cancellationToken)
         {
             var user = new ApplicationUser { UserName = model.Name, Email = model.Email };
