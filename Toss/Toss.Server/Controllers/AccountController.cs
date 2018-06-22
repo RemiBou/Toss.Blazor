@@ -12,6 +12,7 @@ using System.Net;
 using Toss.Shared.Services;
 using System.Security.Claims;
 using MediatR;
+using System.Collections.Generic;
 
 namespace Toss.Server.Controllers
 {
@@ -83,6 +84,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHashTag([FromBody] string newTag)
         {
+            
             var res = await _mediator.Send(new AddHashtagCommand(newTag));
             if (!res.IsSucess)
             {

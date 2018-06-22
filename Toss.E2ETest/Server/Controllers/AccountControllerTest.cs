@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
@@ -28,22 +29,24 @@ namespace Toss.Tests.Server.Controllers
         private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
         private readonly Mock<IEmailSender> _emailSender;
         private readonly Mock<ILogger<AccountController>> _logger;
+        private readonly Mock<IMediator> _mediator;
         public AccountControllerTest()
         {
             _userManager = MockHelpers.MockUserManager<ApplicationUser>();
             _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
             _emailSender = new Mock<IEmailSender>();
             _logger = new Mock<ILogger<AccountController>>();
+            _mediator = new Mock<IMediator>();
             _sut = new AccountController(_userManager.Object,
                 _signInManager.Object,
                 _emailSender.Object,
                 _logger.Object,
-                new Mock<IMediator>().Object);
+                _mediator.Object);
             _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
                      {
                             new Claim(ClaimTypes.Name, "username")
                      }, "someAuthTypeName"));
-            _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash="XXX" };
+            _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash = "XXX" };
             _userManager.Setup(u => u.GetUserAsync(_user))
               .ReturnsAsync(_applicationUser);
             _sut.ControllerContext = new ControllerContext
@@ -74,49 +77,35 @@ namespace Toss.Tests.Server.Controllers
         public async Task Details_when_user_doesnt_exists_return_404()
         {
             _userManager.Setup(u => u.GetUserAsync(_user))
-              .ReturnsAsync((ApplicationUser)null);
+                        .ReturnsAsync((ApplicationUser)null);
+
             var res = await _sut.Details();
 
             var notOk = Assert.IsType<UnauthorizedResult>(res);
         }
 
+
+      
+
         [Fact]
-        public async Task AddHashTag_calls_user_store_with_new_hashtag()
+        public async Task AddHashTag_if_not_ok_return_bad_request()
         {
-          
+            _mediator.Setup(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(new CommandResult("test", "test 2")));
 
             var res = await _sut.AddHashTag("toto");
 
-            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Contains("toto"))));
-        }
-        [Fact]
-        public async Task AddHashTag_cannot_add_null_hashtag()
-        {
-
-
-            var res = await _sut.AddHashTag(null);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
-            var errors = Assert.IsType<Dictionary<string,string>>(badRequestResult.Value);
-            Assert.True(errors.ContainsKey("newTag"));
-            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 1)),Times.Never)    ;
-        }
-        [Fact]
-        public async Task AddHashTag_cannot_add_twice_same_hashtag()
-        {
-
-
-            var res = await _sut.AddHashTag("toto");
-            res = await _sut.AddHashTag("toto");
+            _mediator.Verify(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
             var errors = Assert.IsType<Dictionary<string, string>>(badRequestResult.Value);
-            Assert.True(errors.ContainsKey("newTag"));
-            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 1)), Times.Once);
-            _userManager.Verify(u => u.UpdateAsync(It.Is<ApplicationUser>(a => a.Hashtags.Count == 2)), Times.Never);
-
+            Assert.True(errors.ContainsKey("test"));
         }
         [Fact]
-        public async Task AddHashTag_returns_ok()
+        public async Task AddHashTag_if_ok_returns_ok()
         {
+            _mediator.Setup(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()))
+                    .Returns(Task.FromResult(CommandResult.Success()));
+
             var res = await _sut.AddHashTag("toto");
 
             Assert.IsType<OkResult>(res);
