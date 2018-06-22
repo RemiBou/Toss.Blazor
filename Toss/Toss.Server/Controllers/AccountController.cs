@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -8,10 +7,8 @@ using Microsoft.Extensions.Logging;
 using Toss.Shared;
 using Toss.Server.Extensions;
 using Toss.Server.Models;
-using System.Net;
 using System.Security.Claims;
 using MediatR;
-using System.Collections.Generic;
 using Toss.Server.Models.Account;
 using Toss.Shared.Account;
 
@@ -84,8 +81,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            await _mediator.Send(new SignoutCommand());
             return Redirect("/login");
 
         }
