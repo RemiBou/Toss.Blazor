@@ -1,12 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Toss.Shared;
-using Toss.Server.Models;
-using MediatR;
-using System.Threading;
+using Toss.Shared.Account;
 
-namespace Toss.Server.Controllers
+namespace Toss.Server.Models.Account
 {
     public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandResult>
     {

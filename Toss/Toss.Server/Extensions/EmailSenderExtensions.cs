@@ -1,7 +1,8 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Toss.Server.Services;
 
-namespace Toss.Shared.Services
+namespace Toss.Server.Extensions
 {
     public static class EmailSenderExtensions
     {

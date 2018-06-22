@@ -1,16 +1,17 @@
 ﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Toss.Server.Extensions;
+using Toss.Server.Services;
 using Toss.Shared;
-using Toss.Server.Models;
-using Toss.Shared.Services;
-using MediatR;
-using System.Threading;
-using Microsoft.AspNetCore.Http;
+using Toss.Shared.Account;
 
-namespace Toss.Server.Controllers
+namespace Toss.Server.Models.Account
 {
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, CommandResult>
     {

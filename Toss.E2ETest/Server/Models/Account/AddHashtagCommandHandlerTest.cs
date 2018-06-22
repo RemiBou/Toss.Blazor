@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Models;
+using Toss.Server.Models.Account;
 using Toss.Tests.Infrastructure;
 using Xunit;
 

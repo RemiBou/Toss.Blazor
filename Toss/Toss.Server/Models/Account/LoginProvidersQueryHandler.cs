@@ -1,13 +1,13 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Toss.Shared;
-using Toss.Server.Models;
-using MediatR;
-using System.Collections.Generic;
-using System.Threading;
+using Toss.Shared.Account;
 
-namespace Toss.Server.Controllers
+namespace Toss.Server.Models.Account
 {
     public class LoginProvidersQueryHandler : IRequestHandler<LoginProvidersQuery, IEnumerable<SigninProviderViewModel>>
     {

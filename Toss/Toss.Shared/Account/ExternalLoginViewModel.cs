@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Toss.Shared
+namespace Toss.Shared.Account
 {
     public class ExternalLoginViewModel
     {

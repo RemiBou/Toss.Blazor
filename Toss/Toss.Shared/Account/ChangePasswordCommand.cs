@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Toss.Shared
+namespace Toss.Shared.Account
 {
     public class ChangePasswordCommand : MediatR.IRequest<CommandResult>
     {
@@ -25,36 +21,5 @@ namespace Toss.Shared
         public string ConfirmPassword { get; set; }
 
         public string StatusMessage { get; set; }
-    }
-
-    public class CommandResult
-    {
-        public ValidationErrorDictonary Errors { get; set; }
-        public bool IsSucess
-        {
-            get
-            {
-                return Errors == null || !Errors.Any();
-            }
-        }
-        public CommandResult()
-        {
-
-        }
-        public CommandResult(string errorKey, string errorMessage)
-        {
-            Errors = new ValidationErrorDictonary()
-            {
-                {errorKey,new List<string>{errorMessage} }
-            };
-        }
-        public CommandResult(ValidationErrorDictonary errors)
-        {
-            Errors = errors;
-        }
-        public static CommandResult Success()
-        {
-            return new CommandResult();
-        }
     }
 }

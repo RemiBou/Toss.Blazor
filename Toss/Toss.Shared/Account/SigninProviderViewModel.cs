@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Toss.Shared
+﻿namespace Toss.Shared.Account
 {
     public class SigninProviderViewModel
     {

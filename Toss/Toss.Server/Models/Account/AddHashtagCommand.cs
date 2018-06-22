@@ -1,7 +1,8 @@
-﻿using Toss.Shared;
-using MediatR;
+﻿using MediatR;
+using Toss.Shared;
+using Toss.Shared.Account;
 
-namespace Toss.Server.Controllers
+namespace Toss.Server.Models.Account
 {
     public class AddHashtagCommand : IRequest<CommandResult>
     {

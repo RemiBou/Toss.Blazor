@@ -8,8 +8,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Extensions;
+using Toss.Server.Services;
 using Toss.Shared;
-using Toss.Shared.Services;
+using Toss.Shared.Account;
 
 namespace Toss.Server.Models.Account
 {

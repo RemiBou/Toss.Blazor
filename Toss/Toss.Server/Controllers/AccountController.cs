@@ -9,10 +9,12 @@ using Toss.Shared;
 using Toss.Server.Extensions;
 using Toss.Server.Models;
 using System.Net;
-using Toss.Shared.Services;
 using System.Security.Claims;
 using MediatR;
 using System.Collections.Generic;
+using Toss.Server.Models.Account;
+using Toss.Server.Services;
+using Toss.Shared.Account;
 
 namespace Toss.Server.Controllers
 {

@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Models;
 using Toss.Server.Models.Account;
+using Toss.Server.Services;
 using Toss.Shared;
-using Toss.Shared.Services;
+using Toss.Shared.Account;
 using Toss.Tests.Infrastructure;
 using Xunit;
 

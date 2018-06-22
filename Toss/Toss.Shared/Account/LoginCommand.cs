@@ -1,11 +1,7 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 
-namespace Toss.Shared
+namespace Toss.Shared.Account
 {
     public class LoginCommand : IRequest<LoginCommandResult>
     {
@@ -18,12 +14,5 @@ namespace Toss.Shared
 
         [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
-    }
-
-    public class LoginCommandResult
-    {
-        public bool Need2FA { get; set; }
-        public bool IsLockout { get; set; }
-        public bool IsSuccess { get; set; }
     }
 }
