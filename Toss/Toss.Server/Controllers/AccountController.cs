@@ -286,7 +286,7 @@ namespace Toss.Server.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Details()
-        {
+        {            
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)

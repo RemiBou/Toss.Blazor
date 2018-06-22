@@ -74,6 +74,9 @@ namespace Toss.Client.Services
                 case System.Net.HttpStatusCode.Forbidden:
                     uriHelper.NavigateTo("/login");
                     break;
+                case System.Net.HttpStatusCode.InternalServerError:
+                    JsInterop.Toastr("error","A server error occured, sorry");
+                    break;
                     //other case , we do nothing, I'll add this case as needed
             }
         }

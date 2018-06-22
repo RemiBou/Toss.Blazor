@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -36,7 +37,8 @@ namespace Toss.Tests.Server.Controllers
             _sut = new AccountController(_userManager.Object,
                 _signInManager.Object,
                 _emailSender.Object,
-                _logger.Object);
+                _logger.Object,
+                new Mock<IMediator>().Object);
             _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
                      {
                             new Claim(ClaimTypes.Name, "username")

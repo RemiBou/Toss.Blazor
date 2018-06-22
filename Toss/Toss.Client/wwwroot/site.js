@@ -13,3 +13,20 @@
         toastr.clear($("#toastr-"+id));
     }
 }
+
+Blazor.registerFunction('log', function (message) {
+    console.log(message);
+    return true;
+});
+Blazor.registerFunction('toastr', function (toastType, message) {
+    toastr[toastType](message)
+    return true;
+});
+var ajaxLoader = new AjaxLoader();
+Blazor.registerFunction('ajaxLoaderShow', function () {
+    return ajaxLoader.show();
+});
+Blazor.registerFunction('ajaxLoaderHide', function (id) {
+    ajaxLoader.hide(id);
+    return true;
+});
