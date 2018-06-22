@@ -1,11 +1,16 @@
 ﻿@if ((Errors?.ContainsKey(FieldName)).GetValueOrDefault(false))
 {
-    <span class="small form-text text-danger">@Errors[FieldName]</span>
+    <span class="small form-text text-danger">@GetError()</span>
 
 }
 @functions{
     [Parameter]
     string FieldName { get; set; }
     [Parameter]
-    Dictionary<string, string> Errors { get; set; }
+    ValidationErrorDictonary Errors { get; set; }
+
+    private string GetError()
+    {
+        return string.Join(", ",Errors[FieldName]);
+    }
 }

@@ -67,7 +67,7 @@ namespace Toss.Server.Controllers
             else
             {
                 ModelState.AddModelError("UserName", "Invalid login attempt.");
-                return BadRequest(ModelState.ToFlatDictionary());
+                return BadRequest(ModelState);
             }
 
             // If we got this far, something failed, redisplay form
@@ -198,7 +198,7 @@ namespace Toss.Server.Controllers
                     return Ok();
                 }
             }
-            return BadRequest(result.ToFlatDictionary());
+            return BadRequest(result.ToModelStateDictionary());
 
         }
 
@@ -268,7 +268,7 @@ namespace Toss.Server.Controllers
                 return Ok();
             }
 
-            return BadRequest(result.ToFlatDictionary());
+            return BadRequest(result.ToModelStateDictionary());
         }
 
         [HttpGet]

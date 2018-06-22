@@ -30,12 +30,12 @@
 
 @functions{
     LoginCommand loginCommand = new LoginCommand();
-    Dictionary<string, string> _errors;
+    ValidationErrorDictonary _errors;
     async Task<bool> TryLogin(UIEventArgs even)
-    {       
+    {
         _errors = null;
         await ClientFactory.Create("/api/account/login")
-            .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
+            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
             .OnOK(null,"/")
             .Post(loginCommand);
         StateHasChanged();

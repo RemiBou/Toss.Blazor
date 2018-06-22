@@ -7,16 +7,14 @@ namespace Toss.Server.Extensions
 {
     public static class ModelStateDictionaryExtension
     {
-        public static Dictionary<string,string> ToFlatDictionary(this ModelStateDictionary modelState)
+        public static ModelStateDictionary ToModelStateDictionary(this IdentityResult identityResult)
         {
-            return modelState.ToDictionary(s => s.Key, s => string.Join(" ", s.Value.Errors.Select(e => e.ErrorMessage)));
-        }
-        public static Dictionary<string, string> ToFlatDictionary(this IdentityResult modelState)
-        {
-            return new Dictionary<string, string>()
+            var res = new ModelStateDictionary();
+            foreach (var errors in identityResult.Errors)
             {
-                {"Other",string.Join(" ", modelState.Errors.Select(e => e.Description)) }
-            };
+                res.AddModelError(errors.Code,errors.Description);
+            }
+            return res;
         }
     }
 }

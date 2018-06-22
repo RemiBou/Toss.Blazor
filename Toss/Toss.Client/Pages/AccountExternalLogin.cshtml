@@ -29,22 +29,22 @@
 @functions {
 
 
-Dictionary<string, string> _errors;
-ExternalLoginViewModel model = new ExternalLoginViewModel();
-protected override async Task OnInitAsync()
-{
-    await ClientFactory.Create("/api/account/externalLoginDetails")
-        .OnOK<ExternalLoginViewModel>(a => model = a)
-        .Get();
-    StateHasChanged();
-}
-async Task ExternalLoginConfirm()
-{
-    _errors = null;
-    await ClientFactory.Create("/api/account/externalLoginConfirmation")
-        .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
-        .OnOK("Account successfully set", "/")
-        .Post(model);
-    StateHasChanged();
-}
+    ValidationErrorDictonary _errors;
+    ExternalLoginViewModel model = new ExternalLoginViewModel();
+    protected override async Task OnInitAsync()
+    {
+        await ClientFactory.Create("/api/account/externalLoginDetails")
+            .OnOK<ExternalLoginViewModel>(a => model = a)
+            .Get();
+        StateHasChanged();
+    }
+    async Task ExternalLoginConfirm()
+    {
+        _errors = null;
+        await ClientFactory.Create("/api/account/externalLoginConfirmation")
+            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
+            .OnOK("Account successfully set", "/")
+            .Post(model);
+        StateHasChanged();
+    }
 }

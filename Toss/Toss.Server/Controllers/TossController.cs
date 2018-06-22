@@ -16,7 +16,7 @@ namespace Toss.Server.Controllers
         private readonly ITossRepository tossRepository;
 
         public TossController(ITossRepository tossRepository)
-        {
+        {            
             this.tossRepository = tossRepository;
         }
 
