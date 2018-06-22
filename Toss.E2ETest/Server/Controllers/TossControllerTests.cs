@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -106,34 +107,9 @@ namespace Toss.Tests.Server.Controllers
             Assert.IsType<OkResult>(res);
 
         }
-        [Fact]
-        public async Task create_return_400_if_content_not_valid()
-        {
-            var command = new TossCreateCommand()
-            {
-                Content = "lorem ipsum"
-            };
-            _sut.ModelState.AddModelError("test", "test");
-            var res = await _sut.Create(command);
 
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
-            var dico = Assert.IsType<Dictionary<string, string>>(badRequestResult.Value);
-            Assert.True(dico.ContainsKey("test"));
-        }
-        //[Fact]
-        //public async Task create_invalid_if_length_over_32000()
-        //{
-        //    var command = new TossCreateCommand()
-        //    {
-        //        Content = string.Join(" ", Enumerable.Range(0, 1000).Select(i => "lorem ipsum"))
-        //    };
-        //    Assert.False(_sut.TryValidateModel(command));
 
-        //    var res = await _sut.Create(command);
-
-        //    Assert.True(((Dictionary<string, string>)((BadRequestObjectResult)res).Value).ContainsKey("Content"));
-
-        //}
+       
 
         [Fact]
         public async Task create_setup_username_to_current_user()

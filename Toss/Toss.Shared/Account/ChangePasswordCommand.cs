@@ -29,7 +29,7 @@ namespace Toss.Shared
 
     public class CommandResult
     {
-        public Dictionary<string, string> Errors { get; set; }
+        public ValidationErrorDictonary Errors { get; set; }
         public bool IsSucess
         {
             get
@@ -41,14 +41,14 @@ namespace Toss.Shared
         {
 
         }
-        public CommandResult(string errorKey,string errorMessage)
+        public CommandResult(string errorKey, string errorMessage)
         {
-            Errors = new Dictionary<string, string>()
+            Errors = new ValidationErrorDictonary()
             {
-                {errorKey,errorMessage}
+                {errorKey,new List<string>{errorMessage} }
             };
         }
-         public CommandResult(Dictionary<string,string> errors)
+        public CommandResult(ValidationErrorDictonary errors)
         {
             Errors = errors;
         }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System;
@@ -97,7 +98,7 @@ namespace Toss.Tests.Server.Controllers
 
             _mediator.Verify(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
-            var errors = Assert.IsType<Dictionary<string, string>>(badRequestResult.Value);
+            var errors = Assert.IsType<ValidationErrorDictonary>(badRequestResult.Value);
             Assert.True(errors.ContainsKey("test"));
         }
         [Fact]

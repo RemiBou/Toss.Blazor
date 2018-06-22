@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Shared;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
@@ -58,14 +59,14 @@ namespace Toss.Tests.Server.Data
         {
             await azureTableFixture.TossTable.DeleteAsync();
 
-            await _sut.Create(new Shared.TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
+            await _sut.Create(new TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
 
             Assert.True(await azureTableFixture.TossTable.ExistsAsync());
         }
         [Fact]
         public async Task create_insert_item_in_azure_table()
         {
-            var command = new Shared.TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" };
+            var command = new TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" };
             await _sut.Create(command);
 
             TableContinuationToken tableContinuationToken = null;
@@ -86,10 +87,10 @@ namespace Toss.Tests.Server.Data
             var tasks = new List<Task>();
             for (int i = 0; i < 3; i++)
             {
-                tasks.Add(_sut.Create(new Shared.TossCreateCommand() { Content = "lorem #ipsum #toto num" + i, CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
+                tasks.Add(_sut.Create(new TossCreateCommand() { Content = "lorem #ipsum #toto num" + i, CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
 
             }
-            tasks.Add(_sut.Create(new Shared.TossCreateCommand() { Content = "blabla #ipsum #tutu", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
+            tasks.Add(_sut.Create(new TossCreateCommand() { Content = "blabla #ipsum #tutu", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
             await Task.WhenAll(tasks);
 
             var tosses = await _sut.Last(2, "toto");

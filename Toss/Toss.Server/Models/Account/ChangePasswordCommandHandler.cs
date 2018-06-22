@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Toss.Server.Extensions;
 using Toss.Shared;
 using Toss.Shared.Services;
 
@@ -44,7 +45,7 @@ namespace Toss.Server.Models.Account
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                return new CommandResult(changePasswordResult.Errors.ToDictionary(e => e.Code,e => e.Description));
+                return new CommandResult(changePasswordResult.ToValidationErrorDictonary());
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);

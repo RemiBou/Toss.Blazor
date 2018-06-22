@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Models;
 using Toss.Server.Models.Account;
+using Toss.Shared;
 using Toss.Shared.Services;
 using Toss.Tests.Infrastructure;
 using Xunit;
@@ -59,7 +60,7 @@ namespace Toss.Tests.Server.Models.Account
         {
             _applicationUser.PasswordHash = null;
 
-            var res = await _sut.Handle(new Shared.ChangePasswordCommand()
+            var res = await _sut.Handle(new ChangePasswordCommand()
             {
                 ConfirmPassword = "test2",
                 NewPassword = "test2",
