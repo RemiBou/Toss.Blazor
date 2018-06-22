@@ -30,8 +30,6 @@
 
 @functions{
     AccountViewModel _account = new AccountViewModel();
-    Dictionary<string, string> _errors;
-    bool loading = false;
     string newHashtag;
     protected string GetUrl(string hashtag)
     {
@@ -46,7 +44,6 @@
     }
     protected async Task AddHashtag()
     {
-        loading = true;
         StateHasChanged();
         await ClientFactory.Create("/api/account/addHashTag")
             .OnOK(() =>
@@ -57,7 +54,6 @@
             })
             .OnBadRequest<Dictionary<string, string>>(e => JsInterop.Toastr("error",e["newTag"]))
             .Post(newHashtag);
-        loading = false;
         StateHasChanged();
 
     }

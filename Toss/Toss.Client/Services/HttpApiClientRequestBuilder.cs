@@ -34,7 +34,7 @@ namespace Toss.Client.Services
 
         }
         public async Task Post()
-        {
+        {            
             var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
             {
             });
@@ -86,19 +86,37 @@ namespace Toss.Client.Services
             };
             return this;
         }
-        public HttpApiClientRequestBuilder OnOK(Action todo)
+        public HttpApiClientRequestBuilder OnOK(Func<Task> todo)
         {
             _onOK = async (HttpResponseMessage r) =>
             {
+                await todo();
+            };
+            return this;
+        }
+        public HttpApiClientRequestBuilder OnBadRequest(Func<Task> todo)
+        {
+            _onBadRequest = async (HttpResponseMessage r) =>
+            {
+                await todo();
+            };
+            return this;
+        }
+            public HttpApiClientRequestBuilder OnOK(Action todo)
+        {
+            _onOK = (HttpResponseMessage r) =>
+            {
                 todo();
+                return Task.CompletedTask;
             };
             return this;
         }
         public HttpApiClientRequestBuilder OnBadRequest(Action todo)
         {
-            _onBadRequest = async (HttpResponseMessage r) =>
+            _onBadRequest = (HttpResponseMessage r) =>
             {
                 todo();
+                return Task.CompletedTask;
             };
             return this;
         }
@@ -109,6 +127,7 @@ namespace Toss.Client.Services
                 if (!string.IsNullOrEmpty(successMessage))
                     JsInterop.Toastr("success", successMessage);
                 uriHelper.NavigateTo(navigateTo);
+                return Task.CompletedTask;
             });
             return this;
         }

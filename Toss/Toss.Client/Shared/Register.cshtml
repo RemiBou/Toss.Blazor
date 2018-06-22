@@ -5,29 +5,29 @@
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label for="NewEmail">Email</label>
-        <input id="NewEmail" bind="@registerViewModel.Email" class="form-control" />
+        <input id="NewEmail" bind="@registerCommand.Email" class="form-control" />
         <ValidationError FieldName="Email" Errors="@_errors" />
     </div>
     <div class="form-group">
         <label for="NewName">Name</label>
-        <input id="NewName" bind="@registerViewModel.Name" class="form-control" />
+        <input id="NewName" bind="@registerCommand.Name" class="form-control" />
         <ValidationError FieldName="Name" Errors="@_errors" />
     </div>
     <div class="form-group">
         <label for="NewPassword">Password</label>
-        <input id="NewPassword" bind="@registerViewModel.Password" type="password" class="form-control" />
+        <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control" />
         <ValidationError FieldName="Password" Errors="@_errors" />
     </div>
     <div class="form-group">
         <label for="NewConfirmPassword">Confirm your password</label>
-        <input id="NewConfirmPassword" bind="@registerViewModel.ConfirmPassword" type="password" class="form-control" />
+        <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
     <button type="button" onclick="@CreateAccount" id="BtnRegister" class="btn btn-default">Register</button>
     <ValidationError FieldName="Other" Errors="@_errors" />
 </form>
 @functions{
-    RegisterViewModel registerViewModel = new RegisterViewModel();
+    RegisterCommand registerCommand = new RegisterCommand();
     Dictionary<string, string> _errors;
     async Task CreateAccount()
     {
@@ -36,10 +36,10 @@
             .OnBadRequest<Dictionary<string, string>>(errors => _errors = errors)
             .OnOK(() =>
             {
-                JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to "+registerViewModel.Email);
-                registerViewModel = new RegisterViewModel();
+                JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to "+ registerCommand.Email);
+                registerCommand = new RegisterCommand();
             })
-            .Post(registerViewModel);
+            .Post(registerCommand);
         StateHasChanged();
     }
 }
