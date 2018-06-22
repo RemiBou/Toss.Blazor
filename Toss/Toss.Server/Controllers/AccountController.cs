@@ -18,7 +18,8 @@ namespace Toss.Server.Controllers
 {
     [Authorize]
     [ApiController]
-    public class AccountController : Controller
+    [Route("api/[controller]/[action]")]
+    public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -252,8 +253,7 @@ namespace Toss.Server.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost,AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel model)
         {
             model.Code = WebUtility.UrlDecode(model.Code);
@@ -325,7 +325,7 @@ namespace Toss.Server.Controllers
            
             await _mediator.Send(model);
 
-            return RedirectToAction(nameof(ChangePassword));
+            return Ok();
         }
     }
 }
