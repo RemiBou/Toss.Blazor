@@ -16,8 +16,8 @@ namespace Toss.Tests.Server.Data
     [Collection("AzureTablecollection")]
     public class TossAzureTableRepositoryTest
     {
-        private TossAzureTableRepository _sut;
-        private AzureTableFixture azureTableFixture;
+        private readonly TossAzureTableRepository _sut;
+        private readonly AzureTableFixture azureTableFixture;
 
 
         public TossAzureTableRepositoryTest(AzureTableFixture azureTableFixture)

@@ -14,7 +14,7 @@ namespace Toss.Tests.Server.Data
     [Collection("AzureTablecollection")]
     public class UserStoreV2Tests 
     {
-        private AzureTableFixture azureTableFixture;
+        private readonly AzureTableFixture azureTableFixture;
 
         public UserStoreV2Tests(AzureTableFixture azureTableFixture)
         {

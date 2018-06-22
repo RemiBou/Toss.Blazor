@@ -18,8 +18,8 @@ namespace Toss.Tests.Server.Controllers
 {
     public class TossControllerTests
     {
-        private TossController _sut;
-        private Mock<ITossRepository> mockTossRepository;
+        private readonly TossController _sut;
+        private readonly Mock<ITossRepository> mockTossRepository;
         public TossControllerTests()
         {
             mockTossRepository = new Mock<ITossRepository>();

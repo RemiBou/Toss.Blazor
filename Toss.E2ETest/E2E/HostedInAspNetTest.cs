@@ -9,7 +9,7 @@ namespace Toss.Tests.E2E
 {
     public class HostedInAspNetTest : ServerTestBase<AspNetSiteServerFixture>
     {
-        private WebDriverWait _webDriveWaitDefault;
+        private readonly WebDriverWait _webDriveWaitDefault;
         private const int DefaultWaitSecondsForPageChange = 2;
         public HostedInAspNetTest(
             BrowserFixture browserFixture,

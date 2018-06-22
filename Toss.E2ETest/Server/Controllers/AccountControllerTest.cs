@@ -24,14 +24,13 @@ namespace Toss.Tests.Server.Controllers
         private readonly AccountController _sut;
         private readonly ClaimsPrincipal _user;
         private readonly ApplicationUser _applicationUser;
-        private readonly Mock<UserManager<ApplicationUser>> _userManager;
         private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
         private readonly Mock<ILogger<AccountController>> _logger;
         private readonly Mock<IMediator> _mediator;
         public AccountControllerTest()
         {
-            _userManager = MockHelpers.MockUserManager<ApplicationUser>();
-            _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
+            var userManager = MockHelpers.MockUserManager<ApplicationUser>();
+            _signInManager = MockHelpers.MockSigninManager(userManager.Object);
             _logger = new Mock<ILogger<AccountController>>();
             _mediator = new Mock<IMediator>();
             _sut = new AccountController(_signInManager.Object,
@@ -42,8 +41,6 @@ namespace Toss.Tests.Server.Controllers
                             new Claim(ClaimTypes.Name, "username")
                      }, "someAuthTypeName"));
             _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash = "XXX" };
-            _userManager.Setup(u => u.GetUserAsync(_user))
-              .ReturnsAsync(_applicationUser);
             _sut.ControllerContext = new ControllerContext
             {
                 HttpContext = new DefaultHttpContext
@@ -52,27 +49,12 @@ namespace Toss.Tests.Server.Controllers
                 }
             };
         }
-        [Fact]
-        public async Task Details_when_user_has_password_return_HasPassword_to_true()
-        {
-            var res = Assert.IsType<AccountViewModel>(Assert.IsType<OkObjectResult>(await _sut.Details()).Value);
-
-            Assert.True(res.HasPassword);
-        }
-        [Fact]
-        public async Task Details_when_user_has_no_password_return_HasPassword_to_false()
-        {
-            _applicationUser.PasswordHash = null;
-
-            var res = Assert.IsType<AccountViewModel>(Assert.IsType<OkObjectResult>(await _sut.Details()).Value);
-
-            Assert.False(res.HasPassword);
-        }
+       
         [Fact]
         public async Task Details_when_user_doesnt_exists_return_404()
         {
-            _userManager.Setup(u => u.GetUserAsync(_user))
-                        .ReturnsAsync((ApplicationUser)null);
+            _mediator.Setup(u => u.Send(It.IsAny<CurrentAccountDetailsQuery>(),It.IsAny<CancellationToken>()))
+                        .ReturnsAsync((AccountViewModel)null);
 
             var res = await _sut.Details();
 
@@ -106,25 +88,6 @@ namespace Toss.Tests.Server.Controllers
             Assert.IsType<OkResult>(res);
         }
        
-        [Fact]
-        public async Task Details_return_account_view_model()
-        {
-
-            var res = (await _sut.Details());
-
-            var okResult = Assert.IsType<OkObjectResult>(res);
-
-            Assert.IsType<AccountViewModel>(okResult.Value);
-        }
-        [Fact]
-        public async Task Details_return_user_hashtags()
-        {
-            _userManager.Setup(u => u.GetUserAsync(_user))
-               .ReturnsAsync(new ApplicationUser() { UserName = "username", Hashtags = new HashSet<string> { "toto", "titi" } });
-
-            var details = ((await _sut.Details()) as OkObjectResult).Value as AccountViewModel;
-
-            Assert.Equal(new HashSet<string> { "toto", "titi" }, details.Hashtags);
-        }
+      
     }
 }
