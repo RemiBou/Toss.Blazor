@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Toss.Server.Controllers;
 using Toss.Server.Models;
 using Toss.Server.Models.Account;
 using Toss.Server.Services;
@@ -21,31 +22,15 @@ namespace Toss.Tests.Server.Models.Account
     public class CurrentAccountDetailsQueryHandlerTest
     {
         private readonly CurrentAccountDetailsQueryHandler _sut;
-        private readonly Mock<UserManager<ApplicationUser>> _userManager;
-        private readonly ClaimsPrincipal _user;
-        private ApplicationUser _applicationUser;
+        private CommonMocks<AccountController> _m = new CommonMocks<AccountController>();
 
         public CurrentAccountDetailsQueryHandlerTest()
         {
-            var httpCOntextAccessor = new Mock<IHttpContextAccessor>();
-            _userManager = MockHelpers.MockUserManager<ApplicationUser>();
             _sut = new CurrentAccountDetailsQueryHandler(
-                httpCOntextAccessor
+                _m.HttpContextAccessor
                     .Object,
-                _userManager.Object
+                _m.UserManager.Object
               );
-            _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, "username")
-            }, "someAuthTypeName"));
-            _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash = "XXX" };
-            _userManager.Setup(u => u.GetUserAsync(_user))
-                .ReturnsAsync(_applicationUser);
-            _userManager.Setup(u => u.ChangePasswordAsync(_applicationUser, It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new IdentityResult()));
-            httpCOntextAccessor
-                .SetupGet(h => h.HttpContext)
-                .Returns(new DefaultHttpContext() { User = _user });
         }
 
         [Fact]
@@ -59,7 +44,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Details_return_user_hashtags()
         {
-            _userManager.Setup(u => u.GetUserAsync(_user))
+            _m.UserManager.Setup(u => u.GetUserAsync(_m.User))
                 .ReturnsAsync(new ApplicationUser() { UserName = "username", Hashtags = new HashSet<string> { "toto", "titi" } });
 
             var details = await _sut.Handle(new CurrentAccountDetailsQuery(), new CancellationToken());
@@ -77,7 +62,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Details_when_user_has_no_password_return_HasPassword_to_false()
         {
-            _applicationUser.PasswordHash = null;
+            _m.ApplicationUser.PasswordHash = null;
 
             var res = await _sut.Handle(new CurrentAccountDetailsQuery(), new CancellationToken());
 

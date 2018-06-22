@@ -22,32 +22,16 @@ namespace Toss.Tests.Server.Controllers
     public class AccountControllerTest
     {
         private readonly AccountController _sut;
-        private readonly ClaimsPrincipal _user;
-        private readonly ApplicationUser _applicationUser;
-        private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
-        private readonly Mock<ILogger<AccountController>> _logger;
+        private CommonMocks<AccountController> _m = new CommonMocks<AccountController>();
         private readonly Mock<IMediator> _mediator;
         public AccountControllerTest()
         {
-            var userManager = MockHelpers.MockUserManager<ApplicationUser>();
-            _signInManager = MockHelpers.MockSigninManager(userManager.Object);
-            _logger = new Mock<ILogger<AccountController>>();
+           
             _mediator = new Mock<IMediator>();
-            _sut = new AccountController(_signInManager.Object,
-                _logger.Object,
+            _sut = new AccountController(_m.SignInManager.Object,
+                _m.Logger.Object,
                 _mediator.Object);
-            _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                     {
-                            new Claim(ClaimTypes.Name, "username")
-                     }, "someAuthTypeName"));
-            _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash = "XXX" };
-            _sut.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = _user
-                }
-            };
+            _m.SetControllerContext(_sut);
         }
        
         [Fact]

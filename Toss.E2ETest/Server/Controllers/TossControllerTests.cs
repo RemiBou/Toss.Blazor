@@ -12,6 +12,7 @@ using Toss.Server;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
 using Toss.Shared;
+using Toss.Tests.Infrastructure;
 using Xunit;
 
 namespace Toss.Tests.Server.Controllers
@@ -22,18 +23,10 @@ namespace Toss.Tests.Server.Controllers
         private readonly Mock<ITossRepository> mockTossRepository;
         public TossControllerTests()
         {
+            var commonMock = new CommonMocks<TossController>();
             mockTossRepository = new Mock<ITossRepository>();
             _sut = new TossController(mockTossRepository.Object);
-            _sut.ControllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                     {
-                            new Claim(ClaimTypes.Name, "username")
-                     }, "someAuthTypeName"))
-                }
-            };
+            commonMock.SetControllerContext(_sut);
         }
 
         [Fact]
