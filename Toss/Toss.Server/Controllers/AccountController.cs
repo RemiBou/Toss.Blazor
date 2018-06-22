@@ -16,9 +16,7 @@ using System.Collections.Generic;
 
 namespace Toss.Server.Controllers
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]/[action]")]
+    [Authorize, ApiController, Route("api/[controller]/[action]")]
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -51,7 +49,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginCommand model)
+        public async Task<IActionResult> Login(LoginCommand model)
         {
             var result = await _mediator.Send(model);
             if (result.IsSuccess)
@@ -81,7 +79,7 @@ namespace Toss.Server.Controllers
         /// <param name="newTag"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> AddHashTag([FromBody] string newTag)
+        public async Task<IActionResult> AddHashTag(string newTag)
         {
 
             var res = await _mediator.Send(new AddHashtagCommand(newTag));
@@ -94,7 +92,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterCommand model)
+        public async Task<IActionResult> Register(RegisterCommand model)
         {
 
             var res = await _mediator.Send(model);
@@ -179,7 +177,7 @@ namespace Toss.Server.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginConfirmation([FromBody] ExternalLoginViewModel model)
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model)
         {
 
             // Get the information about the user from the external login provider
@@ -234,7 +232,7 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
 
             var user = await _userManager.FindByEmailAsync(model.Email);
@@ -253,11 +251,11 @@ namespace Toss.Server.Controllers
             return Ok();
         }
 
-        [HttpPost,AllowAnonymous]
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel model)
         {
             model.Code = WebUtility.UrlDecode(model.Code);
-           
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -295,9 +293,9 @@ namespace Toss.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([FromBody] AccountViewModel model)
+        public async Task<IActionResult> Edit(AccountViewModel model)
         {
-          
+
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -320,9 +318,9 @@ namespace Toss.Server.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand model)
         {
-           
+
             await _mediator.Send(model);
 
             return Ok();

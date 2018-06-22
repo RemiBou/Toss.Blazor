@@ -10,7 +10,7 @@ using Toss.Shared;
 
 namespace Toss.Server.Controllers
 {
-    [Authorize]
+    [Authorize, ApiController, Route("api/[controller]/[action]")]
     public class TossController : Controller
     {
         private readonly ITossRepository tossRepository;
@@ -19,6 +19,7 @@ namespace Toss.Server.Controllers
         {
             this.tossRepository = tossRepository;
         }
+
         /// <summary>
         /// Returns the last created Toss for the homepage
         /// </summary>
@@ -35,10 +36,8 @@ namespace Toss.Server.Controllers
         /// <param name="createTossCommand"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody]TossCreateCommand createTossCommand)
+        public async Task<IActionResult> Create(TossCreateCommand createTossCommand)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.ToFlatDictionary());
             createTossCommand.UserId = User.Identity.Name;
             createTossCommand.CreatedOn = DateTimeOffset.Now;
             await tossRepository.Create(createTossCommand);

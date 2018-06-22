@@ -9,7 +9,6 @@
         
     };
     this.hide = function (id) {
-        console.log(id);
         toastr.clear($("#toastr-"+id));
     }
 }
