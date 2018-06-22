@@ -17,6 +17,7 @@ using System.Collections.Generic;
 namespace Toss.Server.Controllers
 {
     [Authorize]
+    [ApiController]
     public class AccountController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -51,9 +52,6 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginCommand model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.ToFlatDictionary());
-
             var result = await _mediator.Send(model);
             if (result.IsSuccess)
             {
@@ -84,7 +82,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHashTag([FromBody] string newTag)
         {
-            
+
             var res = await _mediator.Send(new AddHashtagCommand(newTag));
             if (!res.IsSucess)
             {
@@ -97,8 +95,7 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterCommand model)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.ToFlatDictionary());
+
             var res = await _mediator.Send(model);
             if (res.IsSucess)
                 return Ok();
@@ -183,29 +180,27 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ExternalLoginConfirmation([FromBody] ExternalLoginViewModel model)
         {
-            if (ModelState.IsValid)
+
+            // Get the information about the user from the external login provider
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
             {
-                // Get the information about the user from the external login provider
-                var info = await _signInManager.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    throw new ApplicationException("Error loading external login information during confirmation.");
-                }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
-                var result = await _userManager.CreateAsync(user);
+                throw new ApplicationException("Error loading external login information during confirmation.");
+            }
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
+            var result = await _userManager.CreateAsync(user);
+            if (result.Succeeded)
+            {
+                result = await _userManager.AddLoginAsync(user, info);
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                        return Ok();
-                    }
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                    return Ok();
                 }
-                return BadRequest(result.ToFlatDictionary());
             }
-            return BadRequest(ModelState.ToFlatDictionary());
+            return BadRequest(result.ToFlatDictionary());
+
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -240,26 +235,21 @@ namespace Toss.Server.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return Ok();
-                }
 
-                // For more information on how to enable account confirmation and password reset please
-                // visit https://go.microsoft.com/fwlink/?LinkID=532713
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
-                await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
                 return Ok();
             }
 
-            // If we got this far, something failed, redisplay form
-            return BadRequest(ModelState.ToFlatDictionary());
+            // For more information on how to enable account confirmation and password reset please
+            // visit https://go.microsoft.com/fwlink/?LinkID=532713
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
+            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
+               $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+            return Ok();
         }
 
         [HttpPost]
@@ -267,10 +257,7 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel model)
         {
             model.Code = WebUtility.UrlDecode(model.Code);
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState.ToFlatDictionary());
-            }
+           
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
@@ -288,7 +275,7 @@ namespace Toss.Server.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Details()
-        {            
+        {
             var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
@@ -310,10 +297,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit([FromBody] AccountViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState.ToFlatDictionary());
-            }
+          
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -338,10 +322,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState.ToFlatDictionary());
-            }
+           
             await _mediator.Send(model);
 
             return RedirectToAction(nameof(ChangePassword));
