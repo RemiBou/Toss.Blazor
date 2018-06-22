@@ -105,6 +105,7 @@ namespace Toss.Tests.Server.Controllers
 
             Assert.IsType<OkResult>(res);
         }
+       
         [Fact]
         public async Task Details_return_account_view_model()
         {
@@ -113,7 +114,7 @@ namespace Toss.Tests.Server.Controllers
 
             var okResult = Assert.IsType<OkObjectResult>(res);
 
-            var viewModel = Assert.IsType<AccountViewModel>(okResult.Value);
+            Assert.IsType<AccountViewModel>(okResult.Value);
         }
         [Fact]
         public async Task Details_return_user_hashtags()
@@ -124,8 +125,6 @@ namespace Toss.Tests.Server.Controllers
             var details = ((await _sut.Details()) as OkObjectResult).Value as AccountViewModel;
 
             Assert.Equal(new HashSet<string> { "toto", "titi" }, details.Hashtags);
-
-
         }
     }
 }

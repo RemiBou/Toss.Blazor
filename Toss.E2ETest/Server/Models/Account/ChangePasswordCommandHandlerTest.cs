@@ -20,39 +20,35 @@ namespace Toss.Tests.Server.Models.Account
 {
     public class ChangePasswordCommandHandlerTest
     {
-        private ChangePasswordCommandHandler _sut;
-        private ClaimsPrincipal _user;
-        private ApplicationUser _applicationUser;
+        private readonly ChangePasswordCommandHandler _sut;
+        private readonly ApplicationUser _applicationUser;
         private readonly Mock<UserManager<ApplicationUser>> _userManager;
-        private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
         private readonly Mock<IEmailSender> _emailSender;
-        private readonly Mock<ILogger<ChangePasswordCommandHandler>> _logger;
-        private readonly Mock<IHttpContextAccessor> _httpCOntextAccessor;
+
         public ChangePasswordCommandHandlerTest()
         {
-            _httpCOntextAccessor = new Mock<IHttpContextAccessor>();
+            var httpCOntextAccessor = new Mock<IHttpContextAccessor>();
             _userManager = MockHelpers.MockUserManager<ApplicationUser>();
-            _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
+            var signInManager = MockHelpers.MockSigninManager(_userManager.Object);
             _emailSender = new Mock<IEmailSender>();
-            _logger = new Mock<ILogger<ChangePasswordCommandHandler>>();
             _sut = new ChangePasswordCommandHandler(
                 _userManager.Object,
-                _signInManager.Object,
-                _logger.Object,
-                _httpCOntextAccessor
+                signInManager.Object,
+                new Mock<ILogger<ChangePasswordCommandHandler>>().Object,
+                httpCOntextAccessor
                 .Object);
-            _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                     {
-                            new Claim(ClaimTypes.Name, "username")
-                     }, "someAuthTypeName"));
+            var user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
+            {
+                new Claim(ClaimTypes.Name, "username")
+            }, "someAuthTypeName"));
             _applicationUser = new ApplicationUser() { UserName = "username", PasswordHash = "XXX" };
-            _userManager.Setup(u => u.GetUserAsync(_user))
+            _userManager.Setup(u => u.GetUserAsync(user))
               .ReturnsAsync(_applicationUser);
             _userManager.Setup(u => u.ChangePasswordAsync(_applicationUser, It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(Task.FromResult(new IdentityResult()));
-            _httpCOntextAccessor
+            httpCOntextAccessor
                 .SetupGet(h => h.HttpContext)
-                .Returns(new DefaultHttpContext() { User = _user });
+                .Returns(new DefaultHttpContext() { User = user });
         }
 
         [Fact]
