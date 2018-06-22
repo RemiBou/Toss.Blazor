@@ -14,5 +14,7 @@ namespace Toss.Shared
                 return DateTimeOffset.Now - CreatedOn;
             }
         }
+
+        public string Id { get; set; }
     }
 }

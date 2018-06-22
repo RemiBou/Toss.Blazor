@@ -28,5 +28,9 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("ajaxLoaderHide",id);
         }
+         public static void ShowModal(string id)
+        {
+            RegisteredFunction.Invoke<bool>("showModal",id);
+        }
     }
 }

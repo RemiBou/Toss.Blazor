@@ -29,3 +29,7 @@ Blazor.registerFunction('ajaxLoaderHide', function (id) {
     ajaxLoader.hide(id);
     return true;
 });
+Blazor.registerFunction('showModal', function (id) {
+   $('#'+id).modal('show');
+    return true;
+});

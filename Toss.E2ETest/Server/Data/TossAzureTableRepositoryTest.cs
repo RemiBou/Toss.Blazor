@@ -44,6 +44,22 @@ namespace Toss.Tests.Server.Data
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
         }
 
+        [Fact]
+        public async Task last_returns_last_items_ids()
+        {
+            var batchOperation = new TableBatchOperation();
+
+
+            batchOperation.Insert(new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31)));
+
+
+            await azureTableFixture.TossTable.ExecuteBatchAsync(batchOperation);
+
+            var res = await _sut.Last(50, null);
+
+            Assert.Single(res);
+            Assert.NotNull(res.First().Id);
+        }
 
         [Fact]
         public async Task last_create_the_table_if_not_exists()

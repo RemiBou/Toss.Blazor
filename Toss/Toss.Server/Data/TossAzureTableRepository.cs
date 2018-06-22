@@ -82,6 +82,7 @@ namespace Toss.Server.Data
                 Content = t.Properties["Content"].StringValue,
                 CreatedOn = t.Properties["CreatedOn"].DateTimeOffsetValue.Value,
                 UserName = t.Properties["UserName"].StringValue,
+                Id = t.RowKey
             };
         }
 
