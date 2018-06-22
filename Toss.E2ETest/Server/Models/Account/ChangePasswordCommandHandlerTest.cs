@@ -38,7 +38,6 @@ namespace Toss.Tests.Server.Models.Account
             _sut = new ChangePasswordCommandHandler(
                 _userManager.Object,
                 _signInManager.Object,
-                _emailSender.Object,
                 _logger.Object,
                 _httpCOntextAccessor
                 .Object);

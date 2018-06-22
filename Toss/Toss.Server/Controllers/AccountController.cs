@@ -13,7 +13,6 @@ using System.Security.Claims;
 using MediatR;
 using System.Collections.Generic;
 using Toss.Server.Models.Account;
-using Toss.Server.Services;
 using Toss.Shared.Account;
 
 namespace Toss.Server.Controllers
@@ -21,22 +20,16 @@ namespace Toss.Server.Controllers
     [Authorize, ApiController, Route("api/[controller]/[action]")]
     public class AccountController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
         private readonly IMediator _mediator;
         public AccountController(
-            UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender,
             ILogger<AccountController> logger,
             IMediator mediator)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _logger = logger;
             _mediator = mediator;
         }
@@ -51,29 +44,22 @@ namespace Toss.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginCommand model)
+        public async Task<IActionResult> Login(LoginCommand command)
         {
-            var result = await _mediator.Send(model);
-            if (result.IsSuccess)
+            var result = await _mediator.Send(command);
+            if (!result.IsSuccess)
             {
-                return Ok();
-            }
-            if (result.Need2FA)
-            {
-                return RedirectToAction("/loginWith2fa");
-            }
-            if (result.IsLockout)
-            {
-                return Redirect("/lockout");
-            }
-            else
-            {
+                if (result.IsLockout)
+                    return Redirect("/lockout");
                 ModelState.AddModelError("UserName", "Invalid login attempt.");
                 return BadRequest(ModelState);
+
             }
-
-            // If we got this far, something failed, redisplay form
-
+            //if (result.Need2FA)
+            //{
+            //    return RedirectToAction("/loginWith2fa");
+            //}
+            return Ok();
         }
         /// <summary>
         /// Adds a hashtag to a user
@@ -83,26 +69,17 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddHashTag(string newTag)
         {
-
-            var res = await _mediator.Send(new AddHashtagCommand(newTag));
-            if (!res.IsSucess)
-            {
-                return BadRequest(res.Errors);
-            }
-            return Ok();
+            return await _mediator.ExecuteCommandReturnActionResult(new AddHashtagCommand(newTag));
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register(RegisterCommand model)
+        public async Task<IActionResult> Register(RegisterCommand command)
         {
-
-            var res = await _mediator.Send(model);
-            if (res.IsSucess)
-                return Ok();
-            return BadRequest(res.Errors);
-
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
+
+     
 
         [HttpPost]
         public async Task<IActionResult> Logout()
@@ -118,7 +95,7 @@ namespace Toss.Server.Controllers
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
 
             return Challenge(properties, provider);
@@ -149,17 +126,15 @@ namespace Toss.Server.Controllers
             {
                 return Redirect("/account/lockout");
             }
-            else if (result.IsNotAllowed)
+
+            if (result.IsNotAllowed)
             {
                 return Redirect("/login");
 
             }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
+            // If the user does not have an account, then ask the user to create an account.
 
-                return Redirect("/account/externalLogin");
-            }
+            return Redirect("/account/externalLogin");
         }
         [HttpGet]
         [AllowAnonymous]
@@ -171,7 +146,7 @@ namespace Toss.Server.Controllers
             {
                 throw new ApplicationException("Error loading external login information during confirmation.");
             }
-            return Ok(new ExternalLoginViewModel()
+            return Ok(new ExternalLoginConfirmationCommand()
             {
                 Email = info.Principal.FindFirstValue(ClaimTypes.Email),
                 Provider = info.LoginProvider
@@ -179,29 +154,10 @@ namespace Toss.Server.Controllers
         }
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model)
+        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationCommand command)
         {
-
-            // Get the information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                throw new ApplicationException("Error loading external login information during confirmation.");
-            }
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email, EmailConfirmed = true };
-            var result = await _userManager.CreateAsync(user);
-            if (result.Succeeded)
-            {
-                result = await _userManager.AddLoginAsync(user, info);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                    return Ok();
-                }
-            }
-            return BadRequest(result.ToModelStateDictionary());
-
+            
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
         private IActionResult RedirectToLocal(string returnUrl)
@@ -210,122 +166,52 @@ namespace Toss.Server.Controllers
             {
                 return Redirect(returnUrl);
             }
-            else
-            {
-                return Redirect("/");
-            }
+
+            return Redirect("/");
         }
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(string userId, string code)
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
         {
-            if (userId == null || code == null)
-            {
-                return BadRequest();
-            }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return BadRequest();
-            }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return result.Succeeded ? (IActionResult)Ok() : BadRequest();
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
         {
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
-            {
-                // Don't reveal that the user does not exist or is not confirmed
-                return Ok();
-            }
-
-            // For more information on how to enable account confirmation and password reset please
-            // visit https://go.microsoft.com/fwlink/?LinkID=532713
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = Url.ResetPasswordCallbackLink(user.Id, code, Request.Scheme);
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-               $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-            return Ok();
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> ResetPassword([FromBody]ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordCommand command)
         {
-            model.Code = WebUtility.UrlDecode(model.Code);
-
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
-                return Ok();
-            }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return Ok();
-            }
-
-            return BadRequest(result.ToModelStateDictionary());
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
         [HttpGet]
         public async Task<IActionResult> Details()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _mediator.Send(new CurrentAccountDetailsQuery());
 
             if (user == null)
             {
                 return Unauthorized();
             }
 
-            var model = new AccountViewModel
-            {
-                HasPassword = !string.IsNullOrEmpty(user.PasswordHash),
-                Email = user.Email,
-                IsEmailConfirmed = user.EmailConfirmed,
-                Hashtags = user.Hashtags?.ToList() ?? new System.Collections.Generic.List<string>()
-            };
-
-            return Ok(model);
+            return Ok(user);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(AccountViewModel model)
+        public async Task<IActionResult> Edit(EditAccountCommand command)
         {
-
-
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var email = user.Email;
-            if (model.Email != email)
-            {
-                var setEmailResult = await _userManager.SetEmailAsync(user, model.Email);
-                if (!setEmailResult.Succeeded)
-                {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
-                }
-            }
-            return new OkResult();
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
-
-
         [HttpPost]
-        public async Task<IActionResult> ChangePassword(ChangePasswordCommand model)
+        public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
         {
-
-            await _mediator.Send(model);
-
-            return Ok();
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
     }
 }

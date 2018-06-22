@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Extensions;
-using Toss.Server.Services;
 using Toss.Shared;
 using Toss.Shared.Account;
 
@@ -18,15 +17,13 @@ namespace Toss.Server.Models.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, IEmailSender emailSender, ILogger<ChangePasswordCommandHandler> logger, IHttpContextAccessor httpContextAccessor)
+        public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<ChangePasswordCommandHandler> logger, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _logger = logger;
             _httpContextAccessor = httpContextAccessor;
         }

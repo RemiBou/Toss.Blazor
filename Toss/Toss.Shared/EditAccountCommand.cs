@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
+using Toss.Shared.Account;
 
-namespace Toss.Shared.Account
+namespace Toss.Shared
 {
-    public class ForgotPasswordViewModel
+    public class EditAccountCommand : IRequest
     {
         [Required]
         [EmailAddress]

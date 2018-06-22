@@ -2,17 +2,13 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
-using Toss.Server.Data;
 using Toss.Server.Models;
 using Toss.Server.Models.Account;
 using Toss.Server.Services;
@@ -25,24 +21,20 @@ namespace Toss.Tests.Server.Controllers
 {
     public class AccountControllerTest
     {
-        private AccountController _sut;
-        private ClaimsPrincipal _user;
-        private ApplicationUser _applicationUser;
+        private readonly AccountController _sut;
+        private readonly ClaimsPrincipal _user;
+        private readonly ApplicationUser _applicationUser;
         private readonly Mock<UserManager<ApplicationUser>> _userManager;
         private readonly Mock<SignInManager<ApplicationUser>> _signInManager;
-        private readonly Mock<IEmailSender> _emailSender;
         private readonly Mock<ILogger<AccountController>> _logger;
         private readonly Mock<IMediator> _mediator;
         public AccountControllerTest()
         {
             _userManager = MockHelpers.MockUserManager<ApplicationUser>();
             _signInManager = MockHelpers.MockSigninManager(_userManager.Object);
-            _emailSender = new Mock<IEmailSender>();
             _logger = new Mock<ILogger<AccountController>>();
             _mediator = new Mock<IMediator>();
-            _sut = new AccountController(_userManager.Object,
-                _signInManager.Object,
-                _emailSender.Object,
+            _sut = new AccountController(_signInManager.Object,
                 _logger.Object,
                 _mediator.Object);
             _user = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]

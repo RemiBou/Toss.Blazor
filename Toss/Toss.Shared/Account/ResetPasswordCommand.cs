@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MediatR;
 
 namespace Toss.Shared.Account
 {
-    public class ResetPasswordViewModel
+    public class ResetPasswordCommand : IRequest<CommandResult>
     {
         [Required]
         [EmailAddress]
