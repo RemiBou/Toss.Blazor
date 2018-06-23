@@ -74,16 +74,13 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> Register(RegisterCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
-        }
-
-     
+        }     
 
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _mediator.Send(new SignoutCommand());
             return Redirect("/login");
-
         }
 
         [HttpPost]
