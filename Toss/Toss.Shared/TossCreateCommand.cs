@@ -1,9 +1,10 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Toss.Shared
 {
-    public class TossCreateCommand
+    public class TossCreateCommand : IRequest
     {
         [Required]
         [MaxLength(32000)]

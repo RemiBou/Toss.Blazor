@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server;
 using Toss.Server.Controllers;
@@ -20,40 +21,41 @@ namespace Toss.Tests.Server.Controllers
     public class TossControllerTests
     {
         private readonly TossController _sut;
-        private readonly Mock<ITossRepository> mockTossRepository;
+        private CommonMocks<TossController> _m = new CommonMocks<TossController>();
         public TossControllerTests()
         {
-            var commonMock = new CommonMocks<TossController>();
-            mockTossRepository = new Mock<ITossRepository>();
-            _sut = new TossController(mockTossRepository.Object);
-            commonMock.SetControllerContext(_sut);
+
+            _sut = new TossController(_m.Mediator.Object);
+            _m.SetControllerContext(_sut);
         }
 
         [Fact]
-        public async Task last_return_50_toss_from_repo()
+        public async Task last_return_50_toss_from_mediator()
         {
-            mockTossRepository
-                .Setup(m => m.Last(50,"toto"))
+            _m
+                .Mediator
+                .Setup(m => m.Send(It.Is<LastTossQuery>(q => q.HashTag == "toto"), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Range(0, 50)
                 .Select(i => new TossLastQueryItem()));
 
 
             var res = await _sut.Last("toto") as OkObjectResult;
-            var resValue = (res.Value as List<TossLastQueryItem>);
+            var resValue = (res.Value as IEnumerable<TossLastQueryItem>);
 
             Assert.Equal(50, resValue.Count());
         }
         [Fact]
         public async Task last_map_toss_to_viewmodel()
         {
-            mockTossRepository
-               .Setup(m => m.Last(50,null))
-               .ReturnsAsync(Enumerable.Range(0, 1)
+            _m
+                 .Mediator
+                 .Setup(m => m.Send(It.IsAny<LastTossQuery>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Enumerable.Range(0, 1)
                .Select(i => new TossLastQueryItem()
                {
                    UserName = "toss@yopmail.com",
                    Content = "lorem ipsum",
-                   CreatedOn = new System.DateTime(2018, 1, 1)                   
+                   CreatedOn = new System.DateTime(2018, 1, 1)
                })
                .ToList());
 
@@ -72,12 +74,12 @@ namespace Toss.Tests.Server.Controllers
             var res = await _sut.Last(null);
 
             var resOkObject = Assert.IsType<OkObjectResult>(res);
-            Assert.IsType<List<TossLastQueryItem>>(resOkObject.Value);
+            Assert.IsAssignableFrom<IEnumerable<TossLastQueryItem>>(resOkObject.Value);
 
         }
 
         [Fact]
-        public async Task create_calls_repo_with_command()
+        public async Task create_calls_mediator_with_command()
         {
             var command = new TossCreateCommand()
             {
@@ -85,7 +87,7 @@ namespace Toss.Tests.Server.Controllers
             };
             var res = await _sut.Create(command);
 
-            mockTossRepository.Verify(r => r.Create(command));
+            _m.Mediator.Verify(r => r.Send(command,It.IsAny<CancellationToken>()));
 
         }
         [Fact]
@@ -102,37 +104,8 @@ namespace Toss.Tests.Server.Controllers
         }
 
 
-       
 
-        [Fact]
-        public async Task create_setup_username_to_current_user()
-        {
 
-            var command = new TossCreateCommand()
-            {
-                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserId="jeanmichel"
-            };
-            var res = await _sut.Create(command);
-
-            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.UserId == "username")));
-
-        }
-        [Fact]
-        public async Task create_setup_date_of_post_to_today()
-        {
-
-            var command = new TossCreateCommand()
-            {
-                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserId = "jeanmichel"
-            };
-            var now = DateTime.Now;
-            var res = await _sut.Create(command);
-
-            var now2 = DateTime.Now;
-            mockTossRepository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.CreatedOn >= now && c.CreatedOn <= now2)));
-
-        }
+        
     }
 }

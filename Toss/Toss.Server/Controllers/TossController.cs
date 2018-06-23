@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Extensions;
@@ -11,13 +9,12 @@ using Toss.Shared;
 namespace Toss.Server.Controllers
 {
     [Authorize, ApiController, Route("api/[controller]/[action]")]
-    public class TossController : Controller
+    public class TossController : ControllerBase
     {
-        private readonly ITossRepository tossRepository;
-
-        public TossController(ITossRepository tossRepository)
-        {            
-            this.tossRepository = tossRepository;
+        private readonly IMediator _mediator;
+        public TossController(IMediator mediator)
+        {
+            _mediator = mediator;
         }
 
         /// <summary>
@@ -27,7 +24,7 @@ namespace Toss.Server.Controllers
         [HttpGet]
         public async Task<IActionResult> Last(string hashTag)
         {
-            return Ok((await tossRepository.Last(50, hashTag)).ToList());
+            return Ok(await _mediator.Send(new LastTossQuery() { HashTag = hashTag }));
         }
 
         /// <summary>
@@ -38,9 +35,7 @@ namespace Toss.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(TossCreateCommand createTossCommand)
         {
-            createTossCommand.UserId = User.Identity.Name;
-            createTossCommand.CreatedOn = DateTimeOffset.Now;
-            await tossRepository.Create(createTossCommand);
+            await _mediator.Send(createTossCommand);
             return Ok();
         }
     }

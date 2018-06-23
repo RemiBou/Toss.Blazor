@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -136,8 +137,11 @@ namespace Toss.Tests.Infrastructure
 
         internal Mock<ILogger<TLogger>> Logger { get; }
 
+        public Mock<IMediator> Mediator { get; set; }
+
         public CommonMocks()
         {
+            Mediator = new Mock<IMediator>();
             HttpContextAccessor = new Mock<IHttpContextAccessor>();
             EmailSender = new Mock<IEmailSender>();
             UserManager = MockHelpers.MockUserManager<ApplicationUser>();
