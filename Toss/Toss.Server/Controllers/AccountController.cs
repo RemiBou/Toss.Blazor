@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,15 +31,13 @@ namespace Toss.Server.Controllers
         }
 
 
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> LoginProviders()
         {
             return Ok(await _mediator.Send(new LoginProvidersQuery()));
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Login(LoginCommand command)
         {
             var result = await _mediator.Send(command);
@@ -58,98 +55,63 @@ namespace Toss.Server.Controllers
             //}
             return Ok();
         }
-        /// <summary>
-        /// Adds a hashtag to a user
-        /// </summary>
-        /// <param name="newTag"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public async Task<IActionResult> AddHashTag(string newTag)
-        {
-            return await _mediator.ExecuteCommandReturnActionResult(new AddHashtagCommand(newTag));
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
+        
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Register(RegisterCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
-        }     
-
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            await _mediator.Send(new SignoutCommand());
-            return Redirect("/login");
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        public IActionResult ExternalLogin(string provider, string returnUrl = null)
+        [HttpPost, AllowAnonymous]
+        public async Task<IActionResult> ExternalLogin(string provider, string returnUrl = null)
         {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+
+            var properties = await _mediator.Send(new ExternalLoginChallengeQuery(provider, returnUrl));
 
             return Challenge(properties, provider);
         }
 
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
                 return Redirect("/login");
             }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
+            var result = await _mediator.Send(new ExternalLoginCommand());
+            if (result == null || result.IsNotAllowed)
             {
                 return Redirect("/login");
             }
 
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             if (result.Succeeded)
             {
-                _logger.LogInformation("User logged in with {Name} provider.", info.LoginProvider);
+                _logger.LogInformation("User logged in with external provider.");
                 return RedirectToLocal(returnUrl);
             }
             if (result.IsLockedOut)
             {
                 return Redirect("/account/lockout");
             }
-
-            if (result.IsNotAllowed)
-            {
-                return Redirect("/login");
-
-            }
             // If the user does not have an account, then ask the user to create an account.
-
             return Redirect("/account/externalLogin");
         }
-        [HttpGet]
-        [AllowAnonymous]
+
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> ExternalLoginDetails()
         {
             // Get the information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                throw new ApplicationException("Error loading external login information during confirmation.");
-            }
+            var info = await _mediator.Send(new ExternalLoginDetailQuery());
             return Ok(new ExternalLoginConfirmationCommand()
             {
                 Email = info.Principal.FindFirstValue(ClaimTypes.Email),
                 Provider = info.LoginProvider
             });
         }
-        [HttpPost]
-        [AllowAnonymous]
+
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginConfirmationCommand command)
         {
-            
             return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
@@ -162,15 +124,13 @@ namespace Toss.Server.Controllers
 
             return Redirect("/");
         }
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
-        [HttpPost]
-        [AllowAnonymous]
+        [HttpPost, AllowAnonymous]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
@@ -205,6 +165,24 @@ namespace Toss.Server.Controllers
         public async Task<IActionResult> ChangePassword(ChangePasswordCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
+        }
+
+        /// <summary>
+        /// Adds a hashtag to a user
+        /// </summary>
+        /// <param name="newTag"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> AddHashTag(string newTag)
+        {
+            return await _mediator.ExecuteCommandReturnActionResult(new AddHashtagCommand(newTag));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await _mediator.Send(new SignoutCommand());
+            return Redirect("/login");
         }
     }
 }
