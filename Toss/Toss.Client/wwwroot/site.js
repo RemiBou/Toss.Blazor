@@ -1,15 +1,25 @@
 ﻿function AjaxLoader() {
     var toastrId = 0;
     
-    this.show = function () {
+    this.show = function (elementRef) {
         toastrId++
         var currentToastr = toastr["info"]("Waiting for server response ...", {timeOut:100000});
-        currentToastr.attr("id","toastr-"+toastrId)
+        currentToastr.attr("id", "toastr-" + toastrId);
+        var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i> loading...';
+        if ($(elementRef).html() !== loadingText) {
+            $(elementRef).data('original-text', $(elementRef).html());
+            $(elementRef).html(loadingText);
+        }
+        $(elementRef).data('ajax-loader', toastrId)
         return toastrId;
         
     };
     this.hide = function (id) {
-        toastr.clear($("#toastr-"+id));
+        toastr.clear($("#toastr-" + id));
+        var btn = $("[data-ajax-loader=" + id + "]");
+        btn
+            .html(btn.data('original-text'));
+        
     }
 }
 
@@ -22,8 +32,8 @@ Blazor.registerFunction('toastr', function (toastType, message) {
     return true;
 });
 var ajaxLoader = new AjaxLoader();
-Blazor.registerFunction('ajaxLoaderShow', function () {
-    return ajaxLoader.show();
+Blazor.registerFunction('ajaxLoaderShow', function (elm) {
+    return ajaxLoader.show(elm);
 });
 Blazor.registerFunction('ajaxLoaderHide', function (id) {
     ajaxLoader.hide(id);

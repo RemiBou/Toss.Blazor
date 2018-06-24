@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Blazor.Services;
+﻿using Microsoft.AspNetCore.Blazor;
+using Microsoft.AspNetCore.Blazor.Services;
 using System.Net.Http;
 
 namespace Toss.Client.Services
@@ -13,9 +14,10 @@ namespace Toss.Client.Services
             _httpClient = httpClient;
 
         }
-        public IHttpApiClientRequestBuilder Create(string url)
+        public IHttpApiClientRequestBuilder Create(string url, ElementRef elementRef = default(ElementRef))
         {
-            return new HttpApiClientRequestBuilder(_httpClient, url, _uriHelper);
+            
+            return new HttpApiClientRequestBuilder(_httpClient, url, _uriHelper, elementRef);
         }
     }
 }

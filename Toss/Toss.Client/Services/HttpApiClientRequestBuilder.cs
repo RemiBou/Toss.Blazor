@@ -13,19 +13,20 @@ namespace Toss.Client.Services
         private string _uri;
         private readonly IUriHelper uriHelper;
         private HttpClient _httpClient;
+        private ElementRef _elementRef;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper)
+        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, ElementRef elementRef = default(ElementRef))
         {
             _uri = uri;
             this.uriHelper = uriHelper;
             _httpClient = httpClient;
-
+            _elementRef = elementRef;
         }
         public async Task Post<T>(T data)
         {
-            var loaderId = JsInterop.AjaxLoaderShow();
+            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
 
@@ -44,7 +45,7 @@ namespace Toss.Client.Services
         }
         public async Task Post()
         {
-            var loaderId = JsInterop.AjaxLoaderShow();
+            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
                 var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
@@ -84,7 +85,7 @@ namespace Toss.Client.Services
         public async Task Get()
         {
 
-            var loaderId = JsInterop.AjaxLoaderShow();
+            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
                 var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri));

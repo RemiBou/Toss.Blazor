@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Blazor.Browser.Interop;
+﻿using Microsoft.AspNetCore.Blazor;
+using Microsoft.AspNetCore.Blazor.Browser.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,9 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("toastr",toastType, message);
         }
-        public static int AjaxLoaderShow()
+        public static int AjaxLoaderShow(ElementRef elementRef)
         {
-            return RegisteredFunction.Invoke<int>("ajaxLoaderShow");
+            return RegisteredFunction.Invoke<int>("ajaxLoaderShow", elementRef);
         }
          public static void AjaxLoaderHide(int id)
         {

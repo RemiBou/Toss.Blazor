@@ -11,9 +11,9 @@ namespace Toss.Server.Models.Account
     public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandResult>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger _logger;
+        private readonly ILogger<LoginCommandHandler> _logger;
 
-        public LoginCommandHandler(SignInManager<ApplicationUser> signInManager, ILogger logger)
+        public LoginCommandHandler(SignInManager<ApplicationUser> signInManager, ILogger<LoginCommandHandler> logger)
         {
             _signInManager = signInManager;
             _logger = logger;
