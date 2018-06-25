@@ -3,7 +3,7 @@
     
     this.show = function (elementRef) {
         toastrId++;
-        var currentToastr = toastr["info"]("Waiting for server response ...", {timeOut:100000});
+        var currentToastr = toastr["info"]("","Waiting for server response ...", {timeOut:0});
         currentToastr.attr("id", "toastr-" + toastrId);
         var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i> Loading...';
         var btn = $(elementRef);

@@ -26,41 +26,23 @@ namespace Toss.Client.Services
         }
         public async Task Post<T>(T data)
         {
-            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
-            try
-            {
-
+            
+            await ExecuteHttpQuery(async () =>{
                 var requestJson = JsonUtil.Serialize(data);
-                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+                return await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
                 });
-                await HandleHttpResponse(response);
-            }
-            finally
-            {
-                JsInterop.AjaxLoaderHide(loaderId);
-            }
-
+            });
         }
         public async Task Post()
-        {
-            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
-            try
-            {
-                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
-                {
-                });
-                await HandleHttpResponse(response);
-            }
-            finally
-            {
-                JsInterop.AjaxLoaderHide(loaderId);
-            }
-
+        {            
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)));
         }
         private async Task HandleHttpResponse(HttpResponseMessage response)
         {
+
+            JsInterop.ConsoleLog(response.StatusCode.ToString());
             switch (response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:
@@ -76,7 +58,7 @@ namespace Toss.Client.Services
                     uriHelper.NavigateTo("/login");
                     break;
                 case System.Net.HttpStatusCode.InternalServerError:
-                    JsInterop.Toastr("error","A server error occured, sorry");
+                    JsInterop.Toastr("error", "A server error occured, sorry");
                     break;
                     //other case , we do nothing, I'll add this case as needed
             }
@@ -84,19 +66,26 @@ namespace Toss.Client.Services
 
         public async Task Get()
         {
-
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri)));
+        }
+        private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
+        {
             var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
-                var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri));
+                var response = await httpCall();
                 await HandleHttpResponse(response);
+            }
+            catch
+            {
+                JsInterop.Toastr("error", "Connection error, server is down or you are not connected to the same network.");
+                throw;
             }
             finally
             {
                 JsInterop.AjaxLoaderHide(loaderId);
             }
         }
-
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)
         {
             _onBadRequest = async (HttpResponseMessage r) =>

@@ -23,16 +23,17 @@
         <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
-    <button type="button" onclick="@CreateAccount" id="BtnRegister" class="btn btn-default">Register</button>
+    <button type="button" ref="createButton" onclick="@CreateAccount" id="BtnRegister" class="btn btn-default">Register</button>
     <ValidationError FieldName="Other" Errors="@_errors" />
 </form>
 @functions{
+    ElementRef createButton;
     RegisterCommand registerCommand = new RegisterCommand();
     Dictionary<string,List<string>> _errors;
     async Task CreateAccount()
     {
         _errors = null;
-        await ClientFactory.Create("/api/account/register")
+        await ClientFactory.Create("/api/account/register", createButton)
             .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK(() =>
             {

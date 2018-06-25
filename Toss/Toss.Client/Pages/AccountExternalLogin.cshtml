@@ -20,7 +20,7 @@
                 <input id="Email" bind="@model.Email" class="form-control" />
                 <ValidationError FieldName="Email" Errors="@_errors" />
             </div>           
-            <button type="button" onclick="@ExternalLoginConfirm" class="btn btn-default">Register</button>
+            <button type="button" ref="confirmButton" onclick="@ExternalLoginConfirm" class="btn btn-default">Register</button>
             <ValidationError FieldName="Other" Errors="@_errors" />
         </form>
     </div>
@@ -29,7 +29,7 @@
 
 @functions {
 
-
+    ElementRef confirmButton;
     Dictionary<string,List<string>> _errors;
     ExternalLoginConfirmationCommand model = new ExternalLoginConfirmationCommand();
     protected override async Task OnInitAsync()
@@ -42,7 +42,7 @@
     async Task ExternalLoginConfirm()
     {
         _errors = null;
-        await ClientFactory.Create("/api/account/externalLoginConfirmation")
+        await ClientFactory.Create("/api/account/externalLoginConfirmation", confirmButton)
             .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK("Account successfully set", "/")
             .Post(model);
