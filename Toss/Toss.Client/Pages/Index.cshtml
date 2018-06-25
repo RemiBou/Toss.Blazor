@@ -57,19 +57,20 @@
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string,List<string>> _errors;
-  
+
     ElementRef sendButton;
     [Parameter]
     private string CurrentTag { get; set; } = "";
-   
-
-    public override void SetParameters(ParameterCollection parameters)
-    {       
-        base.SetParameters(parameters);
+    protected override async Task OnParametersSetAsync()
+    {
+        await RefreshTossList();
     }
 
+   
     protected async Task RefreshTossList()
     {
+        if (CurrentTag == null)
+            return;
         var parameters = "?hashtag=" + CurrentTag;
         await ClientFactory.Create("/api/toss/last" + parameters)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
