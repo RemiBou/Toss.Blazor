@@ -63,7 +63,7 @@ namespace Toss.Server.Controllers
         }
 
         [HttpPost, AllowAnonymous]
-        public async Task<IActionResult> ExternalLogin(string provider, string returnUrl = null)
+        public async Task<IActionResult> ExternalLogin([FromForm] string provider, string returnUrl = null)
         {
 
             var properties = await _mediator.Send(new ExternalLoginChallengeQuery(provider, returnUrl));

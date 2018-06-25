@@ -21,6 +21,10 @@ using MediatR;
 using Toss.Server.Services;
 using Toss.Shared;
 using Toss.Shared.Account;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace Toss.Server
 {
@@ -66,7 +70,15 @@ namespace Toss.Server
                     })
                 .AddDefaultTokenProviders()
                 .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
-
+            
+            services.AddHttpContextAccessor();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddScoped<IUrlHelper>(factory =>
+            {
+                var actionContext = factory.GetService<IActionContextAccessor>()
+                                            .ActionContext;
+                return new UrlHelper(actionContext);
+            });
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
             services.AddAuthentication()

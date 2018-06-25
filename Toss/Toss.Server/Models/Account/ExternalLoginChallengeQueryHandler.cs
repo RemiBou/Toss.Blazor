@@ -19,12 +19,12 @@ namespace Toss.Server.Controllers
             _urlHelper = urlHelper;
         }
 
-        public async Task<AuthenticationProperties> Handle(ExternalLoginChallengeQuery request, CancellationToken cancellationToken)
+        public Task<AuthenticationProperties> Handle(ExternalLoginChallengeQuery request, CancellationToken cancellationToken)
         {
             // Request a redirect to the external login provider.
             var redirectUrl = _urlHelper.Action("ExternalLoginCallback", "Account", new { request.ReturnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(request.ProviderName, redirectUrl);
-            return properties;
+            return Task.FromResult(properties);
         }
     }
 }

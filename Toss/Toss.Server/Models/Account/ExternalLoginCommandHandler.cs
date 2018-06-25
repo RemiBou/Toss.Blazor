@@ -6,10 +6,16 @@ using System.Threading;
 
 namespace Toss.Server.Controllers
 {
-    public class ExternalLoginCommandHandler : IRequestHandler<ExternalLoginCommand, Microsoft.AspNetCore.Identity.SignInResult>
+    public class ExternalLoginCommandHandler : IRequestHandler<ExternalLoginCommand, SignInResult>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public async Task<Microsoft.AspNetCore.Identity.SignInResult> Handle(ExternalLoginCommand request, CancellationToken cancellationToken)
+
+        public ExternalLoginCommandHandler(SignInManager<ApplicationUser> signInManager)
+        {
+            _signInManager = signInManager;
+        }
+
+        public async Task<SignInResult> Handle(ExternalLoginCommand request, CancellationToken cancellationToken)
         {
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)

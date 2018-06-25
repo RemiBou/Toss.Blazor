@@ -5,20 +5,20 @@
         toastrId++;
         var currentToastr = toastr["info"]("Waiting for server response ...", {timeOut:100000});
         currentToastr.attr("id", "toastr-" + toastrId);
-        var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i> loading...';
-        if ($(elementRef).html() !== loadingText) {
-            $(elementRef).data("original-text", $(elementRef).html());
-            $(elementRef).html(loadingText);
-        }
-        $(elementRef).attr("ajax-loader", toastrId);
+        var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i> Loading...';
+        var btn = $(elementRef);
+        btn.data("original-text", $(elementRef).html());
+        btn.html(loadingText);
+        btn.attr("ajax-loader", toastrId);
+        btn.prop( "disabled", true );
         return toastrId;
         
     };
     this.hide = function (id) {
         toastr.clear($("#toastr-" + id));
         var btn = $("[ajax-loader=" + id + "]");
-        console.log(btn);
         btn.html(btn.data("original-text"));
+        btn.prop( "disabled", false );
     };
 }
 

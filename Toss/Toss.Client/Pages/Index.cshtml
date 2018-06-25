@@ -21,7 +21,7 @@
 
                 </div>
                 <div class="card-footer p-1 ">
-                    <button onclick="@SendToss" class="btn btn-primary btn-block" type="button">Toss-it</button>
+                    <button onclick="@SendToss" ref="@sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
                 </div>
             </form>
         </div>
@@ -71,6 +71,7 @@
     TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string,List<string>> _errors;
     bool loading = false;
+    ElementRef sendButton;
     [Parameter]
     private string CurrentTag { get; set; } = "";
     protected override async Task OnParametersSetAsync()
@@ -102,7 +103,7 @@
     protected async Task SendToss()
     {
         loading = true;
-        await ClientFactory.Create("/api/toss/create")
+        await ClientFactory.Create("/api/toss/create", sendButton)
             .OnOK(async () =>
             {
                 newToss = new TossCreateCommand();
