@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Toss.Shared.Account;
 
 namespace Toss.Server.Data
 {
@@ -13,7 +13,7 @@ namespace Toss.Server.Data
     /// </summary>
     public class HashTagIndex : TableEntity
     {
-        private static readonly Regex regexHashTag = new Regex(@"(?<=#)\w+");
+        private static readonly Regex regexHashTag = new Regex("(?<=#)"+AddHashtagCommand.HashTagRegex);
         public const string PartionKeyPrefix = "TossTag";
         public HashTagIndex(OneTossEntity toss,string hashTag)
         {

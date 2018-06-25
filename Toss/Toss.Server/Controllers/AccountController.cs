@@ -173,9 +173,9 @@ namespace Toss.Server.Controllers
         /// <param name="newTag"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> AddHashTag(string newTag)
+        public async Task<IActionResult> AddHashTag(AddHashtagCommand command)
         {
-            return await _mediator.ExecuteCommandReturnActionResult(new AddHashtagCommand(newTag));
+            return await _mediator.ExecuteCommandReturnActionResult(command);
         }
 
         [HttpPost]

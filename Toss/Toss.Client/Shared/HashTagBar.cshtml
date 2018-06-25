@@ -52,8 +52,8 @@
                 _account.Hashtags.Add(newHashtag);
                 newHashtag = null;
             })
-            .OnBadRequest<Dictionary<string, string>>(e => JsInterop.Toastr("error",e["newTag"]))
-            .Post(newHashtag);
+            .OnBadRequest<Dictionary<string, List<string>>>(e => JsInterop.Toastr("error",string.Join(",",e["NewHashTag"])))
+            .Post(new AddHashtagCommand(newHashtag));
         StateHasChanged();
 
     }

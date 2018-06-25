@@ -54,7 +54,7 @@ namespace Toss.Tests.Server.Controllers
             _mediator.Setup(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult(new CommandResult("test", "test 2")));
 
-            var res = await _sut.AddHashTag("toto");
+            var res = await _sut.AddHashTag(new AddHashtagCommand("toto"));
 
             _mediator.Verify(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
@@ -67,7 +67,7 @@ namespace Toss.Tests.Server.Controllers
             _mediator.Setup(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()))
                     .Returns(Task.FromResult(CommandResult.Success()));
 
-            var res = await _sut.AddHashTag("toto");
+            var res = await _sut.AddHashTag(new AddHashtagCommand("toto"));
 
             Assert.IsType<OkResult>(res);
         }

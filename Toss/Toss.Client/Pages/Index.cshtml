@@ -26,19 +26,6 @@
             </form>
         </div>
     </div>
-    @if (loading)
-    {
-        <div class="card border-secondary">
-            <div class="card-body p-2 text-secondary">
-                <h5 class="card-title">Loading</h5>
-                <p class="card-text">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </p>
-
-            </div>
-        </div>
-
-    }
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
         <div class="col-md-3 col-sm-6 my-2">
@@ -70,7 +57,7 @@
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string,List<string>> _errors;
-    bool loading = false;
+  
     ElementRef sendButton;
     [Parameter]
     private string CurrentTag { get; set; } = "";
@@ -90,19 +77,16 @@
 
     protected async Task RefreshTossList()
     {
-        loading = true;
         var parameters = "";
         if (!string.IsNullOrEmpty(CurrentTag))
             parameters += "?hashtag=" + CurrentTag;
         await ClientFactory.Create("/api/toss/last" + parameters)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();
-        loading = false;
         StateHasChanged();
     }
     protected async Task SendToss()
     {
-        loading = true;
         await ClientFactory.Create("/api/toss/create", sendButton)
             .OnOK(async () =>
             {
@@ -112,7 +96,6 @@
             })
             .OnBadRequest<Dictionary<string,List<string>>>(e => _errors = e)
             .Post(newToss);
-        loading = false;
         StateHasChanged();
 
     }
