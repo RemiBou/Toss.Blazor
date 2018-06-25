@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Toss.Server.Controllers;
 using Toss.Shared;
 using Toss.Shared.Account;
 
@@ -11,9 +12,9 @@ namespace Toss.Server.Models.Account
     public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginCommandResult>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly ILogger<LoginCommandHandler> _logger;
+        private readonly ILogger _logger;
 
-        public LoginCommandHandler(SignInManager<ApplicationUser> signInManager, ILogger<LoginCommandHandler> logger)
+        public LoginCommandHandler(SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger)
         {
             _signInManager = signInManager;
             _logger = logger;

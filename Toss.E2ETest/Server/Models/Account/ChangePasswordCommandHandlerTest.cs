@@ -28,7 +28,7 @@ namespace Toss.Tests.Server.Models.Account
             _sut = new ChangePasswordCommandHandler(
                 _m.UserManager.Object,
                 _m.SignInManager.Object,
-                new Mock<ILogger<ChangePasswordCommandHandler>>().Object,
+                new Mock<ILogger<AccountController>>().Object,
                 _m.HttpContextAccessor.Object);
 
             _m.UserManager.Setup(u => u.ChangePasswordAsync(_m.ApplicationUser, It.IsAny<string>(), It.IsAny<string>()))

@@ -15,7 +15,7 @@ namespace Toss.Server.Data
         private const string PartitionKeyAllToss = "AllToss";
         private const string AllTossPartitionKeyCondition = "PartitionKey eq 'AllToss'";
         private readonly CloudTableClient storageClient;
-        private CloudTable mainTable;
+        private readonly CloudTable mainTable;
 
         public TossAzureTableRepository(
             CloudTableClient storageClient,
@@ -25,7 +25,7 @@ namespace Toss.Server.Data
             mainTable = storageClient.GetTableReference(tablePrefix + "Toss");
 
         }
-        private static List<string> TossLastQueryItemColumns = new List<string> { "Content", "UserName", "CreatedOn" };
+        private static readonly List<string> TossLastQueryItemColumns = new List<string> { "Content", "UserName", "CreatedOn" };
         /// <summary>
         /// Return the X last toss created.
         /// If none was created an empty list is returned

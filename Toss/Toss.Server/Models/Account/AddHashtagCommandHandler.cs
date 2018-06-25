@@ -12,7 +12,7 @@ namespace Toss.Server.Models.Account
     {
 
         private readonly UserManager<ApplicationUser> _userManager;
-        private IHttpContextAccessor httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
 
         public AddHashtagCommandHandler(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
         {

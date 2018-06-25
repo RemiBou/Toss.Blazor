@@ -11,7 +11,7 @@ namespace Toss.Server.Controllers
     public class ExternalLoginChallengeQueryHandler : IRequestHandler<ExternalLoginChallengeQuery, AuthenticationProperties>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private IUrlHelper _urlHelper;
+        private readonly IUrlHelper _urlHelper;
 
         public ExternalLoginChallengeQueryHandler(SignInManager<ApplicationUser> signInManager, IUrlHelper urlHelper)
         {

@@ -13,7 +13,7 @@ namespace Toss.Server.Data
     /// </summary>
     public class HashTagIndex : TableEntity
     {
-        private static Regex regexHashTag = new Regex(@"(?<=#)\w+");
+        private static readonly Regex regexHashTag = new Regex(@"(?<=#)\w+");
         public const string PartionKeyPrefix = "TossTag";
         public HashTagIndex(OneTossEntity toss,string hashTag)
         {
