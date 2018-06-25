@@ -31,14 +31,14 @@
 @functions{
     ElementRef loginButton;
     LoginCommand loginCommand = new LoginCommand();
-    ValidationErrorDictonary _errors;
+    Dictionary<string,List<string>> _errors;
     async Task<bool> TryLogin(UIEventArgs even)
     {
-        var test = JsonUtil.Deserialize<ValidationErrorDictonary>("{\"Name\":[\"The Name field is required.\"],\"Email\":[\"The Email field is required.\"],\"Password\":[\"The Password field is required.\"]}");
+        var test = JsonUtil.Deserialize<Dictionary<string,List<string>>>("{\"Name\":[\"The Name field is required.\"],\"Email\":[\"The Email field is required.\"],\"Password\":[\"The Password field is required.\"]}");
 
         _errors = null;
         await ClientFactory.Create("/api/account/login", loginButton)
-            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK(null,"/")
             .Post(loginCommand);
         StateHasChanged();

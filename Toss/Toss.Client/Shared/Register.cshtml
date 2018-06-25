@@ -28,12 +28,12 @@
 </form>
 @functions{
     RegisterCommand registerCommand = new RegisterCommand();
-    ValidationErrorDictonary _errors;
+    Dictionary<string,List<string>> _errors;
     async Task CreateAccount()
     {
         _errors = null;
         await ClientFactory.Create("/api/account/register")
-            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK(() =>
             {
                 JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to "+ registerCommand.Email);

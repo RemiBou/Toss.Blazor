@@ -30,7 +30,7 @@
 @functions {
 
 
-    ValidationErrorDictonary _errors;
+    Dictionary<string,List<string>> _errors;
     ExternalLoginConfirmationCommand model = new ExternalLoginConfirmationCommand();
     protected override async Task OnInitAsync()
     {
@@ -43,7 +43,7 @@
     {
         _errors = null;
         await ClientFactory.Create("/api/account/externalLoginConfirmation")
-            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK("Account successfully set", "/")
             .Post(model);
         StateHasChanged();

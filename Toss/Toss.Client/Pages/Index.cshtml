@@ -69,7 +69,7 @@
 @functions{
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     TossCreateCommand newToss = new TossCreateCommand();
-    ValidationErrorDictonary _errors;
+    Dictionary<string,List<string>> _errors;
     bool loading = false;
     [Parameter]
     private string CurrentTag { get; set; } = "";
@@ -109,7 +109,7 @@
                 _errors = null;
                 await RefreshTossList();
             })
-            .OnBadRequest<ValidationErrorDictonary>(e => _errors = e)
+            .OnBadRequest<Dictionary<string,List<string>>>(e => _errors = e)
             .Post(newToss);
         loading = false;
         StateHasChanged();

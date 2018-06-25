@@ -7,7 +7,7 @@
     [Parameter]
     string FieldName { get; set; }
     [Parameter]
-    ValidationErrorDictonary Errors { get; set; }
+    Dictionary<string,List<string>> Errors { get; set; }
 
     private string GetError()
     {

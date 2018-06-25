@@ -17,18 +17,24 @@ namespace Toss.Server.Extensions
             }
             return res;
         }
-        public static ValidationErrorDictonary ToValidationErrorDictonary(this IdentityResult identityResult)
+        public static  Dictionary<string,List<string>> ToValidationErrorDictonary(this IdentityResult identityResult)
         {
             return identityResult.ToModelStateDictionary().ToValidationErrorDictonary();
         }
-        public static ValidationErrorDictonary ToValidationErrorDictonary(this ModelStateDictionary modelState)
+        public static  Dictionary<string,List<string>> ToValidationErrorDictonary(this ModelStateDictionary modelState)
         {
-            var res = new ValidationErrorDictonary();
+            var res = new  Dictionary<string,List<string>>();
             foreach (var validationError in modelState)
             {
                 foreach (var msg in validationError.Value.Errors)
                 {
-                    res.AddModelError(validationError.Key, msg.ErrorMessage);
+                    List<string> errors;
+                    if(!res.TryGetValue(validationError.Key, out errors))
+                    {
+                        errors = new List<string>();
+                        res.Add(validationError.Key,errors);
+                    }
+                    errors.Add(msg.ErrorMessage);
 
                 }
             }

@@ -5,7 +5,7 @@ namespace Toss.Shared.Account
 {
     public class CommandResult
     {
-        public ValidationErrorDictonary Errors { get; set; }
+        public  Dictionary<string,List<string>> Errors { get; set; }
         public bool IsSucess
         {
             get
@@ -19,12 +19,12 @@ namespace Toss.Shared.Account
         }
         public CommandResult(string errorKey, string errorMessage)
         {
-            Errors = new ValidationErrorDictonary()
+            Errors = new  Dictionary<string,List<string>>()
             {
                 {errorKey,new List<string>{errorMessage} }
             };
         }
-        public CommandResult(ValidationErrorDictonary errors)
+        public CommandResult(Dictionary<string,List<string>> errors)
         {
             Errors = errors;
         }

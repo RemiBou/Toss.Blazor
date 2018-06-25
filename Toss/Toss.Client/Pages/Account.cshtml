@@ -16,7 +16,7 @@
 
 @functions {
     AccountViewModel _account = new AccountViewModel();
-    ValidationErrorDictonary _errors;
+    Dictionary<string,List<string>> _errors;
     protected override async Task OnInitAsync()
     {
         _account = await AccountService.CurrentAccount();
@@ -26,7 +26,7 @@
     {
         _errors = null;
         await ClientFactory.Create("/api/account/edit")
-            .OnBadRequest<ValidationErrorDictonary>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
             .OnOK("Informations saved successfully")
             .Post(_account);
         StateHasChanged();

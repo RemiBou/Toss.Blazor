@@ -58,7 +58,7 @@ namespace Toss.Tests.Server.Controllers
 
             _mediator.Verify(u => u.Send(It.IsAny<AddHashtagCommand>(), It.IsAny<CancellationToken>()), Times.Once);
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(res);
-            var errors = Assert.IsType<ValidationErrorDictonary>(badRequestResult.Value);
+            var errors = Assert.IsType<Dictionary<string,List<string>>>(badRequestResult.Value);
             Assert.True(errors.ContainsKey("test"));
         }
         [Fact]
