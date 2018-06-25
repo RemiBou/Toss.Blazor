@@ -39,7 +39,7 @@ namespace Toss.Tests.Server.Controllers
                 .Select(i => new TossLastQueryItem()));
 
 
-            var res = await _sut.Last("toto") as OkObjectResult;
+            var res = await _sut.Last(new LastTossQuery("toto")) as OkObjectResult;
             var resValue = (res.Value as IEnumerable<TossLastQueryItem>);
 
             Assert.Equal(50, resValue.Count());

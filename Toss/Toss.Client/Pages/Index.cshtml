@@ -61,25 +61,16 @@
     ElementRef sendButton;
     [Parameter]
     private string CurrentTag { get; set; } = "";
-    protected override async Task OnParametersSetAsync()
-    {
-        await RefreshTossList();
-    }
+   
 
     public override void SetParameters(ParameterCollection parameters)
-    {
-        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
-        {
-            CurrentTag = null;
-        }
+    {       
         base.SetParameters(parameters);
     }
 
     protected async Task RefreshTossList()
     {
-        var parameters = "";
-        if (!string.IsNullOrEmpty(CurrentTag))
-            parameters += "?hashtag=" + CurrentTag;
+        var parameters = "?hashtag=" + CurrentTag;
         await ClientFactory.Create("/api/toss/last" + parameters)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();

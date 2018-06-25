@@ -4,18 +4,26 @@
 <div class="form-inline">
 
     <div class="form-group">
-        <div class="input-group m-1">
-            <NavLink href="/tag/" Match="NavLinkMatch.All"  class="btn btn-secondary">
-                All
-            </NavLink>
-        </div>
+        @*<div class="input-group m-1">
+                <NavLink href="/tag/" Match="NavLinkMatch.All"  class="btn btn-secondary">
+                    All
+                </NavLink>
+            </div>*@
+        @if (_account.Hashtags == null || !_account.Hashtags.Any())
+        {
+            <div class="input-group m-1">
+                <a href="#" Match="NavLinkMatch.All" class="btn btn-secondary btn-warning">
+                    Add a hashtag for seing content
+                </a>
+            </div>
+        }
         @foreach (var hashTag in _account.Hashtags ?? new List<string>())
         {
-        <div class="input-group m-1">
-            <NavLink href="@GetUrl(hashTag)"  Match="NavLinkMatch.All"  class="btn btn-secondary">
-                #@hashTag
-            </NavLink>        
-        </div>
+            <div class="input-group m-1">
+                <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
+                    #@hashTag
+                </NavLink>
+            </div>
         }
         <div class="input-group m-1">
             <input type="text" class="form-control" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
@@ -33,7 +41,7 @@
     string newHashtag;
     protected string GetUrl(string hashtag)
     {
-        return "/tag/"+hashtag;
+        return "/tag/" + hashtag;
 
     }
     protected override async Task OnInitAsync()
@@ -52,7 +60,7 @@
                 _account.Hashtags.Add(newHashtag);
                 newHashtag = null;
             })
-            .OnBadRequest<Dictionary<string, List<string>>>(e => JsInterop.Toastr("error",string.Join(",",e["NewHashTag"])))
+            .OnBadRequest<Dictionary<string, List<string>>>(e => JsInterop.Toastr("error", string.Join(",", e["NewHashTag"])))
             .Post(new AddHashtagCommand(newHashtag));
         StateHasChanged();
 

@@ -41,8 +41,6 @@ namespace Toss.Client.Services
         }
         private async Task HandleHttpResponse(HttpResponseMessage response)
         {
-
-            JsInterop.ConsoleLog(response.StatusCode.ToString());
             switch (response.StatusCode)
             {
                 case System.Net.HttpStatusCode.OK:

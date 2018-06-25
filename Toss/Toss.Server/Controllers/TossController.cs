@@ -22,9 +22,9 @@ namespace Toss.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Last(string hashTag)
+        public async Task<IActionResult> Last(LastTossQuery hashTag)
         {
-            return Ok(await _mediator.Send(new LastTossQuery() { HashTag = hashTag }));
+            return Ok(await _mediator.Send(hashTag));
         }
 
         /// <summary>
