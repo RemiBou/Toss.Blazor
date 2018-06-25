@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Toss.Server.Controllers;
 using Toss.Server.Extensions;
 using Toss.Server.Services;
 using Toss.Shared;
@@ -21,7 +22,7 @@ namespace Toss.Server.Models.Account
         private readonly IUrlHelper urlHelper;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public RegisterCommandHandler(UserManager<ApplicationUser> userManager, ILogger logger, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+        public RegisterCommandHandler(UserManager<ApplicationUser> userManager, ILogger<AccountController> logger, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _logger = logger;
@@ -40,7 +41,7 @@ namespace Toss.Server.Models.Account
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 var callbackUrl = urlHelper.EmailConfirmationLink(user.Id, code, httpContextAccessor.HttpContext.Request.Scheme);
-                await _emailSender.SendEmailConfirmationAsync(model.Email, callbackUrl);
+                await _emailSender.SendEmailConfirmationAsync(model.Email, model.Name, callbackUrl);
 
                 //await _signInManager.SignInAsync(user, isPersistent: false);
                 _logger.LogInformation("User created a new account with password.");

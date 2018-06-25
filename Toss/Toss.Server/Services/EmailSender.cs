@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Mailjet.Client;
 using Mailjet.Client.Resources;
 using Microsoft.Extensions.Configuration;
@@ -36,6 +37,74 @@ namespace Toss.Server.Services
                  }
                    });
             MailjetResponse response = await client.PostAsync(request);
+        }
+
+        public async Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
+        {
+            var client = new MailjetClient(
+                    Configuration.GetValue<string>("MailJetApiKey"),
+                    Configuration.GetValue<string>("MailJetApiSecret"))
+            {
+                Version = ApiVersion.V3_1
+            };
+            //var request = new MailjetRequest{Resource = Send.Resource}
+            //    .Property(Send.FromEmail, )
+            //   .Property(Send.FromName, "Toss")
+            //   .Property(
+            //        Send.Messages, 
+            //        new JArray {
+            //            new JObject {
+            //                {"To", new JArray {new JObject {{"Email", email},{"Name", userName}}}},
+            //                {"TemplateID", 462653},
+            //                {"TemplateLanguage", true},
+            //                {"Subject", "Welcome to TOSS, please confirm your email"},
+            //                {"Variables",
+            //                    new JObject {
+            //                        {"name", userName},
+            //                        {"confirmation_link}}",confirmationLink}
+            //                    }
+            //                }
+            //            }
+            //        }
+            //    );
+            //var response = await client.PostAsync(request);
+            //if (!response.IsSuccessStatusCode)
+            //    throw new System.Exception(response.GetErrorMessage()+response.StatusCode+response.GetErrorInfo());
+            MailjetRequest request = new MailjetRequest
+            {
+                Resource = Send.Resource,
+            }
+           .Property(Send.Messages, new JArray {
+                new JObject {
+                 {"From", new JObject {
+                  {"Email", Configuration.GetValue<string>("MailJetSender")},
+                  {"Name", "Toss"}
+                  }},
+                 {"To", new JArray {
+                  new JObject {
+                   {"Email", email},
+                   {"Name", userName}
+                   }
+                  }},
+                 {"TemplateID", 462653},
+                 {"TemplateLanguage", true},
+                 {"Subject", "Welcome to TOSS, please confirm your email"},
+                 {"Variables", new JObject {
+                  {"name", ""},
+{"confirmation_link}}", confirmationLink}
+                  }}
+                 }
+               });
+            MailjetResponse response = await client.PostAsync(request);
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception(
+                    string.Format("StatusCode: {0}    ", response.StatusCode) +
+                    string.Format("ErrorInfo: {0}    ", response.GetErrorInfo()) +
+                    string.Format("GetData: {0}    ", response.GetData()) +
+                    string.Format("ErrorMessage: {0}    ", response.GetErrorMessage()));
+            }
+          
         }
     }
 }
