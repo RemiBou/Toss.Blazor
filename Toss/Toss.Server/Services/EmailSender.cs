@@ -47,29 +47,6 @@ namespace Toss.Server.Services
             {
                 Version = ApiVersion.V3_1
             };
-            //var request = new MailjetRequest{Resource = Send.Resource}
-            //    .Property(Send.FromEmail, )
-            //   .Property(Send.FromName, "Toss")
-            //   .Property(
-            //        Send.Messages, 
-            //        new JArray {
-            //            new JObject {
-            //                {"To", new JArray {new JObject {{"Email", email},{"Name", userName}}}},
-            //                {"TemplateID", 462653},
-            //                {"TemplateLanguage", true},
-            //                {"Subject", "Welcome to TOSS, please confirm your email"},
-            //                {"Variables",
-            //                    new JObject {
-            //                        {"name", userName},
-            //                        {"confirmation_link}}",confirmationLink}
-            //                    }
-            //                }
-            //            }
-            //        }
-            //    );
-            //var response = await client.PostAsync(request);
-            //if (!response.IsSuccessStatusCode)
-            //    throw new System.Exception(response.GetErrorMessage()+response.StatusCode+response.GetErrorInfo());
             MailjetRequest request = new MailjetRequest
             {
                 Resource = Send.Resource,
