@@ -11,7 +11,7 @@ using Xunit;
 namespace Toss.Tests.Server.Data
 {
     [Collection("AzureTablecollection")]
-    public class TossCosmosDBRepository
+    public class TossCosmosDBRepository : IDisposable
     {
         private readonly TossCosmosRepository _sut;
         private readonly Uri _collectionLink;
@@ -22,8 +22,9 @@ namespace Toss.Tests.Server.Data
         public TossCosmosDBRepository(AzureTableFixture azureCosmoFixture)
         {
             this.azureTableFixture = azureCosmoFixture;
-            _sut = new TossCosmosRepository(azureCosmoFixture.Client, "UnitTests");
-            _collectionLink = UriFactory.CreateDocumentCollectionUri("UnitTests", "Toss");
+            _sut = new TossCosmosRepository(azureCosmoFixture.Client, AzureTableFixture.UnitTestsDatabaseId);
+            azureCosmoFixture.Init().Wait();
+            _collectionLink = UriFactory.CreateDocumentCollectionUri(azureCosmoFixture.Database.Id, "Toss");
         }
 
         [Fact]
@@ -33,40 +34,28 @@ namespace Toss.Tests.Server.Data
 
             for (int i = 0; i < 60; i++)
             {
-                await azureTableFixture.Client.CreateDocumentAsync(_collectionLink, new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31).AddDays(-i)));
+                var command = new TossCreateCommand() { Content = "lorem #ipsum", CreatedOn = new DateTime(2017, 12, 31).AddDays(-i), UserId = "usernametest" };
+                await _sut.Create(command);
             }
 
-            var res = await _sut.Last(50, null);
+            var res = await _sut.Last(50, "ipsum");
 
             Assert.Equal(50, res.Count());
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
         }
 
-        [Fact]
-        public async Task last_returns_last_items_ids()
-        {
 
-
-            await azureTableFixture.Client.CreateDocumentAsync(_collectionLink, new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31)));
-
-
-            var res = await _sut.Last(50, null);
-
-            Assert.Single(res);
-            Assert.NotNull(res.First().Id);
-        }
-
-     
         [Fact]
         public async Task create_insert_item_in_azure_table()
         {
             var command = new TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" };
             await _sut.Create(command);
 
-           
-            var toss = azureTableFixture.Client.CreateDocumentQuery<OneTossEntity>(_collectionLink)
-                .First();
 
+            var toss = azureTableFixture.Client.CreateDocumentQuery<OneTossEntity>(_collectionLink)
+                .AsEnumerable()
+                .FirstOrDefault();
+            Assert.NotNull(toss);
             Assert.Equal("lorem ipsum", toss.Content);
             Assert.Equal(command.CreatedOn, toss.CreatedOn);
         }
@@ -76,20 +65,25 @@ namespace Toss.Tests.Server.Data
         [Fact]
         public async Task last_returns_toss_matching_hashtag()
         {
-            var tasks = new List<Task>();
+            
             for (int i = 0; i < 3; i++)
             {
-                tasks.Add(_sut.Create(new TossCreateCommand() { Content = "lorem #ipsum #toto num" + i, CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
+                await _sut.Create(new TossCreateCommand() { Content = "lorem #ipsum #toto num" + i, CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
 
             }
-            tasks.Add(_sut.Create(new TossCreateCommand() { Content = "blabla #ipsum #tutu", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" }));
-            await Task.WhenAll(tasks);
+            await _sut.Create(new TossCreateCommand() { Content = "blabla #ipsum #tutu", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
+            
 
             var tosses = await _sut.Last(2, "toto");
             Assert.Equal(2, tosses.Count());
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("num0")));
 
+        }
+
+        public void Dispose()
+        {
+            azureTableFixture.Clean().Wait();
         }
     }
 }

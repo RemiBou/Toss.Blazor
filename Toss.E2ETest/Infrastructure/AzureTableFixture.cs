@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Models;
 
@@ -13,7 +14,7 @@ namespace Toss.Tests.Infrastructure
 {
     public class AzureTableFixture : IDisposable
     {
-        public string TablePrefix { get; set; } = "UnitTests";
+        public const string UnitTestsDatabaseId = "UnitTests";
         public UserStore<ApplicationUser> UserStore;
 
         public DocumentClient Client;
@@ -25,19 +26,30 @@ namespace Toss.Tests.Infrastructure
                 .AddJsonFile("client-secrets.json")
                 .Build();
             Client = new DocumentClient(new Uri(config["CosmosDBEndpoint"]), config["CosmosDBKey"]);
+          
+
+            
+        }
+
+
+        public async Task  Init()
+        {
+            UserStore = new UserStore<ApplicationUser>(Client, new DocumentCollection() { Id = "users" });
             Database = Client.CreateDatabaseQuery()
-                                .Where(d => d.Id == "UnitTest")
+                                .Where(d => d.Id == UnitTestsDatabaseId)
                                 .AsEnumerable()
                                 .FirstOrDefault();
             if (Database != null)
-                Client.DeleteDatabaseAsync(Database.SelfLink);
-            Database = Client.CreateDatabaseAsync(new Database { Id = "UnitTest" }).Result;
-
-            UserStore = new UserStore<ApplicationUser>(Client, new DocumentCollection() { Id = "users" });
+                await Client.DeleteDatabaseAsync(Database.SelfLink);
+            Database = await Client.CreateDatabaseIfNotExistsAsync(new Database { Id = UnitTestsDatabaseId });
         }
+        public async Task Clean()
+        {
+            await Client.DeleteDatabaseAsync(Database.SelfLink);
+        }
+
         public void Dispose()
         {
-            Client.DeleteDatabaseAsync(Database.SelfLink);
         }
     }
 }

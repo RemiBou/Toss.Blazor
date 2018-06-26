@@ -19,14 +19,19 @@ namespace Toss.Server.Data
         public TossCosmosRepository(DocumentClient documentClient, string databaseId)
         {
             _documentClient = documentClient;
-            _database = new Lazy<Task<ResourceResponse<Database>>>(() => 
+            _database = new Lazy<Task<ResourceResponse<Database>>>(() =>
                 _documentClient.CreateDatabaseIfNotExistsAsync(new Database() { Id = databaseId })
             );
-            _collection = new Lazy<Task<ResourceResponse<DocumentCollection>>>(async () => 
-                await _documentClient.CreateDocumentCollectionIfNotExistsAsync(
-                    (await  GetDatabase()).SelfLink,
-                    new DocumentCollection(){Id = collectionId }
-                )
+            _collection = new Lazy<Task<ResourceResponse<DocumentCollection>>>(async () =>
+                {
+                    DocumentCollection documentCollection = new DocumentCollection() { Id = collectionId };
+                    documentCollection.IndexingPolicy = new IndexingPolicy(new RangeIndex(DataType.String) { Precision = -1 });
+                    documentCollection.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
+                    return await _documentClient.CreateDocumentCollectionIfNotExistsAsync(
+                        (await GetDatabase()).SelfLink,
+                        documentCollection
+                    );
+                }
             );
         }
         private readonly DocumentClient _documentClient;
@@ -42,9 +47,9 @@ namespace Toss.Server.Data
             return (await _collection.Value).Resource;
         }
 
-         private async Task<Uri> GetCollectionUri()
+        private async Task<Uri> GetCollectionUri()
         {
-            return new Uri((await GetCollection()).SelfLink);
+            return UriFactory.CreateDocumentCollectionUri((await GetDatabase()).Id, (await GetCollection()).Id);
         }
         /// <summary>
         /// Return the X last toss created.
@@ -54,18 +59,19 @@ namespace Toss.Server.Data
         /// <returns></returns>
         public async Task<IEnumerable<TossLastQueryItem>> Last(int count, string hashTag)
         {
-            return await GetAllResultsAsync(_documentClient.CreateDocumentQuery<OneTossEntity>(await GetCollectionUri())
+            var collectionUri = await GetCollectionUri();
+            return (await GetAllResultsAsync(_documentClient.CreateDocumentQuery<OneTossEntity>(collectionUri)
                 .Where(t => t.Content.Contains("#" + hashTag))
                 .OrderByDescending(t => t.CreatedOn)
                 .Take(count)
-                .Select(t => new TossLastQueryItem()
+
+                .AsDocumentQuery())).Select(t => new TossLastQueryItem()
                 {
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
                     Id = t.Id,
                     UserName = t.UserName
-                })
-                .AsDocumentQuery());
+                });
 
 
         }
@@ -81,9 +87,9 @@ namespace Toss.Server.Data
         {
 
             var toss = new OneTossEntity(createCommand.Content, createCommand.UserId, createCommand.CreatedOn);
-            var tasks = new List<Task>();
-            tasks.Add(_documentClient.CreateDocumentAsync(await GetCollectionUri(), toss));
-            await Task.WhenAll(tasks);
+
+            var collectionuri = await GetCollectionUri();
+            await _documentClient.CreateDocumentAsync(collectionuri, toss);
         }
 
         private async static Task<T[]> GetAllResultsAsync<T>(IDocumentQuery<T> queryAll)
