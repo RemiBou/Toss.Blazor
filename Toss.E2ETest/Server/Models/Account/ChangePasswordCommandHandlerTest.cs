@@ -48,7 +48,7 @@ namespace Toss.Tests.Server.Models.Account
             },
             new System.Threading.CancellationToken());
             _m.UserManager.Verify(u => u.ChangePasswordAsync(_m.ApplicationUser, It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            _m.EmailSender.Verify(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+            _m.EmailSender.Verify(e => e.SendEmailConfirmationAsync(_m.ApplicationUser.Email, _m.ApplicationUser.UserName, It.IsAny<string>()), Times.Never());
             Assert.False(res.IsSucess);
             Assert.True(res.Errors.ContainsKey("User"));
         }

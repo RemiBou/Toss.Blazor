@@ -41,10 +41,9 @@ namespace Toss.Server.Models.Account
             // visit https://go.microsoft.com/fwlink/?LinkID=532713
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = _urlHelper.ResetPasswordCallbackLink(user.Id, code, _httpContextAccessor.HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(request.Email, "Reset Password",
-                $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
+            await _emailSender.SendPasswordForgetAsync(request.Email, user.UserName, callbackUrl);
             return Unit.Value;
-            
+
         }
     }
 }
