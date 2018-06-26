@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Toss.Shared.Account;
 
-namespace Toss.Shared
+namespace Toss.Shared.Tosses
 {
     public class TossCreateCommand : IRequest
     {

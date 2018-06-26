@@ -2,9 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Toss.Server.Data;
-using Toss.Server.Extensions;
-using Toss.Shared;
+using Toss.Shared.Tosses;
 
 namespace Toss.Server.Controllers
 {
@@ -21,8 +19,18 @@ namespace Toss.Server.Controllers
         /// Returns the last created Toss for the homepage
         /// </summary>
         /// <returns></returns>
+        [HttpGet, Authorize(Roles = "Admin")]
+        public async Task<IActionResult> List([FromQuery] TossListAdminQuery query)
+        {
+            return Ok(await _mediator.Send(query));
+        }
+
+        /// <summary>
+        /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Last([FromQuery] LastTossQuery hashTag)
+        public async Task<IActionResult> Last([FromQuery] TossLastQuery hashTag)
         {
             return Ok(await _mediator.Send(hashTag));
         }

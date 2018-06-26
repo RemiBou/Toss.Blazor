@@ -1,0 +1,33 @@
+﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+<h3>Tosses</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Created On</th>
+            <th>User</th>
+            <th>Content</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var toss in Tosses)
+        {
+            <tr>
+                <td>@toss.Id</td>
+                <td>@toss.CreatedOn</td>
+                <td>@toss.UserName</td>
+                <td>@toss.Content</td>
+                <td></td>
+            </tr>
+
+        }
+    </tbody>
+</table>
+@functions {
+    List<TossListAdminItem> Tosses = new List<TossListAdminItem>();
+    protected override async Task OnInitAsync()
+    {
+
+    }
+}

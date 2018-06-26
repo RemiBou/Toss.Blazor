@@ -71,8 +71,7 @@
     {
         if (CurrentTag == null)
             return;
-        var parameters = "?hashtag=" + CurrentTag;
-        await ClientFactory.Create("/api/toss/last" + parameters)
+        await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)
             .Get();
         StateHasChanged();

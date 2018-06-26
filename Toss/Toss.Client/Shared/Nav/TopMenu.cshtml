@@ -17,6 +17,14 @@
                     Account
                 </NavLink>
             </li>
+            @if (account != null && account.IsAdmin)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link btn btn-sm " href="/admin" Match="NavLinkMatch.Prefix">
+                        Admin
+                    </NavLink>
+                </li>
+            }
             <li class="nav-item">
                 <a href="#" class="nav-link btn btn-sm " onclick="@(async () => await LogOff())">
                     Signout
@@ -28,11 +36,11 @@
     </div>
 </nav>
 @functions {
-
+    AccountViewModel account;
     protected override async Task OnInitAsync()
     {
         //forces call to get current account details so the user get redirected if not logged (TODO : make a batter abstraction)
-        var account = await AccountService.CurrentAccount();
+        account = await AccountService.CurrentAccount();
         StateHasChanged();
     }
     protected async Task LogOff()

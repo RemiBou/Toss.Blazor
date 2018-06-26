@@ -68,5 +68,15 @@ namespace Toss.Tests.Server.Models.Account
 
             Assert.False(res.HasPassword);
         }
+
+        [Fact]
+        public async Task Handle_when_user_has_role_admin_return_IsAdmin_true()
+        {
+            _m.ApplicationUser.AddRole("Admin");
+
+             var res = await _sut.Handle(new CurrentAccountDetailsQuery(), new CancellationToken());
+
+            Assert.True(res.IsAdmin);
+        }
     }
 }

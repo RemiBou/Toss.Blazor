@@ -4,7 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
-using Toss.Shared;
+using Toss.Shared.Tosses;
 
 namespace Toss.Server.Controllers
 {

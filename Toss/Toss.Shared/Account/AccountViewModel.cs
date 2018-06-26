@@ -17,5 +17,6 @@ namespace Toss.Shared
         /// If true the user uses a password for connection, if false he uses a OpenID provider
         /// </summary>
         public bool HasPassword { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

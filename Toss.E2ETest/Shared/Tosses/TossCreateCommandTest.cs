@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using Toss.Shared;
+using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
