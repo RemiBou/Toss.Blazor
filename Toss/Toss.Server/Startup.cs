@@ -20,6 +20,8 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Toss.Server.Models;
+using Microsoft.AspNetCore.Identity.DocumentDB;
 
 namespace Toss.Server
 {
@@ -51,7 +53,7 @@ namespace Toss.Server
                                 .FirstOrDefault()
                 ?? client.CreateDatabaseAsync(new Database { Id = Configuration["CosmosDBDataBaseid"] }).Result;
 
-            services.AddIdentityWithDocumentDBStores(client,  db.SelfLink);
+            services.AddIdentityWithDocumentDBStores<ApplicationUser,IdentityRole>(client,  db.SelfLink);
 
 
 
