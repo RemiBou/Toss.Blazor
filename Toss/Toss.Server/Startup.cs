@@ -48,12 +48,12 @@ namespace Toss.Server
             services.AddSingleton(new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]));
             var client = services.BuildServiceProvider().GetRequiredService<DocumentClient>();
             Database db = client.CreateDatabaseQuery()
-                                .Where(d => d.Id == Configuration["CosmosDBDataBaseid"])
+                                .Where(d => d.Id == "Toss")
                                 .AsEnumerable()
                                 .FirstOrDefault()
-                ?? client.CreateDatabaseAsync(new Database { Id = Configuration["CosmosDBDataBaseid"] }).Result;
+                ?? client.CreateDatabaseAsync(new Database { Id = "Toss" }).Result;
 
-            services.AddIdentityWithDocumentDBStores<ApplicationUser,IdentityRole>(client,  db.SelfLink);
+            services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(client, db.SelfLink);
 
 
 
@@ -83,7 +83,7 @@ namespace Toss.Server
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
 
-          
+
             services.AddScoped<ITossRepository, TossCosmosRepository>();
             services.AddMediatR(typeof(Startup));
             services.AddMediatR(typeof(ChangePasswordCommand));

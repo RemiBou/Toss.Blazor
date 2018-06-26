@@ -16,7 +16,7 @@ namespace Toss.Server.Data
     {
 
         private const string collectionId = "Toss";
-        public TossCosmosRepository(DocumentClient documentClient):this(documentClient,"Main")
+        public TossCosmosRepository(DocumentClient documentClient) : this(documentClient, "Toss")
         {
         }
         public TossCosmosRepository(DocumentClient documentClient, string databaseId)
