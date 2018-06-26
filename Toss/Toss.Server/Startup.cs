@@ -25,6 +25,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 
 namespace Toss.Server
 {
@@ -48,29 +50,18 @@ namespace Toss.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
-            // Add Elcamino Azure Table Identity services.
+            services.AddSingleton(new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]));
+            var client = services.BuildServiceProvider().GetRequiredService<DocumentClient>();
+            Database db = client.CreateDatabaseQuery()
+                                .Where(d => d.Id == Configuration["CosmosDBDataBaseid"])
+                                .AsEnumerable()
+                                .FirstOrDefault()
+                ?? client.CreateDatabaseAsync(new Database { Id = Configuration["CosmosDBDataBaseid"] }).Result;
 
-            services
-                .AddIdentity<ApplicationUser, ElCamino.AspNetCore.Identity.AzureTable.Model.IdentityRole>(                    
-                    options =>
-                     {
-                         options.User.RequireUniqueEmail = true;
-                         options.SignIn.RequireConfirmedEmail = true;
-                     })
-                .AddAzureTableStoresV2<ApplicationDbContext>(
-                    () =>
-                    {
-                        return new IdentityConfiguration
-                        {
-                            TablePrefix = "Auth",
-                            StorageConnectionString = Configuration["AzureStorage"],
-                            LocationMode = "PrimaryOnly"
-                            
-                        };
-                    })
-                .AddDefaultTokenProviders()
-                .CreateAzureTablesIfNotExists<ApplicationDbContext>(); //can remove after first run;
-            
+            services.AddIdentityWithDocumentDBStores(client,  db.SelfLink);
+
+
+
             services.AddHttpContextAccessor();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(factory =>
@@ -102,10 +93,10 @@ namespace Toss.Server
                     .Parse(Configuration["AzureStorage"])
                     .CreateCloudTableClient()
             );
-            services.AddScoped<ITossRepository, TossAzureTableRepository>();
+            services.AddScoped<ITossRepository, TossCosmosRepository>();
             services.AddMediatR(typeof(Startup));
             services.AddMediatR(typeof(ChangePasswordCommand));
-           
+
 
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>

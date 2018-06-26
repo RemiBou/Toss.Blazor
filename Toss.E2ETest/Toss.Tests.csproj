@@ -9,7 +9,6 @@
     <PackageReference Include="Moq" Version="4.8.3" />
     <PackageReference Include="Selenium.Support" Version="3.13.0" />
     <PackageReference Include="Selenium.WebDriver" Version="3.13.0" />
-    <PackageReference Include="WindowsAzure.Storage" Version="9.2.0" />
     <PackageReference Include="xunit" Version="2.4.0-beta.1.build3958" />
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.1.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0-beta.1.build3958" />

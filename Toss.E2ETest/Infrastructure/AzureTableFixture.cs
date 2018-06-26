@@ -1,9 +1,9 @@
-﻿using ElCamino.AspNetCore.Identity.AzureTable;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
+﻿using Microsoft.AspNetCore.Identity.DocumentDB;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Toss.Server.Data;
 using Toss.Server.Models;
@@ -13,29 +13,27 @@ namespace Toss.Tests.Infrastructure
     public class AzureTableFixture : IDisposable
     {
         public string TablePrefix { get; set; } = "UnitTests";
-        public UserStoreV2<ApplicationUser, IdentityRole, ApplicationDbContext> UserStoreV2 ;
+        public UserStore<ApplicationUser> UserStore;
 
-        public ApplicationDbContext applicationDbContext = AzureTableHelper.GetApplicationDbContext();
-        public CloudTableClient storageClient;
-        public CloudTable TossTable;
+        public DocumentClient Client;
+        public Database Database;
 
         public AzureTableFixture()
         {
-            UserStoreV2 = new UserStoreV2<ApplicationUser, IdentityRole, ApplicationDbContext>(applicationDbContext);
-            UserStoreV2.CreateTablesIfNotExists().Wait();
 
-            var storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true;");
-            storageClient = storageAccount.CreateCloudTableClient();
+            Database = Client.CreateDatabaseQuery()
+                                .Where(d => d.Id == "UnitTest")
+                                .AsEnumerable()
+                                .FirstOrDefault();
+            if (Database != null)
+                Client.DeleteDatabaseAsync(Database.SelfLink);
+            Database = Client.CreateDatabaseAsync(new Database { Id = "UnitTest" }).Result;
 
-            TossTable = storageClient.GetTableReference(TablePrefix+"Toss");
-            TossTable.CreateIfNotExistsAsync().Wait();
+            UserStore = new UserStore<ApplicationUser>(Client, new DocumentCollection() { Id = "users");
         }
         public void Dispose()
         {
-            applicationDbContext.IndexTable.DeleteAsync().Wait();
-            applicationDbContext.RoleTable.DeleteAsync().Wait();
-            TossTable.DeleteIfExistsAsync().Wait();
-            applicationDbContext.UserTable.DeleteAsync().Wait();
+            Client.DeleteDatabaseAsync(Database.SelfLink);
         }
     }
 }

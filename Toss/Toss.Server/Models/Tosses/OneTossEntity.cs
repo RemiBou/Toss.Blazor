@@ -1,13 +1,11 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System;
 
 namespace Toss.Server.Data
 {
-    public class OneTossEntity : TableEntity
+    public class OneTossEntity
     {
+        
+        public string Id { get; set; }
         public string Content { get; set; }
         public string UserName { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
@@ -16,10 +14,6 @@ namespace Toss.Server.Data
             Content = content;
             UserName = userId;
             CreatedOn = dateOfPost;
-            PartitionKey = "AllToss";
-            //cf https://docs.microsoft.com/en-us/azure/cosmos-db/table-storage-design-guide#log-tail-pattern
-            RowKey = string.Format("{0:D19}", DateTime.MaxValue.Ticks - dateOfPost.Ticks);
-
         }
 
         public OneTossEntity()

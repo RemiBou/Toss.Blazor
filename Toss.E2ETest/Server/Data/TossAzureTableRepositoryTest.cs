@@ -1,4 +1,5 @@
-﻿using Microsoft.WindowsAzure.Storage;
+﻿using Microsoft.Azure.Documents.Client;
+using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Table;
 using Moq;
 using System;
@@ -14,29 +15,30 @@ using Xunit;
 namespace Toss.Tests.Server.Data
 {
     [Collection("AzureTablecollection")]
-    public class TossAzureTableRepositoryTest
+    public class TossCosmosDBRepository
     {
-        private readonly TossAzureTableRepository _sut;
+        private readonly TossCosmosRepository _sut;
+        private readonly Uri _collectionLink;
         private readonly AzureTableFixture azureTableFixture;
 
 
-        public TossAzureTableRepositoryTest(AzureTableFixture azureTableFixture)
+
+        public TossCosmosDBRepository(AzureTableFixture azureCosmoFixture)
         {
-            this.azureTableFixture = azureTableFixture;
-            _sut = new TossAzureTableRepository(azureTableFixture.storageClient, tablePrefix: "UnitTests");
+            this.azureTableFixture = azureCosmoFixture;
+            _sut = new TossCosmosRepository(azureCosmoFixture.Client, "UnitTests");
+            _collectionLink = UriFactory.CreateDocumentCollectionUri("UnitTests", "Toss"));
         }
 
         [Fact]
         public async Task last_returns_last_items_from_table_ordered_desc_by_createdon()
         {
-            var batchOperation = new TableBatchOperation();
+
 
             for (int i = 0; i < 60; i++)
             {
-                batchOperation.Insert(new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31).AddDays(-i)));
+                await azureTableFixture.Client.CreateDocumentAsync(_collectionLink, new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31).AddDays(-i)));
             }
-
-            await azureTableFixture.TossTable.ExecuteBatchAsync(batchOperation);
 
             var res = await _sut.Last(50, null);
 
@@ -47,13 +49,10 @@ namespace Toss.Tests.Server.Data
         [Fact]
         public async Task last_returns_last_items_ids()
         {
-            var batchOperation = new TableBatchOperation();
 
 
-            batchOperation.Insert(new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31)));
+            await azureTableFixture.Client.CreateDocumentAsync(_collectionLink, new OneTossEntity("lorem ipsum", "blabla", new DateTime(2017, 12, 31)));
 
-
-            await azureTableFixture.TossTable.ExecuteBatchAsync(batchOperation);
 
             var res = await _sut.Last(50, null);
 

@@ -1,12 +1,12 @@
-﻿using ElCamino.AspNetCore.Identity.AzureTable.Model;
+﻿
+using Microsoft.AspNetCore.Identity.DocumentDB;
 using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 
 namespace Toss.Server.Models
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUserV2
+    public class ApplicationUser : IdentityUser
     {
         public HashSet<string> Hashtags { get; set; }
 

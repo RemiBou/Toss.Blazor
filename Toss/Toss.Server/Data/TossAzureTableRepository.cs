@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Table;
+using Microsoft.Azure.Documents;
+using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Documents.Linq;
 using Toss.Shared;
 
 namespace Toss.Server.Data
@@ -10,22 +12,20 @@ namespace Toss.Server.Data
     /// <summary>
     /// Store and retreive Toss from an Azure Table Storage
     /// </summary>
-    public class TossAzureTableRepository : ITossRepository
+    public class TossCosmosRepository : ITossRepository
     {
-        private const string PartitionKeyAllToss = "AllToss";
-        private const string AllTossPartitionKeyCondition = "PartitionKey eq 'AllToss'";
-        private readonly CloudTableClient storageClient;
-        private readonly CloudTable mainTable;
 
-        public TossAzureTableRepository(
-            CloudTableClient storageClient,
-            string tablePrefix = null)
+        private const string collectionId = "Toss";
+        public TossCosmosRepository(DocumentClient documentClient, string databaseId)
         {
-            this.storageClient = storageClient;
-            mainTable = storageClient.GetTableReference(tablePrefix + "Toss");
-
+            _documentClient = documentClient;
+            _database = new Lazy<Database>(() => _documentClient.CreateDatabaseIfNotExistsAsync(new Database() { Id = databaseId }).Result);
+            _collectionLink = new Lazy<Uri>(() => UriFactory.CreateDocumentCollectionUri(databaseId, collectionId));
         }
-        private static readonly List<string> TossLastQueryItemColumns = new List<string> { "Content", "UserName", "CreatedOn" };
+        private readonly DocumentClient _documentClient;
+        private readonly Lazy<Database> _database;
+        private readonly Lazy<Uri> _collectionLink;
+
         /// <summary>
         /// Return the X last toss created.
         /// If none was created an empty list is returned
@@ -34,57 +34,23 @@ namespace Toss.Server.Data
         /// <returns></returns>
         public async Task<IEnumerable<TossLastQueryItem>> Last(int count, string hashTag)
         {
-            await mainTable.CreateIfNotExistsAsync();
-            if (hashTag == null)
-            {
-                
-                var query = new TableQuery()
-                    .Where(AllTossPartitionKeyCondition)
-                    .Take(count)
-                    .Select(TossLastQueryItemColumns);
+            return await GetAllResultsAsync(_documentClient.CreateDocumentQuery<OneTossEntity>(_collectionLink.Value)
+                .Where(t => t.Content.Contains("#" + hashTag))
+                .OrderByDescending(t => t.CreatedOn)
+                .Take(count)
+                .Select(t => new TossLastQueryItem()
+                {
+                    Content = t.Content,
+                    CreatedOn = t.CreatedOn,
+                    Id = t.Id,
+                    UserName = t.UserName
+                })
+                .AsDocumentQuery());
 
-               
-                return (await mainTable
-                    .ExecuteQueryAsync(query))
-                    .Select(MapTossLastQueryItem)
-                    .Take(count)//https://stackoverflow.com/a/13453691/277067
-                    .ToList();
-            }
-            else
-            {
-                var query = new TableQuery()
-                       .Where($"PartitionKey eq '{HashTagIndex.PartionKeyPrefix}{hashTag}'")
-                       .Take(count)
-                       .Select(new List<string> { "RowKey" });
-                var queryResponse = await mainTable
-                   .ExecuteQueryAsync(query);
-                var rowKeys = (await mainTable
-                    .ExecuteQueryAsync(query))
-                    .Select(t => t.RowKey)
-                    .Take(count)
-                    .ToList();
-                var tasks = rowKeys
-                    .Select(r => mainTable.ExecuteAsync(
-                       TableOperation.Retrieve(PartitionKeyAllToss, r, TossLastQueryItemColumns)
-                    ))
-                    .ToArray();
-                await Task.WhenAll(tasks);
-                return tasks
-                    .Select(t => MapTossLastQueryItem((DynamicTableEntity)t.Result.Result))
-                    .ToList();
-            }
+
         }
 
-        private static TossLastQueryItem MapTossLastQueryItem(DynamicTableEntity t)
-        {
-            return new TossLastQueryItem()
-            {
-                Content = t.Properties["Content"].StringValue,
-                CreatedOn = t.Properties["CreatedOn"].DateTimeOffsetValue.Value,
-                UserName = t.Properties["UserName"].StringValue,
-                Id = t.RowKey
-            };
-        }
+
 
         /// <summary>
         /// Saves a toss on the DB, the command should be validated before, 
@@ -93,14 +59,28 @@ namespace Toss.Server.Data
         /// <returns></returns>
         public async Task Create(TossCreateCommand createCommand)
         {
-            await mainTable.CreateIfNotExistsAsync();
-            var tasks = new List<Task>();
-            var toss = new OneTossEntity(createCommand.Content, createCommand.UserId, createCommand.CreatedOn);
-           
-            tasks.Add(mainTable.ExecuteAsync(TableOperation.Insert(toss)));
-            tasks.AddRange(HashTagIndex.CreateHashTagIndexes(toss).Select(h => mainTable.ExecuteAsync(TableOperation.Insert(h))));
 
+            var toss = new OneTossEntity(createCommand.Content, createCommand.UserId, createCommand.CreatedOn);
+            var tasks = new List<Task>();
+            tasks.Add(_documentClient.CreateDocumentAsync(_collectionLink.Value, toss));
             await Task.WhenAll(tasks);
+        }
+
+        private async static Task<T[]> GetAllResultsAsync<T>(IDocumentQuery<T> queryAll)
+        {
+            var list = new List<T>();
+
+            while (queryAll.HasMoreResults)
+            {
+                var docs = await queryAll.ExecuteNextAsync<T>();
+
+                foreach (var d in docs)
+                {
+                    list.Add(d);
+                }
+            }
+
+            return list.ToArray();
         }
     }
 }
