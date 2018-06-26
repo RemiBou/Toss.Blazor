@@ -76,25 +76,22 @@ namespace Toss.Server.Services
             }
            .Property(Send.Messages, new JArray {
                 new JObject {
-                 {"From", new JObject {
-                  {"Email", Configuration.GetValue<string>("MailJetSender")},
-                  {"Name", "Toss"}
-                  }},
-                 {"To", new JArray {
-                  new JObject {
-                   {"Email", email},
-                   {"Name", userName}
-                   }
-                  }},
-                 {"TemplateID", 462653},
-                 {"TemplateLanguage", true},
-                 {"Subject", "Welcome to TOSS, please confirm your email"},
-                 {"Variables", new JObject {
-                  {"name", ""},
-{"confirmation_link}}", confirmationLink}
-                  }}
+                     {"From", new JObject {{"Email", Configuration.GetValue<string>("MailJetSender")},{"Name", "Toss"}}},
+                     {"To", new JArray {new JObject {{"Email", email},{"Name", userName}}}},
+                     {"TemplateID", 462653},
+                     {"TemplateLanguage", true},
+                     {"TemplateErrorDeliver", true},
+                     //{"TemplateErrorReporting",new JObject  {{"Email", "" }, {"Name", "Rémi Bourgarel" } } },
+                     {"Subject", "Welcome to TOSS, please confirm your email"},
+                     {"Variables", new JObject 
+                      {
+                        {"name", userName},
+                        {"confirmation_link", confirmationLink}
+                      }
+                     }
                  }
-               });
+               }
+            );
             MailjetResponse response = await client.PostAsync(request);
             if (!response.IsSuccessStatusCode)
             {
@@ -104,7 +101,7 @@ namespace Toss.Server.Services
                     string.Format("GetData: {0}    ", response.GetData()) +
                     string.Format("ErrorMessage: {0}    ", response.GetErrorMessage()));
             }
-          
+
         }
     }
 }

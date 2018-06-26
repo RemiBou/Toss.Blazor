@@ -125,7 +125,7 @@ namespace Toss.Server.Controllers
             return Redirect("/");
         }
         [HttpGet, AllowAnonymous]
-        public async Task<IActionResult> ConfirmEmail(ConfirmEmailCommand command)
+        public async Task<IActionResult> ConfirmEmail([FromQuery] ConfirmEmailCommand command)
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
         }
