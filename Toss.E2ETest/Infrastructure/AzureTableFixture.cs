@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.DocumentDB;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,10 @@ namespace Toss.Tests.Infrastructure
 
         public AzureTableFixture()
         {
-
+            var config = new ConfigurationBuilder()
+                .AddJsonFile("client-secrets.json")
+                .Build();
+            Client = new DocumentClient(new Uri(config["CosmosDBEndpoint"]), config["CosmosDBKey"]);
             Database = Client.CreateDatabaseQuery()
                                 .Where(d => d.Id == "UnitTest")
                                 .AsEnumerable()
@@ -29,7 +33,7 @@ namespace Toss.Tests.Infrastructure
                 Client.DeleteDatabaseAsync(Database.SelfLink);
             Database = Client.CreateDatabaseAsync(new Database { Id = "UnitTest" }).Result;
 
-            UserStore = new UserStore<ApplicationUser>(Client, new DocumentCollection() { Id = "users");
+            UserStore = new UserStore<ApplicationUser>(Client, new DocumentCollection() { Id = "users" });
         }
         public void Dispose()
         {

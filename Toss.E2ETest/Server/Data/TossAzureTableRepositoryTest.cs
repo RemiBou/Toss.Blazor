@@ -1,11 +1,7 @@
 ﻿using Microsoft.Azure.Documents.Client;
-using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Table;
-using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Shared;
@@ -27,7 +23,7 @@ namespace Toss.Tests.Server.Data
         {
             this.azureTableFixture = azureCosmoFixture;
             _sut = new TossCosmosRepository(azureCosmoFixture.Client, "UnitTests");
-            _collectionLink = UriFactory.CreateDocumentCollectionUri("UnitTests", "Toss"));
+            _collectionLink = UriFactory.CreateDocumentCollectionUri("UnitTests", "Toss");
         }
 
         [Fact]
@@ -60,34 +56,15 @@ namespace Toss.Tests.Server.Data
             Assert.NotNull(res.First().Id);
         }
 
-        [Fact]
-        public async Task last_create_the_table_if_not_exists()
-        {
-            await azureTableFixture.TossTable.DeleteAsync();
-
-            var res = (await _sut.Last(50, null));
-
-            Assert.True(await azureTableFixture.TossTable.ExistsAsync());
-        }
-        [Fact]
-        public async Task create_create_the_table_if_not_exists()
-        {
-            await azureTableFixture.TossTable.DeleteAsync();
-
-            await _sut.Create(new TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" });
-
-            Assert.True(await azureTableFixture.TossTable.ExistsAsync());
-        }
+     
         [Fact]
         public async Task create_insert_item_in_azure_table()
         {
             var command = new TossCreateCommand() { Content = "lorem ipsum", CreatedOn = DateTimeOffset.Now, UserId = "usernametest" };
             await _sut.Create(command);
 
-            TableContinuationToken tableContinuationToken = null;
-            var toss = (await azureTableFixture.TossTable
-                .ExecuteQuerySegmentedAsync(new TableQuery<OneTossEntity>(), tableContinuationToken))
-                .Results
+           
+            var toss = azureTableFixture.Client.CreateDocumentQuery<OneTossEntity>(_collectionLink)
                 .First();
 
             Assert.Equal("lorem ipsum", toss.Content);

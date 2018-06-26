@@ -1,7 +1,4 @@
-﻿using Microsoft.WindowsAzure.Storage.Table;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Toss.Shared.Account;
 
@@ -11,14 +8,13 @@ namespace Toss.Server.Data
     /// Used for indexing tosses by its hashtags
     /// Partition Key will be the hashtag, Rowkey the toss's RowKey
     /// </summary>
-    public class HashTagIndex : TableEntity
+    public class HashTagIndex 
     {
         private static readonly Regex regexHashTag = new Regex("(?<=#)"+AddHashtagCommand.HashTagRegex);
         public const string PartionKeyPrefix = "TossTag";
         public HashTagIndex(OneTossEntity toss,string hashTag)
         {
-            PartitionKey = PartionKeyPrefix + hashTag;
-            RowKey = toss.RowKey;
+          
         }
         /// <summary>
         /// Creates all the hashtag indexes needed for a single toss

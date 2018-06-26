@@ -2,26 +2,19 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ElCamino.AspNetCore.Identity.AzureTable.Model;
 using Newtonsoft.Json.Serialization;
 using System.Net.Mime;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Blazor.Server;
 using System.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Toss.Server.Models;
 using Toss.Server.Data;
-using Microsoft.WindowsAzure.Storage.Table;
-using Microsoft.WindowsAzure.Storage;
 using MediatR;
 using Toss.Server.Services;
-using Toss.Shared;
 using Toss.Shared.Account;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -88,11 +81,7 @@ namespace Toss.Server
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
 
-            services.AddScoped(s =>
-                CloudStorageAccount
-                    .Parse(Configuration["AzureStorage"])
-                    .CreateCloudTableClient()
-            );
+          
             services.AddScoped<ITossRepository, TossCosmosRepository>();
             services.AddMediatR(typeof(Startup));
             services.AddMediatR(typeof(ChangePasswordCommand));
