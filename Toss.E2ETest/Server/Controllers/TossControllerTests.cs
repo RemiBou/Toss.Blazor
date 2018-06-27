@@ -13,6 +13,7 @@ using Toss.Server;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
 using Toss.Shared;
+using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
@@ -34,12 +35,12 @@ namespace Toss.Tests.Server.Controllers
         {
             _m
                 .Mediator
-                .Setup(m => m.Send(It.Is<LastTossQuery>(q => q.HashTag == "toto"), It.IsAny<CancellationToken>()))
+                .Setup(m => m.Send(It.Is<TossLastQuery>(q => q.HashTag == "toto"), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Range(0, 50)
                 .Select(i => new TossLastQueryItem()));
 
 
-            var res = await _sut.Last(new LastTossQuery("toto")) as OkObjectResult;
+            var res = await _sut.Last(new TossLastQuery("toto")) as OkObjectResult;
             var resValue = (res.Value as IEnumerable<TossLastQueryItem>);
 
             Assert.Equal(50, resValue.Count());
@@ -49,7 +50,7 @@ namespace Toss.Tests.Server.Controllers
         {
             _m
                  .Mediator
-                 .Setup(m => m.Send(It.IsAny<LastTossQuery>(), It.IsAny<CancellationToken>()))
+                 .Setup(m => m.Send(It.IsAny<TossLastQuery>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Enumerable.Range(0, 1)
                .Select(i => new TossLastQueryItem()
                {
@@ -87,7 +88,7 @@ namespace Toss.Tests.Server.Controllers
             };
             var res = await _sut.Create(command);
 
-            _m.Mediator.Verify(r => r.Send(command,It.IsAny<CancellationToken>()));
+            _m.Mediator.Verify(r => r.Send(command, It.IsAny<CancellationToken>()));
 
         }
         [Fact]
@@ -106,6 +107,6 @@ namespace Toss.Tests.Server.Controllers
 
 
 
-        
+
     }
 }

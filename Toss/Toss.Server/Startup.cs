@@ -83,8 +83,7 @@ namespace Toss.Server
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
 
-
-            services.AddScoped<ITossRepository, TossCosmosRepository>();
+            services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup));
             services.AddMediatR(typeof(ChangePasswordCommand));
 

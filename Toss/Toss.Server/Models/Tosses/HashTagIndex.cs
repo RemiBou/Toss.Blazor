@@ -12,7 +12,7 @@ namespace Toss.Server.Data
     {
         private static readonly Regex regexHashTag = new Regex("(?<=#)"+AddHashtagCommand.HashTagRegex);
         public const string PartionKeyPrefix = "TossTag";
-        public HashTagIndex(OneTossEntity toss,string hashTag)
+        public HashTagIndex(TossEntity toss,string hashTag)
         {
           
         }
@@ -21,7 +21,7 @@ namespace Toss.Server.Data
         /// </summary>
         /// <param name="toss"></param>
         /// <returns></returns>
-        public static IEnumerable<HashTagIndex> CreateHashTagIndexes(OneTossEntity toss)
+        public static IEnumerable<HashTagIndex> CreateHashTagIndexes(TossEntity toss)
         {
             var matches = regexHashTag.Matches(toss.Content);
             foreach (Match m in matches)

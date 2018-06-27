@@ -10,20 +10,23 @@ namespace Toss.Server.Controllers
 {
     public class TossCreateCommandHandler : IRequestHandler<TossCreateCommand>
     {
-        private readonly ITossRepository tossRepository;
+        private readonly ICosmosDBTemplate<TossEntity> _dbTemplate;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public TossCreateCommandHandler(ITossRepository tossRepository, IHttpContextAccessor httpContextAccessor)
+        public TossCreateCommandHandler(ICosmosDBTemplate<TossEntity> cosmosTemplate, IHttpContextAccessor httpContextAccessor)
         {
-            this.tossRepository = tossRepository;
+            _dbTemplate = cosmosTemplate;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<Unit> Handle(TossCreateCommand createTossCommand, CancellationToken cancellationToken)
-        {
-            createTossCommand.UserId = _httpContextAccessor.HttpContext.User.Identity.Name;
-            createTossCommand.CreatedOn = DateTimeOffset.Now;
-            await tossRepository.Create(createTossCommand);
+        public async Task<Unit> Handle(TossCreateCommand command, CancellationToken cancellationToken)
+        {            
+            var toss = new TossEntity(
+                command.Content, 
+                _httpContextAccessor.HttpContext.User.Identity.Name,
+                DateTimeOffset.Now);
+
+            await _dbTemplate.Insert(toss);
             return Unit.Value;
         }
     }

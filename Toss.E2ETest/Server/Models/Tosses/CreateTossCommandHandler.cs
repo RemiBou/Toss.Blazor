@@ -1,27 +1,30 @@
 ﻿using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
 using Toss.Shared;
+using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class CreateTossCommandHandlerTest
+    public class CreateTossCommandHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
     {
-        private TossCreateCommandHandler _sut;
         private CommonMocks<TossController> _m;
-        private Mock<ITossRepository> _repository;
-        public CreateTossCommandHandlerTest()
+        private ICosmosDBTemplate<TossEntity> tossTemplate;
+        private TossCreateCommandHandler _sut;
+        public CreateTossCommandHandlerTest(CosmosDBFixture fixture):base(fixture)
         {
             _m = new CommonMocks<TossController>();
-            _repository = new Mock<ITossRepository>();
+
+            tossTemplate = GetTemplate<TossEntity>();
             _sut = new TossCreateCommandHandler(
-                _repository.Object,
+                tossTemplate,
                 _m.HttpContextAccessor.Object);
         }
         [Fact]
@@ -30,12 +33,13 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var command = new TossCreateCommand()
             {
-                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserId = "jeanmichel"
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             };
-            var res = await _sut.Handle(command,new System.Threading.CancellationToken());
+            var res = await _sut.Handle(command, new System.Threading.CancellationToken());
 
-            _repository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.UserId == "username")));
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.Equal(_m.ApplicationUser.UserName, toss.UserName);
 
         }
         [Fact]
@@ -44,15 +48,36 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var command = new TossCreateCommand()
             {
-                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
-                UserId = "jeanmichel"
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             };
             var now = DateTime.Now;
-            var res = await _sut.Handle(command,new System.Threading.CancellationToken());
+            var res = await _sut.Handle(command, new System.Threading.CancellationToken());
 
             var now2 = DateTime.Now;
-            _repository.Verify(r => r.Create(It.Is<TossCreateCommand>(c => c.CreatedOn >= now && c.CreatedOn <= now2)));
+
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.True(toss.CreatedOn >= now && toss.CreatedOn <= now2); ;
 
         }
+
+        [Fact]
+        public async Task create_insert_item_in_azure_table()
+        {
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum"
+            };
+
+            await _sut.Handle(command, new System.Threading.CancellationToken());
+
+
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.NotNull(toss);
+            Assert.Equal("lorem ipsum", toss.Content);
+        }
+
+
     }
 }

@@ -12,7 +12,5 @@ namespace Toss.Shared.Tosses
         [MinLength(20)]
         [RegularExpression(".*(?<=#)"+AddHashtagCommand.HashTagRegex+".*", ErrorMessage ="Your toss must contain at least one hashtag (#)")]
         public string Content { get; set; }
-        public string UserId { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
     }
 }
