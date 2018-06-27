@@ -52,7 +52,10 @@ namespace Toss.Tests.Infrastructure
             _databaseName = cosmosDBFixture.DatabaseName;
         }
 
-          public void Dispose()
+        /// <summary>
+        /// Delete all the collections after each tests so we don't have any document left
+        /// </summary>
+        public void Dispose()
         {
             var collections = _client.CreateDocumentCollectionQuery(UriFactory.CreateDatabaseUri(_databaseName)).ToList();
             foreach (var item in collections)
