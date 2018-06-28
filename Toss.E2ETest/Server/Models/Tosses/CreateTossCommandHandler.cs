@@ -13,6 +13,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
+    [Collection("CosmosDBFixture")]
     public class CreateTossCommandHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
     {
         private CommonMocks<TossController> _m;

@@ -5,18 +5,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Toss.Server.Data;
+using Xunit;
 
 namespace Toss.Tests.Infrastructure
 {
-
+    [CollectionDefinition("CosmosDBFixture")]
+    public class CosmosDBFixtureCollection : ICollectionFixture<CosmosDBFixture>
+    {
+    }
     public class CosmosDBFixture : IDisposable
     {
         public CosmosDBFixture()
         {
             var config = new ConfigurationBuilder()
-               .AddJsonFile("client-secrets.json")
+               .AddEnvironmentVariables()
                .Build();
-            Client = new DocumentClient(new Uri(config["CosmosDBEndpoint"]), config["CosmosDBKey"]);
+            Client = new DocumentClient(new Uri("https://localhost:8081"), "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==");//same local key for everyone !
             Client.CreateDatabaseAsync(new Microsoft.Azure.Documents.Database() { Id = DatabaseName });
             // ... initialize data in the test database ...
         }

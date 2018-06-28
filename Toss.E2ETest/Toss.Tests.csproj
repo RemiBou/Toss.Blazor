@@ -9,12 +9,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="client-secrets.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Moq" Version="4.8.3" />
     <PackageReference Include="Selenium.Support" Version="3.13.0" />
