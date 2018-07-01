@@ -14,7 +14,7 @@ namespace Toss.Server.Data
             while (queryAll.HasMoreResults)
             {
                 var docs = await queryAll.ExecuteNextAsync<T>();
-
+                
                 foreach (var d in docs)
                 {
                     list.Add(d);
