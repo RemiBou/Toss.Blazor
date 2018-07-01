@@ -84,6 +84,7 @@ namespace Toss.Tests.Infrastructure
                 new Mock<ILogger<UserManager<TUser>>>().Object);
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))
                 .Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
+            
             return userManager;
         }
 

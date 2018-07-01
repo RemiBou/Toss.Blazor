@@ -184,5 +184,11 @@ namespace Toss.Server.Controllers
             await _mediator.Send(new SignoutCommand());
             return Redirect("/login");
         }
+
+        [HttpGet, Authorize(Roles ="Admin")]
+        public async Task<IActionResult> List()
+        {
+            return Ok( await _mediator.Send(new AccountListQuery()));
+        }
     }
 }
