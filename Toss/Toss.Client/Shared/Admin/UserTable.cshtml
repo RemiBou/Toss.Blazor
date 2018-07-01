@@ -1,16 +1,36 @@
-﻿<h5>Accounts</h5>
+﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+<h5>Users <small class="text-muted">@Users.Count users in the DB</small></h5>
 <table class="table">
     <thead>
         <tr>
             <th>Id</th>
-            <th>Created On</th>
-            <th>User</th>
-            <th>Content</th>
-            <th>Actions</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Email confirmed</th>
         </tr>
     </thead>
-    <tbody></tbody>
+    <tbody>
+        @foreach (var user in Users)
+        {
+            <tr>
+                <td>@user.Id</td>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@user.EmailConfirmed</td>
+            </tr>
+
+        }
+    </tbody>
 </table>
 @functions {
-List<AccountViewModel> USers = new List<AccountViewModel>();
+List<AdminAccountListItem> Users = new List<AdminAccountListItem>();
+protected override async Task OnInitAsync()
+{
+    await ClientFactory.Create("/api/account/list")
+        .OnOK<List<AdminAccountListItem>>(r =>
+        {
+            Users = r;
+        })
+        .Get();
+}
 }

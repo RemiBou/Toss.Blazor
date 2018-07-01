@@ -23,13 +23,13 @@ namespace Toss.Server.Models.Account
 
         public async Task<List<AdminAccountListItem>> Handle(AccountListQuery request, CancellationToken cancellationToken)
         {
-            var users = await userManager.GetUsersInRoleAsync("");
+            var users = userManager.Users.ToList();
             return users.Select(u => new AdminAccountListItem()
             {
                 Email = u.Email,
                 EmailConfirmed = u.EmailConfirmed,
                 Id = u.Id,
-                UserName = u.UserName
+                UserName = u.UserName                
             }).ToList();
         }
     }

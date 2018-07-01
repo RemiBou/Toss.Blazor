@@ -25,27 +25,27 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Handle_calls_get_user_in_role_empty()
         {
-            _m.UserManager.Setup(u => u.GetUsersInRoleAsync(""))
-               .ReturnsAsync(new List<ApplicationUser>());
+            _m.UserManager.SetupGet(u => u.Users)
+               .Returns(new List<ApplicationUser>().AsQueryable());
 
             var res = await _sut.Handle(new Toss.Shared.Account.AccountListQuery(), new System.Threading.CancellationToken());
 
-            _m.UserManager.Verify(u => u.GetUsersInRoleAsync(""), Times.Once());
+            _m.UserManager.Verify(u => u.Users, Times.Once());
 
         }
 
         [Fact]
         public async Task Handle_maps_result()
         {
-            _m.UserManager.Setup(u => u.GetUsersInRoleAsync(""))
-                .ReturnsAsync(new List<ApplicationUser>(){
+            _m.UserManager.SetupGet(u => u.Users)
+                .Returns(new List<ApplicationUser>(){
                     new ApplicationUser() {
                         UserName = "test un",
                         Id = "test id",
                         Email = "toto@gmail.com",
                         EmailConfirmed = true
                     }
-                });
+                }.AsQueryable());
             var res = await _sut.Handle(new Toss.Shared.Account.AccountListQuery(), new System.Threading.CancellationToken());
 
             Assert.Single(res);
