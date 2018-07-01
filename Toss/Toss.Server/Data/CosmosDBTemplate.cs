@@ -73,5 +73,10 @@ namespace Toss.Server.Data
         {
             return UriFactory.CreateDocumentCollectionUri((await GetDatabase()).Id, (await GetCollection()).Id);
         }
+
+        public async Task Delete(string id)
+        {
+            await _documentClient.DeleteDocumentAsync(UriFactory.CreateDocumentUri((await GetDatabase()).Id, (await GetCollection()).Id, id));
+        }
     }
 }

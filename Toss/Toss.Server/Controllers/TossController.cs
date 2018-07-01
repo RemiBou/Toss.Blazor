@@ -24,7 +24,15 @@ namespace Toss.Server.Controllers
         {
             return Ok(await _mediator.Send(query));
         }
-
+        /// <summary>
+        /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost, Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete([FromBody] DeleteTossCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
         /// <summary>
         /// Returns the last created Toss for the homepage
         /// </summary>
