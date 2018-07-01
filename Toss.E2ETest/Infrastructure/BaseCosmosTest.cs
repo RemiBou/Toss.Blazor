@@ -27,11 +27,8 @@ namespace Toss.Tests.Infrastructure
 
         public void Dispose()
         {
-            var dbs = Client.CreateDatabaseQuery().ToList();
-            foreach (var item in dbs)
-            {
-                Client.DeleteDatabaseAsync(item.SelfLink).Wait();
-            }
+
+            Client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(DatabaseName)).Wait();
         }
 
         public DocumentClient Client { get; private set; }

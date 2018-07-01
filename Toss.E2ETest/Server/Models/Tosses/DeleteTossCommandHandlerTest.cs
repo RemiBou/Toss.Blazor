@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Models.Tosses;
+using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
@@ -29,7 +30,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await _cosmosDBTemplateEntity.Insert(new TossEntity("test content2", "user test", DateTimeOffset.Now));
             var allInsertedToss = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();
 
-            await _sut.Handle(new Toss.Server.Controllers.DeleteTossCommand(allInsertedToss.First().Id), new System.Threading.CancellationToken());
+            await _sut.Handle(new DeleteTossCommand(allInsertedToss.First().Id), new System.Threading.CancellationToken());
 
 
             var allRemaining = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();

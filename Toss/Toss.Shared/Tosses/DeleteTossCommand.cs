@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Toss.Server.Controllers
+namespace Toss.Shared.Tosses
 {
     public class DeleteTossCommand : IRequest
     {

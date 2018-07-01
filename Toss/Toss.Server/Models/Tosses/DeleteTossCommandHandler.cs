@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
+using Toss.Shared.Tosses;
 
 namespace Toss.Server.Models.Tosses
 {

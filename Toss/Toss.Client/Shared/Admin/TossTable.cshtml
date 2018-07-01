@@ -18,7 +18,7 @@
                 <td>@toss.CreatedOn</td>
                 <td>@toss.UserName</td>
                 <td>@toss.Content</td>
-                <td></td>
+                <td><button type="button" class="btn btn-danger" onclick="@(async () => await Delete(toss))"><i class="fas fa-trash"></i></button></td>
             </tr>
 
         }
@@ -53,7 +53,16 @@
             })
             .Get();
     }
-
+    protected async Task Delete(TossListAdminItem toss)
+    {
+        await ClientFactory.Create("/api/toss/delete")
+                   .OnOK<TossListAdminItems>(r =>
+                   {
+                       JsInterop.Toastr("success", "Toss deleted with success");
+                       Tosses.Remove(toss);
+                   })
+                   .Post(new DeleteTossCommand(toss.Id));
+    }
     protected async Task LoadMore()
     {
         await ClientFactory.Create(string.Format("/api/toss/list?ItemCount=15&maxDate={0:yyyy-MM-ddTHH:mm:ss.fffZ}", maxDate))
