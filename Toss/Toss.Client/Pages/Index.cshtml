@@ -20,12 +20,25 @@
 
 
                 </div>
+
                 <div class="card-footer p-1 ">
                     <button onclick="@SendToss" ref="@sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
                 </div>
             </form>
         </div>
     </div>
+    @if (string.IsNullOrEmpty(CurrentTag))
+    {
+        <div class="col-md-3 col-sm-6 my-2">
+            <div class="card text-white bg-warning   h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Select a hashtag</h5>
+                    <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
+                </div>
+            </div>
+        </div>
+
+    }
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
         <div class="col-md-3 col-sm-6 my-2">
@@ -33,13 +46,13 @@
             <div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
-                        
+
                         <div class="modal-body">
                             @toss.Content
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                          
+
                         </div>
                     </div>
                 </div>
@@ -56,7 +69,7 @@
 @functions{
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     TossCreateCommand newToss = new TossCreateCommand();
-    Dictionary<string,List<string>> _errors;
+    Dictionary<string, List<string>> _errors;
 
     ElementRef sendButton;
     [Parameter]
@@ -66,7 +79,7 @@
         await RefreshTossList();
     }
 
-   
+
     protected async Task RefreshTossList()
     {
         if (CurrentTag == null)
@@ -85,7 +98,7 @@
                 _errors = null;
                 await RefreshTossList();
             })
-            .OnBadRequest<Dictionary<string,List<string>>>(e => _errors = e)
+            .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
             .Post(newToss);
         StateHasChanged();
 

@@ -5,6 +5,10 @@ namespace Toss.Shared.Tosses
 {
     public class TossListAdminItems
     {
+        public TossListAdminItems()
+        {
+        }
+
         public TossListAdminItems(List<TossListAdminItem> result, int count)
         {
             if(count < 0)

@@ -1,5 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-<h3>Tosses</h3>
+<h5>Tosses <small class="text-muted">@TossCount tosses in the DB</small></h5>
 <table class="table">
     <thead>
         <tr>
@@ -22,12 +22,50 @@
             </tr>
 
         }
+        @if (maxDate.HasValue)
+        {
+            <tr>
+                <td colspan="5"><button type="button" class="btn btn-block" onclick="@LoadMore">Load More</button></td>
+            </tr>
+        }
+        else
+        {
+            <tr>
+                <td colspan="5"><div class="alert alert-warning">All the toss were loaded</div></td>
+            </tr>
+
+        }
     </tbody>
 </table>
 @functions {
+    int TossCount = 0;
     List<TossListAdminItem> Tosses = new List<TossListAdminItem>();
+    DateTimeOffset? maxDate;
     protected override async Task OnInitAsync()
     {
+        await ClientFactory.Create("/api/toss/list?ItemCount=15")
+            .OnOK<TossListAdminItems>(r =>
+            {
+                Tosses = r.Result;
+                TossCount = r.Count;
+                if (r.Result.Count > 0)
+                    maxDate = r.Result.Min(t => t.CreatedOn);
+            })
+            .Get();
+    }
+
+    protected async Task LoadMore()
+    {
+        await ClientFactory.Create(string.Format("/api/toss/list?ItemCount=15&maxDate={0:yyyy-MM-ddTHH:mm:ss.fffZ}", maxDate))
+                   .OnOK<TossListAdminItems>(r =>
+                   {
+                       Tosses.AddRange(r.Result);
+                       if (r.Result.Count > 0)
+                           maxDate = r.Result.Min(t => t.CreatedOn);
+                       else
+                           maxDate = null;
+                   })
+                   .Get();
 
     }
 }

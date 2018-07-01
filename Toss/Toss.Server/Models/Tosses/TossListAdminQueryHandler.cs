@@ -11,9 +11,9 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossListAdminQueryHandler : IRequestHandler<TossListAdminQuery, TossListAdminItems>
     {
-        private CosmosDBTemplate<TossEntity> _tossCosmosDB;
+        private ICosmosDBTemplate<TossEntity> _tossCosmosDB;
 
-        public TossListAdminQueryHandler(CosmosDBTemplate<TossEntity> tossCosmosDB)
+        public TossListAdminQueryHandler(ICosmosDBTemplate<TossEntity> tossCosmosDB)
         {
             _tossCosmosDB = tossCosmosDB;
         }

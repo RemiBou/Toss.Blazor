@@ -13,5 +13,8 @@ namespace Toss.Server.Data
         Task<IOrderedQueryable<T>> CreateDocumentQuery();
 
         Task Insert(T instance);
+        Task<IQueryable<T>> CreateDocumentQuery(string sql);
+
+        Task<IQueryable<TReturn>> CreateDocumentQuery<TReturn>(string sql);
     }
 }
