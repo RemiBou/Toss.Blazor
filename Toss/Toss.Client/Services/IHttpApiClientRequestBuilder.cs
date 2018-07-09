@@ -15,5 +15,6 @@ namespace Toss.Client.Services
         HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null);
         Task Post();
         Task Post<T>(T data);
+        Task Post(byte[] data);
     }
 }

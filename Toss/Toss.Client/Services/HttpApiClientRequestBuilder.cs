@@ -24,10 +24,18 @@ namespace Toss.Client.Services
             _httpClient = httpClient;
             _elementRef = elementRef;
         }
+
+        public async Task Post(byte[] data)
+        {
+            await ExecuteHttpQuery(async () =>
+            {
+                return await _httpClient.PostAsync( _uri,new ByteArrayContent(data));
+            });
+        }
         public async Task Post<T>(T data)
         {
-            
-            await ExecuteHttpQuery(async () =>{
+            await ExecuteHttpQuery(async () =>
+            {
                 var requestJson = JsonUtil.Serialize(data);
                 return await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
@@ -36,7 +44,7 @@ namespace Toss.Client.Services
             });
         }
         public async Task Post()
-        {            
+        {
             await ExecuteHttpQuery(async () => await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)));
         }
         private async Task HandleHttpResponse(HttpResponseMessage response)

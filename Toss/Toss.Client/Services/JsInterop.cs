@@ -33,5 +33,15 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("showModal",id);
         }
+
+        public static async Task<string> Upload(byte[] fileContent)
+        {
+            string res = null;
+            var httpRequestFactory = (IHttpApiClientRequestBuilderFactory)Program.serviceProvider.GetService(typeof(IHttpApiClientRequestBuilderFactory));
+            await httpRequestFactory.Create("/api/picture/upload")
+                .OnOK<string>(s => res = s)
+                .Post(fileContent);
+            return res;
+        }
     }
 }

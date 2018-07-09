@@ -42,3 +42,15 @@ Blazor.registerFunction("showModal", function (id) {
    $("#"+id).modal("show");
     return true;
 });
+$(document).on('change', 'input[type=file][data-image-upload]',function () {
+    console.log("Loading file");
+    var reader = new FileReader();
+    reader.onload = function () {
+        var arrayBuffer = this.result,
+            array = new Uint8Array(arrayBuffer),
+            binaryString = String.fromCharCode(array);
+        console.log(binaryString);
+        console.log("File Loaded");
+    };
+    reader.readAsArrayBuffer(this.files[0]);
+});

@@ -7,9 +7,10 @@ namespace Toss.Client
 {
     public class Program
     {
+        public static BrowserServiceProvider serviceProvider;
         static void Main(string[] args)
         {
-            var serviceProvider = new BrowserServiceProvider(configure =>
+            serviceProvider = new BrowserServiceProvider(configure =>
             {
                 configure.Add(new ServiceDescriptor(
                     typeof(IHttpApiClientRequestBuilderFactory),

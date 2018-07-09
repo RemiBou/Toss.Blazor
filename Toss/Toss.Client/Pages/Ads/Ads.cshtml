@@ -1,0 +1,8 @@
+﻿@page "/ads"
+<h1>Ads</h1>
+<input type="file" data-image-upload="123" />
+<input type="hidden" id="image-input-123" bind="@pictureUrl" />
+<img id="image-img-123" src="@pictureUrl" />
+@functions{
+    string pictureUrl;
+}
