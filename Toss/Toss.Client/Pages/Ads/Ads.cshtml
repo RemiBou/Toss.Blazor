@@ -1,8 +1,19 @@
 ﻿@page "/ads"
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 <h1>Ads</h1>
-<input type="file" data-image-upload="123" />
-<input type="hidden" id="image-input-123" bind="@pictureUrl" />
-<img id="image-img-123" src="@pictureUrl" />
+<input type="file" onchange="@UploadFile" id="fileUpload" ref="@fileInput" />
 @functions{
     string pictureUrl;
+    ElementRef fileInput;
+    async Task UploadFile()
+    {
+        JsInterop.ConsoleLog("onchange");
+        var data = await JsInterop.GetFileData("fileUpload");
+        await ClientFactory.Create("/api/upload")
+            .OnOK<FileUploadResult>(s =>
+            {
+                JsInterop.ConsoleLog("C# received " + s.TempFileName + " from server");
+            })
+            .Post(Convert.FromBase64String(data));
+    }
 }

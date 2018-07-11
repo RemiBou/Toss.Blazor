@@ -16,32 +16,37 @@ namespace Toss.Client.Services
         {
             RegisteredFunction.Invoke<bool>("log", message);
         }
-      
-        public static void Toastr(string toastType,string message)
+
+        public static void Toastr(string toastType, string message)
         {
-            RegisteredFunction.Invoke<bool>("toastr",toastType, message);
+            RegisteredFunction.Invoke<bool>("toastr", toastType, message);
         }
         public static int AjaxLoaderShow(ElementRef elementRef)
         {
             return RegisteredFunction.Invoke<int>("ajaxLoaderShow", elementRef);
         }
-         public static void AjaxLoaderHide(int id)
+        public static void AjaxLoaderHide(int id)
         {
-            RegisteredFunction.Invoke<bool>("ajaxLoaderHide",id);
+            RegisteredFunction.Invoke<bool>("ajaxLoaderHide", id);
         }
-         public static void ShowModal(string id)
+        public static void ShowModal(string id)
         {
-            RegisteredFunction.Invoke<bool>("showModal",id);
+            RegisteredFunction.Invoke<bool>("showModal", id);
+        }
+        private class StringHolder
+        {
+            public string Content { get; set; }
         }
 
-        public static async Task<string> Upload(byte[] fileContent)
+        public static async Task<string> GetFileData(string fileInputRef)
         {
-            string res = null;
-            var httpRequestFactory = (IHttpApiClientRequestBuilderFactory)Program.serviceProvider.GetService(typeof(IHttpApiClientRequestBuilderFactory));
-            await httpRequestFactory.Create("/api/picture/upload")
-                .OnOK<string>(s => res = s)
-                .Post(fileContent);
-            return res;
+            return (await RegisteredFunction.InvokeAsync<StringHolder>("getFileData", fileInputRef)).Content;
+            //ConsoleLog("C# just received byte[] : " + base64fileContent.Length);
+            //string res = null;
+           
+
+            //return res;
         }
+
     }
 }
