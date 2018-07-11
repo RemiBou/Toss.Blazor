@@ -9,6 +9,7 @@
     {
         JsInterop.ConsoleLog("onchange");
         var data = await JsInterop.GetFileData("fileUpload");
+        JsInterop.ConsoleLog(data.Length.ToString());
         await ClientFactory.Create("/api/upload")
             .OnOK<FileUploadResult>(s =>
             {

@@ -50,15 +50,14 @@ const readUploadedFileAsText = (inputFile) => {
             temporaryFileReader.abort();
             reject(new DOMException("Problem parsing input file."));
         };
-
-        temporaryFileReader.onload = (e) => {
-            var arrayBuffer = e.target.result;
-            var array = new Uint8Array(arrayBuffer);         
-            var data = { content: btoa(array) };
+        temporaryFileReader.addEventListener("load", function () {
+            var data = {
+                content: temporaryFileReader.result.split(',')[1]
+            };
+            console.log(data);
             resolve(data);
-        };
-        console.log(inputFile.files[0]);
-        temporaryFileReader.readAsArrayBuffer(inputFile.files[0]);
+        }, false);
+        temporaryFileReader.readAsDataURL(inputFile.files[0]);
     });
 };
 Blazor.registerFunction("getFileData", function (inputFile) {
