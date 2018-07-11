@@ -1,7 +1,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/mek4xbti51pog09j?svg=true)](https://ci.appveyor.com/project/RemiBou/toss-blazor)
 
 # Toss.Blazor
-Twitter-like web application using Blazor 0.4.0. You can login, post a ew message (a "toss") with hashtag and select your favorite hashtags for find messages.
+Twitter-like web application using Blazor 0.4.0. You can login, post a new message (a "toss") with hashtag and select your favorite hashtags for find messages.
 
 # Tech stack
 - Blazor (0.4.0)
