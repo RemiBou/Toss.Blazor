@@ -26,4 +26,4 @@ Twitter-like web application using Blazor 0.4.0. You can login, post a new messa
 - Run Toss.Server
 - This sample uses mailjet as mail provider, edit MailService if you want to change that
 
-You can find detailed explanation onmy blog here : https://remibou.github.io/
+You can find detailed explanation on my blog here : https://remibou.github.io/
