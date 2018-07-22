@@ -47,6 +47,12 @@ namespace Toss.Client.Services
 
             //return res;
         }
-
+        
+        public static string GetCookie()
+        {
+            StringHolder stringHolder = RegisteredFunction.Invoke<StringHolder>("getDocumentCookie");
+            JsInterop.ConsoleLog(stringHolder.Content);
+            return stringHolder.Content;
+        }
     }
 }

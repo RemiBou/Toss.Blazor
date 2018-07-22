@@ -1,4 +1,4 @@
-﻿@inject HttpClient Http;
+﻿@inject IHttpApiClientRequestBuilderFactory Http;
 @inject IUriHelper UriHelper;
 <h4>Use another service to log in.</h4>
 @foreach (var provider in loginProviders)
@@ -17,7 +17,7 @@
     IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
     protected override async Task OnInitAsync()
     {
-        await new HttpApiClientRequestBuilder(Http, "/api/account/loginProviders",UriHelper)
+        await Http.Create("/api/account/loginProviders")
             .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
             .Get();
 

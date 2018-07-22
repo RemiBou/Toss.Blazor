@@ -22,6 +22,7 @@ using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Toss.Server.Models;
 using Microsoft.AspNetCore.Identity.DocumentDB;
+using Toss.Server.Extensions;
 
 namespace Toss.Server
 {
@@ -86,7 +87,10 @@ namespace Toss.Server
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup));
             services.AddMediatR(typeof(ChangePasswordCommand));
-
+            services.AddAntiforgery(options =>
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
 
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
@@ -117,13 +121,14 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
+            
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "/api/{controller}/{action}/{id?}");
             });
-
+            app.UseMiddleware<CsrfTokenCookieMiddleware>();
             app.UseBlazor<Toss.Client.Program>();
         }
     }

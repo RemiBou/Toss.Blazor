@@ -64,3 +64,7 @@ Blazor.registerFunction("getFileData", function (inputFile) {
     var expr = "#" + inputFile.replace(/"/g, '');
     return readUploadedFileAsText($(expr)[0]);
 });
+
+Blazor.registerFunction("getDocumentCookie", function () {
+    return { content: document.cookie };
+});

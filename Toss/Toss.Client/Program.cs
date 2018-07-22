@@ -20,6 +20,10 @@ namespace Toss.Client
                   typeof(IAccountService),
                   typeof(AccountService),
                   ServiceLifetime.Scoped));
+                configure.Add(new ServiceDescriptor(
+                 typeof(IBrowserCookieService),
+                 typeof(BrowserCookieService),
+                 ServiceLifetime.Singleton));
             });
 
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");

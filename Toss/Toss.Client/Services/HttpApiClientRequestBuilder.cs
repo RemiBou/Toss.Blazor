@@ -16,20 +16,25 @@ namespace Toss.Client.Services
         private ElementRef _elementRef;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
+        private IBrowserCookieService browserCookieService;
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, ElementRef elementRef = default(ElementRef))
+        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, IBrowserCookieService browserCookieService, ElementRef elementRef = default(ElementRef))
         {
             _uri = uri;
             this.uriHelper = uriHelper;
             _httpClient = httpClient;
             _elementRef = elementRef;
+            this.browserCookieService = browserCookieService;
         }
 
         public async Task Post(byte[] data)
         {
             await ExecuteHttpQuery(async () =>
             {
-                return await _httpClient.PostAsync( _uri,new ByteArrayContent(data));
+                return await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Post, _uri)
+                {
+                    Content = new ByteArrayContent(data)
+                }));
             });
         }
         public async Task Post<T>(T data)
@@ -37,10 +42,10 @@ namespace Toss.Client.Services
             await ExecuteHttpQuery(async () =>
             {
                 var requestJson = JsonUtil.Serialize(data);
-                return await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
+                return await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
-                });
+                }));
             });
         }
         public async Task Post()
@@ -69,16 +74,24 @@ namespace Toss.Client.Services
                     //other case , we do nothing, I'll add this case as needed
             }
         }
-
+        private HttpRequestMessage PrepareMessage(HttpRequestMessage httpRequestMessage)
+        {
+            string csrfCookieValue = browserCookieService.Get(c => c.Equals("CSRF-TOKEN"));
+            if (csrfCookieValue != null)
+                httpRequestMessage.Headers.Add("X-CSRF-TOKEN", csrfCookieValue);
+            return httpRequestMessage;
+        }
         public async Task Get()
         {
-            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, _uri)));
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Get, _uri))));
         }
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {
             var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
+
+
                 var response = await httpCall();
                 await HandleHttpResponse(response);
             }
