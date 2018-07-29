@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Blazor;
 using Microsoft.AspNetCore.Blazor.Browser.Services;
 using Microsoft.AspNetCore.Blazor.Services;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -31,7 +32,7 @@ namespace Toss.Client.Services
         {
             await ExecuteHttpQuery(async () =>
             {
-                return await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Post, _uri)
+                return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new ByteArrayContent(data)
                 }));
@@ -41,8 +42,8 @@ namespace Toss.Client.Services
         {
             await ExecuteHttpQuery(async () =>
             {
-                var requestJson = JsonUtil.Serialize(data);
-                return await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Post, _uri)
+                var requestJson = Json.Serialize(data);
+                return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
                 }));
@@ -69,25 +70,25 @@ namespace Toss.Client.Services
                     uriHelper.NavigateTo("/login");
                     break;
                 case System.Net.HttpStatusCode.InternalServerError:
-                    JsInterop.Toastr("error", "A server error occured, sorry");
+                    await JsInterop.Toastr("error", "A server error occured, sorry");
                     break;
                     //other case , we do nothing, I'll add this case as needed
             }
         }
-        private HttpRequestMessage PrepareMessage(HttpRequestMessage httpRequestMessage)
+        private async Task<HttpRequestMessage> PrepareMessageAsync(HttpRequestMessage httpRequestMessage)
         {
-            string csrfCookieValue = browserCookieService.Get(c => c.Equals("CSRF-TOKEN"));
+            string csrfCookieValue = await browserCookieService.Get(c => c.Equals("CSRF-TOKEN"));
             if (csrfCookieValue != null)
                 httpRequestMessage.Headers.Add("X-CSRF-TOKEN", csrfCookieValue);
             return httpRequestMessage;
         }
         public async Task Get()
         {
-            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(PrepareMessage(new HttpRequestMessage(HttpMethod.Get, _uri))));
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Get, _uri))));
         }
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {
-            var loaderId = JsInterop.AjaxLoaderShow(_elementRef);
+            var loaderId = await JsInterop.AjaxLoaderShow(_elementRef);
             try
             {
 
@@ -97,19 +98,19 @@ namespace Toss.Client.Services
             }
             catch
             {
-                JsInterop.Toastr("error", "Connection error, server is down or you are not connected to the same network.");
+                await JsInterop.Toastr("error", "Connection error, server is down or you are not connected to the same network.");
                 throw;
             }
             finally
             {
-                JsInterop.AjaxLoaderHide(loaderId);
+                await JsInterop.AjaxLoaderHide(loaderId);
             }
         }
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)
         {
             _onBadRequest = async (HttpResponseMessage r) =>
             {
-                var response = JsonUtil.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                var response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;
@@ -118,7 +119,7 @@ namespace Toss.Client.Services
         {
             _onOK = async (HttpResponseMessage r) =>
             {
-                var response = JsonUtil.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                var response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;
@@ -159,12 +160,11 @@ namespace Toss.Client.Services
         }
         public HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null)
         {
-            OnOK(() =>
+            OnOK(async () =>
             {
                 if (!string.IsNullOrEmpty(successMessage))
-                    JsInterop.Toastr("success", successMessage);
+                    await JsInterop.Toastr("success", successMessage);
                 uriHelper.NavigateTo(navigateTo);
-                return Task.CompletedTask;
             });
             return this;
         }

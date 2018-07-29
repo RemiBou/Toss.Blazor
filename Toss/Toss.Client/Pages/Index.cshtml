@@ -22,7 +22,7 @@
                 </div>
 
                 <div class="card-footer p-1 ">
-                    <button onclick="@SendToss" ref="@sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
+                    <button onclick="@SendToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
                 </div>
             </form>
         </div>
@@ -57,7 +57,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card  h-100" data-toggle="modal" onclick="@(() => ShowModal(toss))" style="cursor:zoom-in">
+            <div class="card  h-100" data-toggle="modal" onclick="@(async () => await ShowModal(toss))" style="cursor:zoom-in">
                 <div class="card-body p-2">
                     <p class="card-text" style="max-height:200px;overflow-y: hidden;">@toss.Content</p>
                     <p class="card-text"><small class="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
@@ -104,9 +104,9 @@
 
     }
 
-    protected void ShowModal(TossLastQueryItem toss)
+    protected async Task ShowModal(TossLastQueryItem toss)
     {
-        JsInterop.ShowModal(GetTossDetailsId(toss));
+        await JsInterop.ShowModal(GetTossDetailsId(toss));
     }
     protected string GetTossDetailsId(TossLastQueryItem toss)
     {

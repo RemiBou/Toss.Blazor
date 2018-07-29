@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.Browser.Interop;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.JSInterop;
 using System.Threading.Tasks;
 
 namespace Toss.Client.Services
@@ -12,26 +9,26 @@ namespace Toss.Client.Services
     /// </summary>
     public static class JsInterop
     {
-        public static void ConsoleLog(string message)
+        public static async Task ConsoleLog(string message)
         {
-            RegisteredFunction.Invoke<bool>("log", message);
+            await JSRuntime.Current.InvokeAsync<bool>("console.log", message);
         }
 
-        public static void Toastr(string toastType, string message)
+        public static async Task Toastr(string toastType, string message)
         {
-            RegisteredFunction.Invoke<bool>("toastr", toastType, message);
+            await JSRuntime.Current.InvokeAsync<bool>("toastrShow", toastType, message);
         }
-        public static int AjaxLoaderShow(ElementRef elementRef)
+        public static async Task<int> AjaxLoaderShow(ElementRef elementRef)
         {
-            return RegisteredFunction.Invoke<int>("ajaxLoaderShow", elementRef);
+            return await JSRuntime.Current.InvokeAsync<int>("ajaxLoaderShow", elementRef);
         }
-        public static void AjaxLoaderHide(int id)
+        public static async Task AjaxLoaderHide(int id)
         {
-            RegisteredFunction.Invoke<bool>("ajaxLoaderHide", id);
+            await JSRuntime.Current.InvokeAsync<bool>("ajaxLoaderHide", id);
         }
-        public static void ShowModal(string id)
+        public static async Task ShowModal(string id)
         {
-            RegisteredFunction.Invoke<bool>("showModal", id);
+            await JSRuntime.Current.InvokeAsync<bool>("showModal", id);
         }
         private class StringHolder
         {
@@ -40,19 +37,13 @@ namespace Toss.Client.Services
 
         public static async Task<string> GetFileData(string fileInputRef)
         {
-            return (await RegisteredFunction.InvokeAsync<StringHolder>("getFileData", fileInputRef)).Content;
-            //ConsoleLog("C# just received byte[] : " + base64fileContent.Length);
-            //string res = null;
+            return (await JSRuntime.Current.InvokeAsync<string>("getFileData", fileInputRef));
            
-
-            //return res;
         }
         
-        public static string GetCookie()
+        public static async Task<string> GetCookie()
         {
-            StringHolder stringHolder = RegisteredFunction.Invoke<StringHolder>("getDocumentCookie");
-            JsInterop.ConsoleLog(stringHolder.Content);
-            return stringHolder.Content;
+            return await JSRuntime.Current.InvokeAsync<string>("getDocumentCookie");
         }
     }
 }

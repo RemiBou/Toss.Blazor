@@ -34,7 +34,7 @@
     Dictionary<string,List<string>> _errors;
     async Task<bool> TryLogin(UIEventArgs even)
     {
-        var test = JsonUtil.Deserialize<Dictionary<string,List<string>>>("{\"Name\":[\"The Name field is required.\"],\"Email\":[\"The Email field is required.\"],\"Password\":[\"The Password field is required.\"]}");
+        var test = Json.Deserialize<Dictionary<string,List<string>>>("{\"Name\":[\"The Name field is required.\"],\"Email\":[\"The Email field is required.\"],\"Password\":[\"The Password field is required.\"]}");
 
         _errors = null;
         await ClientFactory.Create("/api/account/login", loginButton)

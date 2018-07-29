@@ -56,9 +56,9 @@
     protected async Task Delete(TossListAdminItem toss)
     {
         await ClientFactory.Create("/api/toss/delete")
-                   .OnOK<TossListAdminItems>(r =>
+                   .OnOK<TossListAdminItems>(async r =>
                    {
-                       JsInterop.Toastr("success", "Toss deleted with success");
+                       await JsInterop.Toastr("success", "Toss deleted with success");
                        Tosses.Remove(toss);
                    })
                    .Post(new DeleteTossCommand(toss.Id));

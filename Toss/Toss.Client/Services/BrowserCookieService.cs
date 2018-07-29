@@ -15,10 +15,10 @@ namespace Toss.Client.Services
         /// </summary>
         /// <param name="cookieName"></param>
         /// <returns></returns>
-        public string Get(Func<string,bool> filterCookie)
+        public async Task<string> Get(Func<string,bool> filterCookie)
         {
-            return JsInterop
-                .GetCookie()
+            return (await JsInterop
+                .GetCookie())
                 .Split(';')
                 .Select(v => v.TrimStart().Split('='))
                 .Where(s => filterCookie(s[0]))

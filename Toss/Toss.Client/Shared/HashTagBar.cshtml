@@ -43,13 +43,13 @@
     {
         StateHasChanged();
         await ClientFactory.Create("/api/account/addHashTag")
-            .OnOK(() =>
+            .OnOK(async () =>
             {
-                JsInterop.Toastr("success", "Hashtag added with success");
+                await JsInterop.Toastr("success", "Hashtag added with success");
                 _account.Hashtags.Add(newHashtag);
                 newHashtag = null;
             })
-            .OnBadRequest<Dictionary<string, List<string>>>(e => JsInterop.Toastr("error", string.Join(",", e["NewHashTag"])))
+            .OnBadRequest<Dictionary<string, List<string>>>(async e => await JsInterop.Toastr("error", string.Join(",", e["NewHashTag"])))
             .Post(new AddHashtagCommand(newHashtag));
         StateHasChanged();
 
