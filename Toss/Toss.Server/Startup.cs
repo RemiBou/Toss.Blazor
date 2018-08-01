@@ -23,6 +23,8 @@ using Microsoft.Azure.Documents.Client;
 using Toss.Server.Models;
 using Microsoft.AspNetCore.Identity.DocumentDB;
 using Toss.Server.Extensions;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace Toss.Server
 {
@@ -92,6 +94,8 @@ namespace Toss.Server
                 options.HeaderName = "X-CSRF-TOKEN";
             });
 
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+
         }
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
@@ -116,6 +120,19 @@ namespace Toss.Server
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            var supportedCultures = new[]
+            {
+                new CultureInfo("en"),
+                new CultureInfo("fr"),
+            };
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("en"),
+                // Formatting numbers, dates, etc.
+                SupportedCultures = supportedCultures,
+                // UI strings that we have localized.
+                SupportedUICultures = supportedCultures
+            });
 
             app.UseStaticFiles();
 

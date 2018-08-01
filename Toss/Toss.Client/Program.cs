@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Blazor.Browser.Rendering;
 using Microsoft.AspNetCore.Blazor.Browser.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 using Toss.Client.Services;
 
 namespace Toss.Client
@@ -24,9 +26,15 @@ namespace Toss.Client
                  typeof(IBrowserCookieService),
                  typeof(BrowserCookieService),
                  ServiceLifetime.Singleton));
+                configure.Add(new ServiceDescriptor(
+                   typeof(II18nService),
+                   typeof(RemoteI18nService),
+                   ServiceLifetime.Singleton));
             });
 
+
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");
+
         }
     }
 }

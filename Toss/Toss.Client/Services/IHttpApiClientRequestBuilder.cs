@@ -16,5 +16,6 @@ namespace Toss.Client.Services
         Task Post();
         Task Post<T>(T data);
         Task Post(byte[] data);
+        void SetHeader(string v, string lg);
     }
 }

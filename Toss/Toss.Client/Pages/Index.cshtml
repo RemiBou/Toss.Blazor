@@ -3,8 +3,6 @@
 @page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
-
-
 <HashTagBar></HashTagBar>
 <div class="row">
     <div class="col-md-3 col-sm-6 my-2">
@@ -82,7 +80,7 @@
 
     protected async Task RefreshTossList()
     {
-        if (CurrentTag == null)
+        if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
         await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
             .OnOK<List<TossLastQueryItem>>(l => Tosses = l)

@@ -169,5 +169,9 @@ namespace Toss.Client.Services
             return this;
         }
 
+        public void SetHeader(string key, string value)
+        {
+            _httpClient.DefaultRequestHeaders.Add(key, value);
+        }
     }
 }

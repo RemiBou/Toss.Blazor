@@ -1,0 +1,20 @@
+﻿@inject II18nService i18n;
+
+
+    @displayValue.Value
+
+
+@functions{
+    [Parameter]
+    string key { get; set; }
+
+    public MarkupString displayValue { get; set; }
+    protected override async Task OnParametersSetAsync()
+    {
+        displayValue = new MarkupString(await i18n.Get(key));
+        await JsInterop.ConsoleLog(displayValue.ToString());
+        this.StateHasChanged();
+        await base.OnParametersSetAsync();
+    }
+
+}
