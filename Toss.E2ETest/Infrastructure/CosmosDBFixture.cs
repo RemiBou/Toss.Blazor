@@ -19,10 +19,10 @@ namespace Toss.Tests.Infrastructure
         public void Dispose()
         {
 
-          //  Client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(DatabaseName)).Wait();
+           Client.DeleteDatabaseAsync(UriFactory.CreateDatabaseUri(DatabaseName)).Wait();
         }
 
         public DocumentClient Client { get; private set; }
-        public string DatabaseName { get; internal set; } = "UnitTests";
+        public const string DatabaseName  = "UnitTests";
     }
 }

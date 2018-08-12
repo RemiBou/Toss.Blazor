@@ -23,7 +23,7 @@ namespace Toss.Tests.Infrastructure
         {
             this.cosmosDBFixture = cosmosDBFixture;
             _client = cosmosDBFixture.Client;
-            _databaseName = cosmosDBFixture.DatabaseName;
+            _databaseName = CosmosDBFixture.DatabaseName;
         }
 
         /// <summary>

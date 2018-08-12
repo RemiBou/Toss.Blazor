@@ -25,6 +25,8 @@ using Microsoft.AspNetCore.Identity.DocumentDB;
 using Toss.Server.Extensions;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using IdentityRole = Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole;
 
 namespace Toss.Server
 {
@@ -48,20 +50,17 @@ namespace Toss.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
-            services.AddSingleton(new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]));
-            var client = services.BuildServiceProvider().GetRequiredService<DocumentClient>();
-            string DataBaseName = "Toss";
-            if (services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>().IsEnvironment("TEST"))
-            {
-                DataBaseName = "TossTest";
-            }
-            Database db = client.CreateDatabaseQuery()
+            DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]);
+            services.AddSingleton(documentClient);
+            string DataBaseName = Configuration.GetValue("databaseName", "TOSS");
+            Database db = documentClient.CreateDatabaseQuery()
                                 .Where(d => d.Id == DataBaseName)
                                 .AsEnumerable()
                                 .FirstOrDefault()
-                ?? client.CreateDatabaseAsync(new Database { Id = DataBaseName }).Result;
+                ?? documentClient.CreateDatabaseAsync(new Database { Id = DataBaseName }).Result;
 
-            services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(client, db.SelfLink);
+            services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(documentClient, db.SelfLink)
+                .AddDefaultTokenProviders();
 
 
 
@@ -74,8 +73,17 @@ namespace Toss.Server
                 return new UrlHelper(actionContext);
             });
             // Add application services.
-            services.AddTransient<IEmailSender, EmailSender>();
+            if (Configuration.GetValue<string>("e2eTest") == null)
+            {
+                services.AddTransient<IEmailSender, EmailSender>();
+            }
+            else
+            {
+                //We had it as singleton so we can get the content later during the asset phase
+                services.AddSingleton<IEmailSender, E2ETestEmailSender>();
+            }
             services.AddAuthentication()
+
                 .AddGoogle(o =>
                 {
                     o.ClientId = Configuration["GoogleClientId"];
@@ -143,7 +151,7 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
-            
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(

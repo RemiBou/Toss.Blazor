@@ -1,0 +1,1 @@
+<Playlist Version="1.0"><Add Test="Toss.Tests.E2E.HostedInAspNetTest.FullE2eTest" /><Add Test="Toss.Tests.E2E.E2ETest.FullE2eTest" /></Playlist>

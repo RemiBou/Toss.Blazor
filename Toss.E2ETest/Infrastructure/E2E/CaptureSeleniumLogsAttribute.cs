@@ -10,7 +10,7 @@ namespace Toss.Tests.E2E
     {
         public override void Before(MethodInfo methodUnderTest)
         {
-            if (!typeof(BrowserTestBase).IsAssignableFrom(methodUnderTest.DeclaringType))
+            if (!typeof(ServerTestBase).IsAssignableFrom(methodUnderTest.DeclaringType))
             {
                 throw new InvalidOperationException("This should only be used with BrowserTestBase");
             }
@@ -18,9 +18,9 @@ namespace Toss.Tests.E2E
 
         public override void After(MethodInfo methodUnderTest)
         {
-            var browser = BrowserTestBase.Browser;
-            var logs = BrowserTestBase.Logs;
-            var output = BrowserTestBase.Output;
+            var browser = ServerTestBase.Browser;
+            var logs = ServerTestBase.Logs;
+            var output = ServerTestBase.Output;
 
             // Put browser logs first, the test UI will truncate output after a certain length
             // and the browser logs will include exceptions thrown by js in the browser.

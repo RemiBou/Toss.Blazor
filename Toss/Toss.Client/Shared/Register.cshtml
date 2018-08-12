@@ -38,7 +38,7 @@
             .OnOK(async () =>
             {
                 await JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to "+ registerCommand.Email);
-                //registerCommand = new RegisterCommand();
+                registerCommand = new RegisterCommand();
             })
             .Post(registerCommand);
         StateHasChanged();
