@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor.Browser.Rendering;
 using Microsoft.AspNetCore.Blazor.Browser.Services;
+using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
@@ -31,8 +32,7 @@ namespace Toss.Client
                    typeof(RemoteI18nService),
                    ServiceLifetime.Singleton));
             });
-
-
+            
             new BrowserRenderer(serviceProvider).AddComponent<App>("app");
 
         }
