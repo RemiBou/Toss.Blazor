@@ -18,39 +18,22 @@ namespace Toss.Tests.E2E
             : base(browserFixture, serverFixture, output)
         {
             serverFixture.BuildWebHostMethod = Toss.Server.Program.BuildWebHost;
-            serverFixture.Environment = AspNetEnvironment.Development;
             Navigate("/", noReload: true);
             WaitUntilLoaded();
             _webDriveWaitDefault = new WebDriverWait(Browser, TimeSpan.FromSeconds(DefaultWaitSecondsForPageChange));
         }
-
-  //      [Fact]
-        public void HasTitle()
+        /// <summary>
+        /// The purpose of this test is the most important features of toss : subscribe, validate account, post content, read content
+        /// Forget password, reset password, logout.
+        /// As more feature will be added if tey are important enough tey'll be added to this test
+        /// It's designed as one test because E2E test are hard to initialize so I prefer to see it as a signle user session trying everything.
+        /// 
+        /// </summary>
+        [Fact]
+        public void FullE2eTest()
         {
-            Assert.Equal("TOSS", Browser.Title);
-        }
-
- //       [Fact]
-        public void when_accessing_accountpage_and_not_logged_redirect_to_login()
-        {
-            Navigate("/account");
-            
-            _webDriveWaitDefault.Until(driver => driver.Url.EndsWith("/login"));
-        }
-
-//        [Fact]
-        public void when_register_ok_empty_form_and_cannot_log()
-        {
-            Navigate("/login");
-
-            _webDriveWaitDefault.Until(driver => driver.FindElements(By.Id("NewEmail")).Any());
-            Browser.FindElement(By.Id("NewEmail")).SendKeys("toto@yopmail.com");
-            Browser.FindElement(By.Id("NewName")).SendKeys("tototo");
-            Browser.FindElement(By.Id("NewPassword")).SendKeys("056187Aa!");
-            Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys("056187Aa!");
-            Browser.FindElement(By.Id("BtnRegister")).Click();
-            _webDriveWaitDefault.Until(driver => driver.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
-           
+            Navigate("/");
+            Assert.Equal("Toss", Browser.Title);
         }
 
         private void WaitUntilLoaded()

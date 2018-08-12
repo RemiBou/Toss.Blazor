@@ -50,11 +50,16 @@ namespace Toss.Server
             });
             services.AddSingleton(new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]));
             var client = services.BuildServiceProvider().GetRequiredService<DocumentClient>();
+            string DataBaseName = "Toss";
+            if (services.BuildServiceProvider().GetRequiredService<IHostingEnvironment>().IsEnvironment("TEST"))
+            {
+                DataBaseName = "TossTest";
+            }
             Database db = client.CreateDatabaseQuery()
-                                .Where(d => d.Id == "Toss")
+                                .Where(d => d.Id == DataBaseName)
                                 .AsEnumerable()
                                 .FirstOrDefault()
-                ?? client.CreateDatabaseAsync(new Database { Id = "Toss" }).Result;
+                ?? client.CreateDatabaseAsync(new Database { Id = DataBaseName }).Result;
 
             services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(client, db.SelfLink);
 
