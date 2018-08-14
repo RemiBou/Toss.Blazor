@@ -76,7 +76,7 @@ namespace Toss.Tests.E2E
             _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector("#BlockHashTagBar a")).Any());
             //filter on hashtag
             Browser.FindElement(By.CssSelector("#BlockHashTagBar a")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .modal-body")).Text == newTossContent);
+            _webDriveWaitDefault.Until(b =>  b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
             //sign out
             Browser.FindElement(By.Id("LinkLogout")).Click();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
