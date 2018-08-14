@@ -52,7 +52,8 @@ namespace Toss.Server
             });
             DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]);
             services.AddSingleton(documentClient);
-            string DataBaseName = Configuration.GetValue("databaseName", "TOSS");
+            string DataBaseName = Configuration.GetValue("databaseName", "Toss");
+            services.Configure<CosmosDBTemplateOptions>((c) => c.DataBaseName = DataBaseName);
             Database db = documentClient.CreateDatabaseQuery()
                                 .Where(d => d.Id == DataBaseName)
                                 .AsEnumerable()

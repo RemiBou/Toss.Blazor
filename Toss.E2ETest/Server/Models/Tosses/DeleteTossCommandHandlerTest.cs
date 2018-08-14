@@ -19,7 +19,7 @@ namespace Toss.Tests.Server.Models.Tosses
 
         public DeleteTossCommandHandlerTest(CosmosDBFixture cosmosDBFixture) : base(cosmosDBFixture)
         {
-            _cosmosDBTemplateEntity = new CosmosDBTemplate<TossEntity>(cosmosDBFixture.Client, CosmosDBFixture.DatabaseName);
+            _cosmosDBTemplateEntity = new CosmosDBTemplate<TossEntity>(cosmosDBFixture.Client, new CosmosDBTemplateOptions() { DataBaseName = CosmosDBFixture.DatabaseName });
             _sut = new DeleteTossCommandHandler(_cosmosDBTemplateEntity);
         }
 

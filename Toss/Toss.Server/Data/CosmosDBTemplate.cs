@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Extensions.Options;
 using Toss.Shared.Tosses;
 
 namespace Toss.Server.Data
@@ -14,15 +15,15 @@ namespace Toss.Server.Data
     {
 
         private string collectionId;
-        public CosmosDBTemplate(DocumentClient documentClient) : this(documentClient, "Toss")
+        public CosmosDBTemplate(DocumentClient documentClient, IOptions<CosmosDBTemplateOptions> options) : this(documentClient,options.Value)
         {
         }
-        public CosmosDBTemplate(DocumentClient documentClient, string databaseId)
+            public CosmosDBTemplate(DocumentClient documentClient, CosmosDBTemplateOptions options)
         {
             collectionId = typeof(T).GetType().Name;
             _documentClient = documentClient;
             _database = new Lazy<Task<ResourceResponse<Database>>>(() =>
-                _documentClient.CreateDatabaseIfNotExistsAsync(new Database() { Id = databaseId })
+                _documentClient.CreateDatabaseIfNotExistsAsync(new Database() { Id = options.DataBaseName })
             );
             _collection = new Lazy<Task<ResourceResponse<DocumentCollection>>>(async () =>
                 {

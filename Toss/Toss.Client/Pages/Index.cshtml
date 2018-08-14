@@ -11,7 +11,7 @@
                 <div class="card-body p-2">
 
                     <p class="card-text">
-                        <textarea bind="@newToss.Content" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
+                        <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
                         <ValidationError FieldName="Content" Errors="@_errors" />
                     </p>
 
@@ -20,7 +20,7 @@
                 </div>
 
                 <div class="card-footer p-1 ">
-                    <button onclick="@SendToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
+                    <button onclick="@SendToss" id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
                 </div>
             </form>
         </div>
@@ -39,7 +39,7 @@
     }
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
-        <div class="col-md-3 col-sm-6 my-2">
+        <div class="col-md-3 col-sm-6 my-2 toss">
             <!-- Modal -->
             <div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog" role="document">

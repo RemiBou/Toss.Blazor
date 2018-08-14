@@ -3,7 +3,7 @@
 
 <div class="form-inline">
 
-    <div class="form-group">
+    <div class="form-group" id="BlockHashTagBar">
         
        
         @foreach (var hashTag in _account.Hashtags ?? new List<string>())
@@ -15,9 +15,9 @@
             </div>
         }
         <div class="input-group m-1">
-            <input type="text" class="form-control" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
+            <input type="text" class="form-control" id="TxtAddHashTag" bind="@newHashtag" placeholder="Add hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
             <div class="input-group-append">
-                <button class="btn btn-outline-secondary" onclick="@(async () => await AddHashtag())" type="button">
+                <button class="btn btn-outline-secondary" id="BtnAddHashTag" onclick="@(async () => await AddHashtag())" type="button">
                     <i class="fas fa-plus"></i>
                 </button>
             </div>

@@ -17,7 +17,7 @@ namespace Toss.Tests.Shared.Tosses
         private TossListAdminQueryHandler _sut;
         public TossListAdminQueryHandlerTest(CosmosDBFixture cosmosDBFixture) : base(cosmosDBFixture)
         {
-            _tossCosmosDB = new CosmosDBTemplate<TossEntity>(_client, CosmosDBFixture.DatabaseName);
+            _tossCosmosDB = new CosmosDBTemplate<TossEntity>(_client, new CosmosDBTemplateOptions() { DataBaseName = CosmosDBFixture.DatabaseName });
             _sut = new TossListAdminQueryHandler(_tossCosmosDB);
         }
 

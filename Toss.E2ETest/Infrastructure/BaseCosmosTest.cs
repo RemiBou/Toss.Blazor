@@ -40,7 +40,7 @@ namespace Toss.Tests.Infrastructure
 
         protected ICosmosDBTemplate<T> GetTemplate<T>()
         {
-            return new CosmosDBTemplate<T>(_client, _databaseName);
+            return new CosmosDBTemplate<T>(_client, new CosmosDBTemplateOptions() { DataBaseName = _databaseName });
         }
     }
 }
