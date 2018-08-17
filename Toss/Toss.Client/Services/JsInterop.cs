@@ -18,6 +18,11 @@ namespace Toss.Client.Services
         {
             await JSRuntime.Current.InvokeAsync<bool>("toastrShow", toastType, message);
         }
+
+        public static async Task<string[]> Languages()
+        {
+            return await JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages");
+        }
         public static async Task<int> AjaxLoaderShow(ElementRef elementRef)
         {
             return await JSRuntime.Current.InvokeAsync<int>("ajaxLoaderShow", elementRef);

@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Blazor.Browser.Services;
 using Microsoft.AspNetCore.Blazor.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 using System;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Toss.Client.Services;
 
@@ -32,9 +36,11 @@ namespace Toss.Client
                    typeof(RemoteI18nService),
                    ServiceLifetime.Singleton));
             });
-            
-            new BrowserRenderer(serviceProvider).AddComponent<App>("app");
 
+
+            JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages")
+                .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
+                .ContinueWith(t => new BrowserRenderer(serviceProvider).AddComponent<App>("app")) ;
         }
     }
 }

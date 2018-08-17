@@ -70,3 +70,7 @@ getFileData = function (inputFile) {
 getDocumentCookie = function () {
     return document.cookie;
 };
+
+navigatorLanguages = function () {
+    return navigator.languages;
+}
