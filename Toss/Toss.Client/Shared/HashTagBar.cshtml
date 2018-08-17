@@ -1,5 +1,6 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService
+@inject IUriHelper urlHelper;
 
 <div class="form-inline">
 
@@ -28,6 +29,10 @@
 @functions{
     AccountViewModel _account = new AccountViewModel();
     string newHashtag;
+
+    [Parameter]
+    private string CurrentTag { get; set; } = "";
+
     protected string GetUrl(string hashtag)
     {
         return "/tag/" + hashtag;
@@ -35,8 +40,10 @@
     }
     protected override async Task OnInitAsync()
     {
-
         _account = await AccountService.CurrentAccount();
+
+        if (string.IsNullOrEmpty(CurrentTag) && _account.Hashtags.Any())
+            urlHelper.NavigateTo(GetUrl(_account.Hashtags.First()));
         StateHasChanged();
     }
     protected async Task AddHashtag()
