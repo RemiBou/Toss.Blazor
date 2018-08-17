@@ -51,6 +51,21 @@ namespace Toss.Tests.Shared
             Assert.True(isValid);
         }
 
+        [Fact]
+        public void can_send_toss_with_new_line()
+        {
+            var res = new List<ValidationResult>();
+            var sut = new TossCreateCommand()
+            {
+                Content = @"lorem ipsum lrorem peozeproizeri
+zerizeporizop eir
+zerzerezr 
+#toto"
+            };
+            bool isValid = ValidationHelper.IsValid(res, sut);
+
+            Assert.True(isValid);
+        }
 
     }
 }
