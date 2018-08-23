@@ -1,12 +1,14 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 <h4>Create a Toss account</h4>
 
-<form>
+<ValidatedForm OnSubmit="CreateAccount" Model="registerCommand">
     <div asp-validation-summary="All" class="text-danger"></div>
     <div class="form-group">
         <label for="NewEmail">Email</label>
         <input id="NewEmail" bind="@registerCommand.Email" class="form-control" />
+        <ClientValidationError FieldName="Email" Model="registerCommand" />
         <ValidationError FieldName="Email" Errors="@_errors" />
+
     </div>
     <div class="form-group">
         <label for="NewName">Name</label>
@@ -23,14 +25,14 @@
         <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
         <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
     </div>
-    <button type="button" ref="createButton" onclick="@CreateAccount" id="BtnRegister" class="btn btn-default">Register</button>
+    <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-default">Register</button>
     <ValidationError FieldName="Other" Errors="@_errors" />
-</form>
+</ValidatedForm>
 @functions{
     ElementRef createButton;
     RegisterCommand registerCommand = new RegisterCommand();
     Dictionary<string,List<string>> _errors;
-    async Task CreateAccount()
+    async Task CreateAccount(UIEventArgs ev)
     {
         _errors = null;
         await ClientFactory.Create("/api/account/register", createButton)

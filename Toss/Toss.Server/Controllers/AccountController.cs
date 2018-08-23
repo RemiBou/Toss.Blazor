@@ -179,6 +179,12 @@ namespace Toss.Server.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> RemoveHashTag(RemoveHashTagCommand command)
+        {
+            return await _mediator.ExecuteCommandReturnActionResult(command);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await _mediator.Send(new SignoutCommand());

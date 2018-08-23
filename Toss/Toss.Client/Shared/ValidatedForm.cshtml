@@ -1,0 +1,21 @@
+﻿@inject IModelValidator ModelValidator
+<form onsubmit="@OnSubmitWithValidate">
+    @ChildContent
+</form>
+@functions {
+    [Parameter]
+    private RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    private Func<UIEventArgs,Task> OnSubmit { get; set; }
+
+
+    [Parameter]
+    private object Model { get; set; }
+
+    private async Task OnSubmitWithValidate(UIEventArgs eventArgs)
+    {
+        if (ModelValidator.Validate(Model))
+            await OnSubmit(eventArgs);
+    }
+}

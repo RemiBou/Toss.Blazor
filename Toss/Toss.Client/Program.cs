@@ -24,17 +24,21 @@ namespace Toss.Client
                     typeof(HttpApiClientRequestBuilderFactory),
                     ServiceLifetime.Scoped));
                 configure.Add(new ServiceDescriptor(
-                  typeof(IAccountService),
-                  typeof(AccountService),
-                  ServiceLifetime.Scoped));
+                    typeof(IAccountService),
+                    typeof(AccountService),
+                    ServiceLifetime.Scoped));
                 configure.Add(new ServiceDescriptor(
-                 typeof(IBrowserCookieService),
-                 typeof(BrowserCookieService),
-                 ServiceLifetime.Singleton));
+                     typeof(IBrowserCookieService),
+                     typeof(BrowserCookieService),
+                     ServiceLifetime.Singleton));
                 configure.Add(new ServiceDescriptor(
-                   typeof(II18nService),
-                   typeof(RemoteI18nService),
-                   ServiceLifetime.Singleton));
+                    typeof(II18nService),
+                    typeof(RemoteI18nService),
+                    ServiceLifetime.Singleton));
+                configure.Add(new ServiceDescriptor(
+                    typeof(IModelValidator),
+                    typeof(ModelValidator),
+                    ServiceLifetime.Singleton));
             });
 
 

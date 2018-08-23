@@ -1,6 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Identity.DocumentDB;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Toss.Server.Models
@@ -35,6 +36,13 @@ namespace Toss.Server.Models
         internal bool AlreadyHasHashTag(string newTag)
         {
             return Hashtags != null && Hashtags.Contains(newTag);
+        }
+
+        internal void RemoveHashTag(string hashTag)
+        {
+            if (Hashtags == null)
+                return;
+            Hashtags.Remove(hashTag);
         }
     }
 }
