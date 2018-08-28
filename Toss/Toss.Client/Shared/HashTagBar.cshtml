@@ -9,10 +9,14 @@
        
         @foreach (var hashTag in _account.Hashtags ?? new List<string>())
         {
-            <div class="input-group m-1">
+            <div class="input-group m-1 btn-group"  role="group">
                 <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
                     #@hashTag
                 </NavLink>
+                @if(hashTag == CurrentTag)
+                {
+                    <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
+                }
             </div>
         }
         <div class="input-group m-1">
@@ -35,6 +39,8 @@
 
     protected string GetUrl(string hashtag)
     {
+        if (string.IsNullOrEmpty(hashtag))
+            return "/";
         return "/tag/" + hashtag;
 
     }
@@ -48,17 +54,32 @@
     }
     protected async Task AddHashtag()
     {
-        StateHasChanged();
+
         await ClientFactory.Create("/api/account/addHashTag")
             .OnOK(async () =>
             {
+
                 await JsInterop.Toastr("success", "Hashtag added with success");
                 _account.Hashtags.Add(newHashtag);
+                urlHelper.NavigateTo(GetUrl(newHashtag));
                 newHashtag = null;
             })
             .OnBadRequest<Dictionary<string, List<string>>>(async e => await JsInterop.Toastr("error", string.Join(",", e["NewHashTag"])))
             .Post(new AddHashtagCommand(newHashtag));
         StateHasChanged();
+
+    }
+
+    protected async Task RemoveHashTag()
+    {
+        await ClientFactory.Create("/api/account/removeHashTag")
+              .OnOK(async () =>
+              {
+                  await JsInterop.Toastr("success", "Hashtag removed with success");
+                  _account.Hashtags.Remove(CurrentTag);
+                  urlHelper.NavigateTo(GetUrl(_account.Hashtags.FirstOrDefault()));
+              })
+              .Post(new RemoveHashTagCommand(CurrentTag));
 
     }
 }

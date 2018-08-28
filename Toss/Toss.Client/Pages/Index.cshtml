@@ -60,7 +60,8 @@
                 <div class="card-body p-2">
                     <p class="card-text" style="max-height:200px;overflow-y: hidden;">
                             @((MarkupString)Markdown.ToHtml(toss.Content))</p>
-                    <p class="card-text"><small class="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
+                    <p class="card-text"><small cl
+                                                ass="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
                 </div>
             </div>
         </div>
@@ -80,8 +81,18 @@
     }
 
 
+    public override void SetParameters(ParameterCollection parameters)
+    {
+        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
+        {
+            CurrentTag = null;
+        }
+        base.SetParameters(parameters);
+    }
+
     protected async Task RefreshTossList()
     {
+        Tosses = new List<TossLastQueryItem>();
         if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
         await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
