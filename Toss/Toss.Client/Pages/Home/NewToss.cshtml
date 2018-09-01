@@ -1,0 +1,45 @@
+﻿
+@inject IHttpApiClientRequestBuilderFactory ClientFactory
+<div class="card  h-100">
+    <form method="post">
+        <div class="card-body p-2">
+
+            <p class="card-text">
+                <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
+                <ValidationError FieldName="Content" Errors="@_errors" />
+            </p>
+            <p class="card-text"><small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small></p>
+
+
+        </div>
+
+        <div class="card-footer p-1 ">
+            <button onclick="@SendToss" id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
+        </div>
+    </form>
+</div>
+@functions{
+
+    [Parameter]
+    public Func<Task> OnNewTossCreated { get; set; }
+
+    TossCreateCommand newToss = new TossCreateCommand();
+    Dictionary<string, List<string>> _errors;
+
+    ElementRef sendButton;
+
+    protected async Task SendToss()
+    {
+        await ClientFactory.Create("/api/toss/create", sendButton)
+            .OnOK(async () =>
+            {
+                newToss = new TossCreateCommand();
+                _errors = null;
+                await OnNewTossCreated?.Invoke();
+            })
+            .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
+            .Post(newToss);
+        StateHasChanged();
+
+    }
+}
