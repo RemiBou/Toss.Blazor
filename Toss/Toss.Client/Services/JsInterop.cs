@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Blazor;
 using Microsoft.JSInterop;
+using System;
 using System.Threading.Tasks;
 
 namespace Toss.Client.Services
@@ -9,10 +10,7 @@ namespace Toss.Client.Services
     /// </summary>
     public static class JsInterop
     {
-        public static async Task ConsoleLog(string message)
-        {
-            await JSRuntime.Current.InvokeAsync<bool>("console.log", message);
-        }
+      
 
         public static async Task Toastr(string toastType, string message)
         {
@@ -40,7 +38,7 @@ namespace Toss.Client.Services
             public string Content { get; set; }
         }
 
-        public static async Task<string> GetFileData(string fileInputRef)
+        public static async Task<string> GetFileData(ElementRef fileInputRef)
         {
             return (await JSRuntime.Current.InvokeAsync<string>("getFileData", fileInputRef));
            

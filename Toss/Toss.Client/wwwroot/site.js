@@ -55,22 +55,21 @@ const readUploadedFileAsText = (inputFile) => {
             reject(new DOMException("Problem parsing input file."));
         };
         temporaryFileReader.addEventListener("load", function () {
-            var data = temporaryFileReader.result.split(',')[1];
-            console.log(data);
-            resolve(data);
+            console.log("JS : file read done");
+            resolve(temporaryFileReader.result.split(',')[1]);
         }, false);
         temporaryFileReader.readAsDataURL(inputFile.files[0]);
     });
 };
 getFileData = function (inputFile) {
-    var expr = "#" + inputFile;
-    return readUploadedFileAsText($(expr)[0]);
+
+    return readUploadedFileAsText(inputFile);
 };
 
 getDocumentCookie = function () {
-    return document.cookie;
+    return Promise.resolve(document.cookie);
 };
 
 navigatorLanguages = function () {
-    return navigator.languages;
-}
+    return Promise.resolve(navigator.languages);
+};
