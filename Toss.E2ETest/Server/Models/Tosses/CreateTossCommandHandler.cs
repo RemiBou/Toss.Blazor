@@ -13,8 +13,8 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    [Collection("CosmosDBFixture")]
-    public class CreateTossCommandHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
+    [Collection("CosmosDBFixture Collection")]
+    public class CreateTossCommandHandlerTest : BaseCosmosTest
     {
         private CommonMocks<TossController> _m;
         private ICosmosDBTemplate<TossEntity> tossTemplate;
@@ -51,19 +51,19 @@ namespace Toss.Tests.Server.Models.Tosses
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             };
-            var now = DateTime.Now;
+            var now = DateTimeOffset.Now.AddMinutes(-1);
             var res = await _sut.Handle(command, new System.Threading.CancellationToken());
 
-            var now2 = DateTime.Now;
+            var now2 = DateTimeOffset.Now.AddMinutes(1);
 
             var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
 
-            Assert.True(toss.CreatedOn >= now && toss.CreatedOn <= now2); ;
+            Assert.True(toss.CreatedOn >= now && toss.CreatedOn <= now2); 
 
         }
 
         [Fact]
-        public async Task create_insert_item_in_azure_table()
+        public async Task create_insert_item_in_cosmos()
         {
             var command = new TossCreateCommand()
             {
@@ -77,6 +77,26 @@ namespace Toss.Tests.Server.Models.Tosses
 
             Assert.NotNull(toss);
             Assert.Equal("lorem ipsum", toss.Content);
+        }
+
+        [Fact]
+        public async Task create_when_display_count_creates_SponsoredToss()
+        {
+            var command = new TossCreateCommand()
+            {
+                Content = "lorem ipsum",
+                SponsoredDisplayedCount = 1000
+            };
+
+            await _sut.Handle(command, new System.Threading.CancellationToken());
+
+
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.NotNull(toss);
+            var sponsored = Assert.IsAssignableFrom<SponsoredTossEntity>(toss);
+            Assert.Equal(1000, sponsored.DisplayedCount);
+            Assert.Equal(1000, sponsored.DisplayedCountBought);
         }
 
 

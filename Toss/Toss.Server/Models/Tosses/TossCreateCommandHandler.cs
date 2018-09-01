@@ -20,12 +20,19 @@ namespace Toss.Server.Controllers
         }
 
         public async Task<Unit> Handle(TossCreateCommand command, CancellationToken cancellationToken)
-        {            
-            var toss = new TossEntity(
-                command.Content, 
-                _httpContextAccessor.HttpContext.User.Identity.Name,
-                DateTimeOffset.Now);
-
+        {
+            TossEntity toss;
+            if (!command.SponsoredDisplayedCount.HasValue)
+                toss = new TossEntity(
+                    command.Content,
+                    _httpContextAccessor.HttpContext.User.Identity.Name,
+                    DateTimeOffset.Now);
+            else
+                toss = new SponsoredTossEntity(
+                    command.Content,
+                    _httpContextAccessor.HttpContext.User.Identity.Name,
+                    DateTimeOffset.Now,
+                    command.SponsoredDisplayedCount.Value);
             await _dbTemplate.Insert(toss);
             return Unit.Value;
         }

@@ -1,27 +1,59 @@
 ﻿
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
-<div class="card  h-100">
-    <form method="post">
-        <div class="card-body p-2">
+<!-- Modal -->
+<div class="modal fade" id="modal-new-toss" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <form method="post">
+                    <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
+                    <ValidationError FieldName="Content" Errors="@_errors" />
+                    <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" bind="isSpsonsoredToss"  class="custom-control-input" id="customCheck1"/>
+                        <label class="custom-control-label" for="customCheck1">Sponsored Toss</label>
+                    </div>
+                    @if (isSpsonsoredToss)
+                    {
+                        <div class="alert alert-info mt-2">
+                            You can create a sponsored Toss :
+                            <ul>
+                                <li>It'll be displayed as first Toss during 30sec for the number of times entered below</li>
+                                <li>Only one sponsored toss is displayed at a time, if multiple matches the current tag, one is picked randomly. </li>
+                                <li>One display costs 0.01€, you have to get between 1000 and 10000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
+                                <li>The TOSS will be displayed as a normal toss, once we get the payment confirmation it will be displayed as a sponsored toss like said before.</li>
+                                <li>You can read more details about it <a href="https://github.com">here</a>. By creating a sponsored toss, you agree on the conditions explained on the provided link.</li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <label for="TxtDisplayCount">Display count</label>
+                            <input type="number" class="form-control" id="TxtDisplayCount" placeholder="Display count">
+                            <ValidationError FieldName="SponsoredDisplayCount" Errors="@_errors" />
 
-            <p class="card-text">
-                <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
-                <ValidationError FieldName="Content" Errors="@_errors" />
-            </p>
-            <p class="card-text"><small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small></p>
-
-
+                        </div>
+                    }
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button onclick="@SendToss" id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
+            </div>
         </div>
+    </div>
+</div>
 
-        <div class="card-footer p-1 ">
-            <button onclick="@SendToss" id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
+<div class="form-inline">
+    <div class="form-group">
+        <div class="input-group m-1 btn-group" role="group">
+            <button type="button" class="btn btn-primary" onclick="@(async () => await ShowModal())"><i class="fas fa-plus"></i> New TOSS</button>
         </div>
-    </form>
+    </div>
 </div>
 @functions{
+    bool isSpsonsoredToss = false;
 
     [Parameter]
-    public Func<Task> OnNewTossCreated { get; set; }
+    protected Func<Task> OnNewTossCreated { get; set; }
 
     TossCreateCommand newToss = new TossCreateCommand();
     Dictionary<string, List<string>> _errors;
@@ -36,10 +68,15 @@
                 newToss = new TossCreateCommand();
                 _errors = null;
                 await OnNewTossCreated?.Invoke();
+                await JsInterop.HideModal("modal-new-toss");
             })
             .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
             .Post(newToss);
         StateHasChanged();
 
+    }
+    protected async Task ShowModal()
+    {
+        await JsInterop.ShowModal("modal-new-toss");
     }
 }

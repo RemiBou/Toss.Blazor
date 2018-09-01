@@ -12,5 +12,8 @@ namespace Toss.Shared.Tosses
         [MinLength(20)]
         [RegularExpression("(?s)(.)*(?<=#)" + AddHashtagCommand.HashTagRegex+"(.)*", ErrorMessage ="Your toss must contain at least one hashtag (#)")]
         public string Content { get; set; }
+
+        [Range(1000,10000)]
+        public int? SponsoredDisplayedCount { get; set; }
     }
 }

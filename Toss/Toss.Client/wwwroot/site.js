@@ -46,6 +46,10 @@ showModal = function (id) {
     $("#" + id).modal("show");
     return true;
 };
+hideModal = function (id) {
+    $("#" + id).modal("hide");
+    return true;
+};
 
 const readUploadedFileAsText = (inputFile) => {
     const temporaryFileReader = new FileReader();

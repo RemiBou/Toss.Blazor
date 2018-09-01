@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using Toss.Shared.Tosses;
 
 namespace Toss.Server.Data
@@ -13,15 +14,16 @@ namespace Toss.Server.Data
     /// </summary>
     public class CosmosDBTemplate<T> : ICosmosDBTemplate<T>
     {
-
+      
         private string collectionId;
-        public CosmosDBTemplate(DocumentClient documentClient, IOptions<CosmosDBTemplateOptions> options) : this(documentClient,options.Value)
+        public CosmosDBTemplate(DocumentClient documentClient, IOptions<CosmosDBTemplateOptions> options) : this(documentClient, options.Value)
         {
         }
-            public CosmosDBTemplate(DocumentClient documentClient, CosmosDBTemplateOptions options)
+        public CosmosDBTemplate(DocumentClient documentClient, CosmosDBTemplateOptions options)
         {
             collectionId = typeof(T).GetType().Name;
             _documentClient = documentClient;
+            
             _database = new Lazy<Task<ResourceResponse<Database>>>(() =>
                 _documentClient.CreateDatabaseIfNotExistsAsync(new Database() { Id = options.DataBaseName })
             );

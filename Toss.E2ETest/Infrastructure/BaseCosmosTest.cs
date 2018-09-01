@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Toss.Server.Data;
+using Xunit;
 
 namespace Toss.Tests.Infrastructure
 {
@@ -13,7 +14,7 @@ namespace Toss.Tests.Infrastructure
     /// <summary>
     /// This test classe will drop and recreate a test cosmos database at each test
     /// </summary>
-    public class BaseCosmosTest : IDisposable
+    public class BaseCosmosTest
     {
         private readonly CosmosDBFixture cosmosDBFixture;
         protected DocumentClient _client;
@@ -26,17 +27,6 @@ namespace Toss.Tests.Infrastructure
             _databaseName = CosmosDBFixture.DatabaseName;
         }
 
-        /// <summary>
-        /// Delete all the collections after each tests so we don't have any document left
-        /// </summary>
-        public void Dispose()
-        {
-            var collections = _client.CreateDocumentCollectionQuery(UriFactory.CreateDatabaseUri(_databaseName)).ToList();
-            foreach (var item in collections)
-            {
-                _client.DeleteDocumentCollectionAsync(item.SelfLink).Wait();
-            }
-        }
 
         protected ICosmosDBTemplate<T> GetTemplate<T>()
         {

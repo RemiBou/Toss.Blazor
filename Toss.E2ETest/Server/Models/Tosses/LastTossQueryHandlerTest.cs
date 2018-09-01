@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    [Collection("CosmosDBFixture")]
+    [Collection("CosmosDBFixture Collection")]
     public class LastTossQueryHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
     {
         private CommonMocks<TossController> _m;

@@ -33,6 +33,10 @@ namespace Toss.Client.Services
         {
             await JSRuntime.Current.InvokeAsync<bool>("showModal", id);
         }
+        public static async Task HideModal(string id)
+        {
+            await JSRuntime.Current.InvokeAsync<bool>("hideModal", id);
+        }
         private class StringHolder
         {
             public string Content { get; set; }

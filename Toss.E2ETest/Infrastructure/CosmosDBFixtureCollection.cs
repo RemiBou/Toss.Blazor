@@ -2,8 +2,9 @@
 
 namespace Toss.Tests.Infrastructure
 {
-    [CollectionDefinition("CosmosDBFixture")]
+    [CollectionDefinition("CosmosDBFixture Collection")]
     public class CosmosDBFixtureCollection : ICollectionFixture<CosmosDBFixture>
     {
     }
 }
+ 

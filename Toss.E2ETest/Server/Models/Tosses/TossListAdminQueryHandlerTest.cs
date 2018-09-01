@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Shared.Tosses
 {
-    [Collection("CosmosDBFixture")]
+    [Collection("CosmosDBFixture Collection")]
     public class TossListAdminQueryHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
     {
         private CosmosDBTemplate<TossEntity> _tossCosmosDB;

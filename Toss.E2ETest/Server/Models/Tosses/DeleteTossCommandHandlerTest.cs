@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    [Collection("CosmosDBFixture")]
+    [Collection("CosmosDBFixture Collection")]
     public class DeleteTossCommandHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
     {
         private CosmosDBTemplate<TossEntity> _cosmosDBTemplateEntity;
