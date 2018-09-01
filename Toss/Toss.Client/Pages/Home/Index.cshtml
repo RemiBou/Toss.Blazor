@@ -3,11 +3,10 @@
 @page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
-@using Markdig
 <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
 <div class="row">
     <div class="col-md-3 col-sm-6 my-2">
-       <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
+        <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
     </div>
     @if (string.IsNullOrEmpty(CurrentTag))
     {
@@ -24,45 +23,23 @@
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
         <div class="col-md-3 col-sm-6 my-2 toss">
-            <!-- Modal -->
-            <div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-
-                        <div class="modal-body">
-                            @((MarkupString)Markdown.ToHtml(toss.Content))
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="card  h-100" data-toggle="modal" onclick="@(async () => await ShowModal(toss))" style="cursor:zoom-in">
-                <div class="card-body p-2">
-                    <p class="card-text" style="max-height:200px;overflow-y: hidden;">
-                            @((MarkupString)Markdown.ToHtml(toss.Content))</p>
-                    <p class="card-text"><small cl
-                                                ass="text-muted">By @toss.UserName  @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small></p>
-                </div>
-            </div>
+            <OneToss toss="@toss" />
         </div>
     }
 </div>
 @functions{
-    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
-    [Parameter]
+        List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
+[Parameter]
     private string CurrentTag { get; set; } = "";
 
-   
+
 
     protected override async Task OnParametersSetAsync()
     {
         await RefreshTossList();
     }
 
-  
+
 
 
     public override void SetParameters(ParameterCollection parameters)
@@ -89,13 +66,4 @@
     }
 
 
-    protected async Task ShowModal(TossLastQueryItem toss)
-    {
-        await JsInterop.ShowModal(GetTossDetailsId(toss));
-    }
-    protected string GetTossDetailsId(TossLastQueryItem toss)
-    {
-        return string.Format("toss-details-{0}", toss.Id);
-
-    }
 }
