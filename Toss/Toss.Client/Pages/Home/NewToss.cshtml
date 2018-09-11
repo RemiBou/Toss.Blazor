@@ -95,6 +95,7 @@
     [JSInvokable]
     public async Task TokenReceived(string token)
     {
+        newToss.StripeChargeToken = token;
        await DoSendToss();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Stripe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,23 +18,25 @@ namespace Toss.Server.Services
     public class StripeClient : IStripeClient
     {
         private readonly HttpClient httpClient = new HttpClient();
+        public StripeClient(string stripeSecretKey)
+        {
+            StripeConfiguration.SetApiKey(stripeSecretKey);
+        }
         public async Task<bool> Charge(string token, int amount, string description, string email)
         {
-            HttpRequestMessage query = new HttpRequestMessage(HttpMethod.Get, 
-                $"https://api.stripe.com/v1/charges" +
-                $"?amount={amount}" +
-                $"&currency=eur" +
-                $"&description={HttpUtility.UrlEncode(description)}" +
-                $"&source={token}" +
-                $"&receipt_email={email}");
-            query.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes("sk_test_x8Q4T7JGzApqkNORB7od8SHP:")));
-            
-            var response = await httpClient.SendAsync(query);
+           
 
-            JObject json = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            return json.GetValue("capture").Value<string>() == "true";
-
+            var chargeOptions = new StripeChargeCreateOptions()
+            {
+                Amount = amount,
+                Currency = "eur",
+                Description = description,
+                SourceTokenOrExistingSourceId = token,
+                ReceiptEmail = email
+            };
+            var chargeService = new StripeChargeService();
+            StripeCharge charge = chargeService.Create(chargeOptions);
+            return charge.FailureMessage != null && charge.Paid;
         }
     }
 }

@@ -66,6 +66,7 @@ namespace Toss.Server
 
 
             services.AddHttpContextAccessor();
+            services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(factory =>
             {
