@@ -1,16 +1,19 @@
 ﻿
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
+@implements IStripeCallBack
 <!-- Modal -->
 <div class="modal fade" id="modal-new-toss" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
+       
         <div class="modal-content">
-            <div class="modal-body">
-                <form method="post">
+            <ValidatedForm method="post" Model="@newToss" onsubmit="@SendToss">
+                <div class="modal-body">
+
                     <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
                     <ValidationError FieldName="Content" Errors="@_errors" />
                     <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" bind="isSpsonsoredToss"  class="custom-control-input" id="customCheck1"/>
+                        <input type="checkbox" bind="isSpsonsoredToss" class="custom-control-input" id="customCheck1" />
                         <label class="custom-control-label" for="customCheck1">Sponsored Toss</label>
                     </div>
                     @if (isSpsonsoredToss)
@@ -20,24 +23,25 @@
                             <ul>
                                 <li>It'll be displayed as first Toss during 30sec for the number of times entered below</li>
                                 <li>Only one sponsored toss is displayed at a time, if multiple matches the current tag, one is picked randomly. </li>
-                                <li>One display costs 0.01€, you have to get between 1000 and 10000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
+                                <li>One display costs @(TossCreateCommand.CtsCostPerDisplay/100) €, you have to get between 50 and 1000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
                                 <li>The TOSS will be displayed as a normal toss, once we get the payment confirmation it will be displayed as a sponsored toss like said before.</li>
                                 <li>You can read more details about it <a href="https://github.com">here</a>. By creating a sponsored toss, you agree on the conditions explained on the provided link.</li>
                             </ul>
                         </div>
                         <div class="form-group">
                             <label for="TxtDisplayCount">Display count</label>
-                            <input type="number" class="form-control" id="TxtDisplayCount" placeholder="Display count">
+                            <input type="number" class="form-control" id="TxtDisplayCount" bind="@newToss.SponsoredDisplayedCountStr" placeholder="Display count"/>
                             <ValidationError FieldName="SponsoredDisplayCount" Errors="@_errors" />
-
+                            <ClientValidationError FieldName="SponsoredDisplayCount" Model="newToss" />
                         </div>
                     }
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button onclick="@SendToss" id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="button">Toss-it</button>
-            </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="submit">Toss-it</button>
+                </div>
+            </ValidatedForm>
         </div>
     </div>
 </div>
@@ -60,7 +64,17 @@
 
     ElementRef sendButton;
 
-    protected async Task SendToss()
+    protected async Task SendToss(UIEventArgs ev)
+    {
+        if (isSpsonsoredToss)
+        {
+            await JsInterop.OpenStripe(this, newToss.SponsoredDisplayedCount.Value*TossCreateCommand.CtsCostPerDisplay);
+            return;
+        }
+       await DoSendToss();
+
+    }
+    private async Task DoSendToss()
     {
         await ClientFactory.Create("/api/toss/create", sendButton)
             .OnOK(async () =>
@@ -73,10 +87,14 @@
             .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
             .Post(newToss);
         StateHasChanged();
-
     }
     protected async Task ShowModal()
     {
         await JsInterop.ShowModal("modal-new-toss");
+    }
+    [JSInvokable]
+    public async Task TokenReceived(string token)
+    {
+       await DoSendToss();
     }
 }

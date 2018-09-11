@@ -52,5 +52,10 @@ namespace Toss.Client.Services
         {
             return await JSRuntime.Current.InvokeAsync<string>("getDocumentCookie");
         }
+
+        public static async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
+        {
+            await JSRuntime.Current.InvokeAsync<string>("stripeCheckout",new DotNetObjectRef(stripeCallBack), amountInCts);
+        }
     }
 }

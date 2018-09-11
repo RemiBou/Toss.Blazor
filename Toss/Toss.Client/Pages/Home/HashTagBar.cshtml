@@ -48,7 +48,7 @@
     {
         _account = await AccountService.CurrentAccount();
 
-        if (string.IsNullOrEmpty(CurrentTag) && _account.Hashtags.Any())
+        if (_account != null && string.IsNullOrEmpty(CurrentTag) && _account.Hashtags.Any())
             urlHelper.NavigateTo(GetUrl(_account.Hashtags.First()));
         StateHasChanged();
     }

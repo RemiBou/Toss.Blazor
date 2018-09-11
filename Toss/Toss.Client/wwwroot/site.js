@@ -77,3 +77,24 @@ getDocumentCookie = function () {
 navigatorLanguages = function () {
     return Promise.resolve(navigator.languages);
 };
+
+stripeCheckout = function (callBackInstance, amount) {
+    var handler = StripeCheckout.configure({
+        key: 'pk_test_IAEerhZ6JVmmcj9756zIZegI',
+        image: 'https://stripe.com/img/documentation/checkout/marketplace.png',
+        locale: 'auto',
+        token: function (token) {
+            callBackInstance.invokeMethodAsync('TokenReceived', token.id)
+                .then(r => console.log(token));
+        },
+        currency: 'EUR'
+    });
+    // Open Checkout with further options:
+    handler.open({
+        name: 'Stripe.com',
+        description: '2 widgets',
+        zipCode: true,
+        amount: amount
+    });
+    return Promise.resolve();
+};
