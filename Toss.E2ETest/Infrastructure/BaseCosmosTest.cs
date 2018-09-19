@@ -38,6 +38,7 @@ namespace Toss.Tests.Infrastructure
 
         public async Task InitializeAsync()
         {
+
         }
 
         public async Task DisposeAsync()
@@ -46,6 +47,37 @@ namespace Toss.Tests.Infrastructure
             foreach (var item in collections)
             {
                 var docs =  _client.CreateDocumentQuery(item.SelfLink);
+                foreach (var d in docs)
+                {
+                    await _client.DeleteDocumentAsync(d.SelfLink);
+                }
+            }
+            await Task.Delay(100);//mandatory for issuing queries after collection deletion
+        }
+    }
+
+    public class BaseIntegrationTest : IAsyncLifetime
+    {
+
+        public BaseIntegrationTest()
+        {
+        }     
+
+
+
+        public async Task InitializeAsync()
+        {
+           
+            await TestFixture.CreateTestUser();
+        }
+
+        public async Task DisposeAsync()
+        {
+            var _client = TestFixture.GetInstance<DocumentClient>();
+            var collections = _client.CreateDocumentCollectionQuery(UriFactory.CreateDatabaseUri(TestFixture.DataBaseName)).ToList();
+            foreach (var item in collections)
+            {
+                var docs = _client.CreateDocumentQuery(item.SelfLink);
                 foreach (var d in docs)
                 {
                     await _client.DeleteDocumentAsync(d.SelfLink);

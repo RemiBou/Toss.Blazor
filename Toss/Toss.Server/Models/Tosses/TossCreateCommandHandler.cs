@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Models;
+using Toss.Server.Models.Tosses;
 using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
@@ -17,9 +18,12 @@ namespace Toss.Server.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> userManager;
         private IStripeClient stripeClient;
+        private IMediator mediator;
 
-        public TossCreateCommandHandler(ICosmosDBTemplate<TossEntity> cosmosTemplate, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager)
+        public TossCreateCommandHandler(ICosmosDBTemplate<TossEntity> cosmosTemplate, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager,
+            IMediator mediator)
         {
+            this.mediator = mediator;
             _dbTemplate = cosmosTemplate;
             _httpContextAccessor = httpContextAccessor;
             this.stripeClient = stripeClient;
@@ -46,9 +50,13 @@ namespace Toss.Server.Controllers
                 ApplicationUser applicationUser = (await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User));
                 var paymentResult = await stripeClient.Charge(command.StripeChargeToken, command.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay, "Payment for sponsored Toss #" + toss.Id, applicationUser.Email);
                 if (!paymentResult)
+                {
                     await _dbTemplate.Delete(toss.Id);
+                    throw new InvalidOperationException("Payment error on sponsored Toss ");
+                }
 
             }
+            await mediator.Publish(new TossCreated(toss.Id));
             return Unit.Value;
         }
     }

@@ -8,7 +8,7 @@ namespace Toss.Server.Services
     /// <summary>
     /// Here for E2E tests, didn't find better place to put it
     /// </summary>
-    public class E2ETestEmailSender : IEmailSender
+    public class FakeEmailSender : IEmailSender
     {
         private List<Tuple<string, string, string>> confirationLinks = new List<Tuple<string, string, string>>();
         private List<Tuple<string, string, string>> resetPasswordLinks = new List<Tuple<string, string, string>>();
@@ -33,4 +33,21 @@ namespace Toss.Server.Services
             return confirationLinks.LastOrDefault(t => t.Item1 == email)?.Item3;
         }
     }
+
+    public class FakeStripeClient : IStripeClient
+    {
+        public static bool NextCallFails { get; set; }
+
+        public Task<bool> Charge(string token, int amount, string description, string email)
+        {
+            if (NextCallFails)
+            {
+                NextCallFails = false;
+                return Task.FromResult(false);
+            }
+            return Task.FromResult(true);
+        }
+    }
+
+
 }

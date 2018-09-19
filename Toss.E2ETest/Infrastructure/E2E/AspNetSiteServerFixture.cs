@@ -12,7 +12,7 @@ namespace Toss.Tests.E2E
 {
     public class AspNetSiteServerFixture : IDisposable
     {
-        public E2ETestEmailSender EmailSender { get; private set; }
+        public FakeEmailSender EmailSender { get; private set; }
         public Uri RootUri => _rootUriInitializer.Value;
 
         public IWebHost Host { get => _host; set => _host = value; }
@@ -65,7 +65,7 @@ namespace Toss.Tests.E2E
         {
             Host = CreateWebHost();
             RunInBackgroundThread(Host.Start);
-            EmailSender = Host.Services.GetService(typeof(IEmailSender)) as E2ETestEmailSender;
+            EmailSender = Host.Services.GetService(typeof(IEmailSender)) as FakeEmailSender;
             return Host.ServerFeatures
                 .Get<IServerAddressesFeature>()
                 .Addresses.Single();

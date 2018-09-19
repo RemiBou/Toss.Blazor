@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using IdentityRole = Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole;
+using Newtonsoft.Json;
 
 namespace Toss.Server
 {
@@ -50,7 +51,10 @@ namespace Toss.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
-            DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"]);
+            DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
             services.AddSingleton(documentClient);
             string DataBaseName = Configuration.GetValue("databaseName", "Toss");
             services.Configure<CosmosDBTemplateOptions>((c) => c.DataBaseName = DataBaseName);
@@ -66,7 +70,7 @@ namespace Toss.Server
 
 
             services.AddHttpContextAccessor();
-            services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
+            
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(factory =>
             {
@@ -75,14 +79,16 @@ namespace Toss.Server
                 return new UrlHelper(actionContext);
             });
             // Add application services.
-            if (Configuration.GetValue<string>("e2eTest") == null)
+            if (Configuration.GetValue<string>("test") == null)
             {
                 services.AddTransient<IEmailSender, EmailSender>();
+                services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
             }
             else
             {
                 //We had it as singleton so we can get the content later during the asset phase
-                services.AddSingleton<IEmailSender, E2ETestEmailSender>();
+                services.AddSingleton<IEmailSender, FakeEmailSender>();
+                services.AddSingleton<IStripeClient, FakeStripeClient>();
             }
             services.AddAuthentication()
 
