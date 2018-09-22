@@ -13,7 +13,7 @@ using Xunit;
 namespace Toss.Tests.Server.Models.Tosses
 {
     
-    public class DeleteTossCommandHandlerTest : BaseIntegrationTest
+    public class DeleteTossCommandHandlerTest : BaseCosmosTest
     {
         private ICosmosDBTemplate<TossEntity> _cosmosDBTemplateEntity;
 
@@ -30,7 +30,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await _cosmosDBTemplateEntity.Insert(new TossEntity("test content2", "user test", DateTimeOffset.Now));
             var allInsertedToss = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();
 
-            await TestFixture.GetInstance<IMediator>().Send(new DeleteTossCommand(allInsertedToss.First().Id));
+            await_mediator.Send(new DeleteTossCommand(allInsertedToss.First().Id));
 
 
             var allRemaining = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();

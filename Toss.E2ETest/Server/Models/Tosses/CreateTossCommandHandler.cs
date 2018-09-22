@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class CreateTossCommandHandlerTest : BaseIntegrationTest
+    public class CreateTossCommandHandlerTest : BaseCosmosTest
     {   private ICosmosDBTemplate<TossEntity> tossTemplate;
         public CreateTossCommandHandlerTest()
         {
@@ -18,7 +18,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_setup_username_to_current_user()
         {
-            await TestFixture.GetInstance<IMediator>().Send(
+            await_mediator.Send(
                 new TossCreateCommand()
                 {
                     Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
@@ -33,7 +33,7 @@ namespace Toss.Tests.Server.Models.Tosses
         public async Task create_setup_date_of_post_to_today()
         {
             var now = DateTimeOffset.Now.AddMinutes(-1);
-            await TestFixture.GetInstance<IMediator>().Send(new TossCreateCommand()
+            await_mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
@@ -48,7 +48,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_insert_item_in_cosmos()
         {
-            await TestFixture.GetInstance<IMediator>().Send(new TossCreateCommand()
+            await_mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
@@ -63,7 +63,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_when_display_count_creates_SponsoredToss()
         {
-            await TestFixture.GetInstance<IMediator>().Send(new TossCreateCommand()
+            await_mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
                 SponsoredDisplayedCount = 1000
@@ -80,7 +80,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_when_sponsored_payment_succeed_return_ok()
         {
-            await TestFixture.GetInstance<IMediator>().Send(new TossCreateCommand()
+            await_mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
                 SponsoredDisplayedCount = 1000,
@@ -96,7 +96,7 @@ namespace Toss.Tests.Server.Models.Tosses
         {
             FakeStripeClient.NextCallFails = true;
             await Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                await TestFixture.GetInstance<IMediator>().Send(new TossCreateCommand()
+                await_mediator.Send(new TossCreateCommand()
                 {
                     Content = "lorem ipsum erzer zer zer ze rze rezr zer",
                     SponsoredDisplayedCount = 1000,

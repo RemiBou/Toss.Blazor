@@ -12,7 +12,7 @@ using Xunit;
 namespace Toss.Tests.Server.Models.Tosses
 {
     
-    public class LastTossQueryHandlerTest : BaseIntegrationTest
+    public class LastTossQueryHandlerTest : BaseCosmosTest
     {
         private ICosmosDBTemplate<TossEntity> tossTemplate;
         public LastTossQueryHandlerTest()
@@ -34,7 +34,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 });
             }
 
-            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossLastQuery("ipsum")) ;
+            var res = await_mediator.Send(new Toss.Shared.Tosses.TossLastQuery("ipsum")) ;
 
             Assert.Equal(50, res.Count());
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
@@ -61,7 +61,7 @@ namespace Toss.Tests.Server.Models.Tosses
             });
 
 
-            var tosses = await TestFixture.GetInstance<IMediator>().Send(
+            var tosses = await_mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
             Assert.Equal(3, tosses.Count());
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class CurrentAccountDetailsQueryHandlerTest : BaseIntegrationTest
+    public class CurrentAccountDetailsQueryHandlerTest : BaseCosmosTest
     {
         [Fact]
         public async Task Details_return_account_view_model()

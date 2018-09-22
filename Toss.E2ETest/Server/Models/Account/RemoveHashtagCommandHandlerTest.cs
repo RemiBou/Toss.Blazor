@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class RemoveHashtagCommandHandlerTest : BaseIntegrationTest
+    public class RemoveHashtagCommandHandlerTest : BaseCosmosTest
     {
        
         [Fact]

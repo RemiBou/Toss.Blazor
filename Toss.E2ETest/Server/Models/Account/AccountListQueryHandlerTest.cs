@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class AccountListQueryHandlerTest :BaseIntegrationTest
+    public class AccountListQueryHandlerTest :BaseCosmosTest
     {   
         [Fact]
         public async Task AccountListQuery_returns_all_users()

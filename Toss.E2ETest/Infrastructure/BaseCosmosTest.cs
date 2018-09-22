@@ -13,11 +13,11 @@ using Xunit;
 
 namespace Toss.Tests.Infrastructure
 {  
-    public class BaseIntegrationTest : IAsyncLifetime
+    public class BaseCosmosTest : IAsyncLifetime
     {
         protected IMediator _mediator = TestFixture.GetInstance<IMediator>();
         protected UserManager<ApplicationUser> _userManager = TestFixture.GetInstance<UserManager<ApplicationUser>>();
-        public BaseIntegrationTest()
+        public BaseCosmosTest()
         {
         }
 

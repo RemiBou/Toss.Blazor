@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Toss.Tests.Shared.Tosses
 {
-    public class TossListAdminQueryHandlerTest : BaseIntegrationTest
+    public class TossListAdminQueryHandlerTest : BaseCosmosTest
     {
         private ICosmosDBTemplate<TossEntity> _tossCosmosDB;
         public TossListAdminQueryHandlerTest()
@@ -27,7 +27,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now));
             }
 
-            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(), new System.Threading.CancellationToken());
+            var res = await_mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(), new System.Threading.CancellationToken());
 
             Assert.Equal(59, res.Count);
         }
@@ -40,7 +40,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
-            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
+            var res = await_mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
 
             Assert.Equal(15, res.Result.Count());
             Assert.Null(res.Result.FirstOrDefault(r => r.CreatedOn <= DateTimeOffset.Now.AddDays(-15)));
@@ -54,7 +54,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
-            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, DateTimeOffset.Now.AddDays(-14)));
+            var res = await_mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, DateTimeOffset.Now.AddDays(-14)));
 
             Assert.Equal(13, res.Result.Count());
             Assert.Null(res.Result.FirstOrDefault(r => r.CreatedOn > DateTimeOffset.Now.AddDays(-14)));
@@ -66,7 +66,7 @@ namespace Toss.Tests.Shared.Tosses
             TossEntity instance = new TossEntity("lorem ipsum", "test", DateTimeOffset.Now);
             await _tossCosmosDB.Insert(instance);
 
-            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
+            var res = await_mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
 
             var first = res.Result.FirstOrDefault();
 

@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class AddHashtagCommandHandlerTest : BaseIntegrationTest
+    public class AddHashtagCommandHandlerTest : BaseCosmosTest
     {
         [Fact]
         public async Task AddHashTag_if_null_hashtag_returns_error()

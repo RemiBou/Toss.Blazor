@@ -18,7 +18,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class ChangePasswordCommandHandlerTest : BaseIntegrationTest
+    public class ChangePasswordCommandHandlerTest : BaseCosmosTest
     {
         
 
