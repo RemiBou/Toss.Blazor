@@ -18,7 +18,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_setup_username_to_current_user()
         {
-            await_mediator.Send(
+            await _mediator.Send(
                 new TossCreateCommand()
                 {
                     Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
@@ -33,7 +33,7 @@ namespace Toss.Tests.Server.Models.Tosses
         public async Task create_setup_date_of_post_to_today()
         {
             var now = DateTimeOffset.Now.AddMinutes(-1);
-            await_mediator.Send(new TossCreateCommand()
+            await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
@@ -48,7 +48,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_insert_item_in_cosmos()
         {
-            await_mediator.Send(new TossCreateCommand()
+            await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
@@ -63,7 +63,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_when_display_count_creates_SponsoredToss()
         {
-            await_mediator.Send(new TossCreateCommand()
+            await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
                 SponsoredDisplayedCount = 1000
@@ -80,7 +80,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_when_sponsored_payment_succeed_return_ok()
         {
-            await_mediator.Send(new TossCreateCommand()
+            await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
                 SponsoredDisplayedCount = 1000,
@@ -96,7 +96,7 @@ namespace Toss.Tests.Server.Models.Tosses
         {
             FakeStripeClient.NextCallFails = true;
             await Assert.ThrowsAsync<InvalidOperationException>(async () => 
-                await_mediator.Send(new TossCreateCommand()
+                await _mediator.Send(new TossCreateCommand()
                 {
                     Content = "lorem ipsum erzer zer zer ze rze rezr zer",
                     SponsoredDisplayedCount = 1000,

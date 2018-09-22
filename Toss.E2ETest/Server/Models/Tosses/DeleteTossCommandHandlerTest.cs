@@ -30,7 +30,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await _cosmosDBTemplateEntity.Insert(new TossEntity("test content2", "user test", DateTimeOffset.Now));
             var allInsertedToss = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();
 
-            await_mediator.Send(new DeleteTossCommand(allInsertedToss.First().Id));
+            await _mediator.Send(new DeleteTossCommand(allInsertedToss.First().Id));
 
 
             var allRemaining = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();
