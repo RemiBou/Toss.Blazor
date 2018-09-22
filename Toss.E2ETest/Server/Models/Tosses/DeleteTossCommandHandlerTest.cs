@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,16 +12,15 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    [Collection("CosmosDBFixture Collection")]
-    public class DeleteTossCommandHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
+    
+    public class DeleteTossCommandHandlerTest : BaseIntegrationTest
     {
-        private CosmosDBTemplate<TossEntity> _cosmosDBTemplateEntity;
-        private DeleteTossCommandHandler _sut;
+        private ICosmosDBTemplate<TossEntity> _cosmosDBTemplateEntity;
 
-        public DeleteTossCommandHandlerTest(CosmosDBFixture cosmosDBFixture) : base(cosmosDBFixture)
+        public DeleteTossCommandHandlerTest()
         {
-            _cosmosDBTemplateEntity = new CosmosDBTemplate<TossEntity>(cosmosDBFixture.Client, new CosmosDBTemplateOptions() { DataBaseName = CosmosDBFixture.DatabaseName });
-            _sut = new DeleteTossCommandHandler(_cosmosDBTemplateEntity);
+            _cosmosDBTemplateEntity = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
+            
         }
 
         [Fact]
@@ -30,7 +30,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await _cosmosDBTemplateEntity.Insert(new TossEntity("test content2", "user test", DateTimeOffset.Now));
             var allInsertedToss = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();
 
-            await _sut.Handle(new DeleteTossCommand(allInsertedToss.First().Id), new System.Threading.CancellationToken());
+            await TestFixture.GetInstance<IMediator>().Send(new DeleteTossCommand(allInsertedToss.First().Id));
 
 
             var allRemaining = (await _cosmosDBTemplateEntity.CreateDocumentQuery()).ToList();

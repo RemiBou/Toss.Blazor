@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,15 +11,12 @@ using Xunit;
 
 namespace Toss.Tests.Shared.Tosses
 {
-    [Collection("CosmosDBFixture Collection")]
-    public class TossListAdminQueryHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
+    public class TossListAdminQueryHandlerTest : BaseIntegrationTest
     {
-        private CosmosDBTemplate<TossEntity> _tossCosmosDB;
-        private TossListAdminQueryHandler _sut;
-        public TossListAdminQueryHandlerTest(CosmosDBFixture cosmosDBFixture) : base(cosmosDBFixture)
+        private ICosmosDBTemplate<TossEntity> _tossCosmosDB;
+        public TossListAdminQueryHandlerTest()
         {
-            _tossCosmosDB = new CosmosDBTemplate<TossEntity>(_client, new CosmosDBTemplateOptions() { DataBaseName = CosmosDBFixture.DatabaseName });
-            _sut = new TossListAdminQueryHandler(_tossCosmosDB);
+            _tossCosmosDB = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
         }
 
         [Fact]
@@ -29,7 +27,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now));
             }
 
-            var res = await _sut.Handle(new Toss.Shared.Tosses.TossListAdminQuery(), new System.Threading.CancellationToken());
+            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(), new System.Threading.CancellationToken());
 
             Assert.Equal(59, res.Count);
         }
@@ -42,7 +40,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
-            var res = await _sut.Handle(new Toss.Shared.Tosses.TossListAdminQuery(15, null), new System.Threading.CancellationToken());
+            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
 
             Assert.Equal(15, res.Result.Count());
             Assert.Null(res.Result.FirstOrDefault(r => r.CreatedOn <= DateTimeOffset.Now.AddDays(-15)));
@@ -56,7 +54,7 @@ namespace Toss.Tests.Shared.Tosses
                 await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
-            var res = await _sut.Handle(new Toss.Shared.Tosses.TossListAdminQuery(15, DateTimeOffset.Now.AddDays(-14)), new System.Threading.CancellationToken());
+            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, DateTimeOffset.Now.AddDays(-14)));
 
             Assert.Equal(13, res.Result.Count());
             Assert.Null(res.Result.FirstOrDefault(r => r.CreatedOn > DateTimeOffset.Now.AddDays(-14)));
@@ -68,7 +66,7 @@ namespace Toss.Tests.Shared.Tosses
             TossEntity instance = new TossEntity("lorem ipsum", "test", DateTimeOffset.Now);
             await _tossCosmosDB.Insert(instance);
 
-            var res = await _sut.Handle(new Toss.Shared.Tosses.TossListAdminQuery(15, null), new System.Threading.CancellationToken());
+            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
 
             var first = res.Result.FirstOrDefault();
 

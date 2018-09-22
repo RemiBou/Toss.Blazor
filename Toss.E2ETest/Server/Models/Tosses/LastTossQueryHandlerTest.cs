@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,20 +11,14 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    [Collection("CosmosDBFixture Collection")]
-    public class LastTossQueryHandlerTest : BaseCosmosTest, IClassFixture<CosmosDBFixture>
+    
+    public class LastTossQueryHandlerTest : BaseIntegrationTest
     {
-        private CommonMocks<TossController> _m;
         private ICosmosDBTemplate<TossEntity> tossTemplate;
-        private LastTossQueryHandler _sut;
-
-        public LastTossQueryHandlerTest(CosmosDBFixture fixture):base(fixture)
+        public LastTossQueryHandlerTest()
         {
-            _m = new CommonMocks<TossController>();
-
-            tossTemplate = GetTemplate<TossEntity>();
-
-            _sut = new LastTossQueryHandler(tossTemplate);
+            tossTemplate = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
+            
         }
 
         [Fact]
@@ -39,7 +34,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 });
             }
 
-            var res = await _sut.Handle(new Toss.Shared.Tosses.TossLastQuery("ipsum"), new System.Threading.CancellationToken());
+            var res = await TestFixture.GetInstance<IMediator>().Send(new Toss.Shared.Tosses.TossLastQuery("ipsum")) ;
 
             Assert.Equal(50, res.Count());
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
@@ -66,10 +61,8 @@ namespace Toss.Tests.Server.Models.Tosses
             });
 
 
-            var tosses = await _sut.Handle(
-                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" },
-                new System.Threading.CancellationToken()
-            );
+            var tosses = await TestFixture.GetInstance<IMediator>().Send(
+                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
             Assert.Equal(3, tosses.Count());
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));
         }

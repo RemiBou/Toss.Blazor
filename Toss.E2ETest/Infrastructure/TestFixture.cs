@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -19,9 +20,11 @@ namespace Toss.Tests.Infrastructure
     {
         public const string DataBaseName = "Tests";
         public const string UserName = "username";
-        private static readonly IServiceScopeFactory _scopeFactory;
         private static ServiceProvider _provider;
+        //only mock we need :)
         private static Mock<IHttpContextAccessor> _httpContextAccessor;
+
+        public static ClaimsPrincipal ClaimPrincipal { get; set; }
 
         static TestFixture()
         {
@@ -62,30 +65,58 @@ namespace Toss.Tests.Infrastructure
             ApplicationUser user = new ApplicationUser()
             {
                 UserName = UserName,
-                Email = "test@yopmail.com"
+                Email = "test@yopmail.com",
+                EmailConfirmed = true
             };
             await userManager.CreateAsync(user);
-            var claimPrincipal = new ClaimsPrincipal(
+            ClaimPrincipal = new ClaimsPrincipal(
                       new ClaimsIdentity(new Claim[]
                          {
                                     new Claim(ClaimTypes.Name, UserName)
                          },
-                      "someAuthTypeName"));
-            (claimPrincipal.Identity as ClaimsIdentity).AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
+                      "Basic"));
+            (ClaimPrincipal.Identity as ClaimsIdentity).AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
             _httpContextAccessor
               .SetupGet(h => h.HttpContext)
               .Returns(() =>
               new DefaultHttpContext()
               {
-                  User = claimPrincipal
+                  User = ClaimPrincipal
                   
               });
         }
 
+        public static void SetControllerContext(Controller controller)
+        {
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext = _httpContextAccessor.Object.HttpContext
+            };
+        }
+
+        public static void SetControllerContext(ControllerBase controller)
+        {
+            controller.ControllerContext = new ControllerContext
+            {
+                HttpContext  = _httpContextAccessor.Object.HttpContext
+            };
+        }
 
         public static T GetInstance<T>()
         {
-            return _provider.GetRequiredService<T>();
+            T result = _provider.GetRequiredService<T>();
+            ControllerBase controllerBase = result as ControllerBase;
+            if (controllerBase != null)
+            {
+                SetControllerContext(controllerBase);
+            }
+            Controller controller = result as Controller;
+            if (controller != null)
+            {
+                SetControllerContext(controller);
+            }
+            return result;
+
         }
     }
 }

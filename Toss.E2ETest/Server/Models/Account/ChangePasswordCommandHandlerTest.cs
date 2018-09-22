@@ -18,37 +18,21 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class ChangePasswordCommandHandlerTest
+    public class ChangePasswordCommandHandlerTest : BaseIntegrationTest
     {
-        private readonly ChangePasswordCommandHandler _sut;
-        private CommonMocks<AccountController> _m = new CommonMocks<AccountController>();
-        public ChangePasswordCommandHandlerTest()
-        {
-
-            _sut = new ChangePasswordCommandHandler(
-                _m.UserManager.Object,
-                _m.SignInManager.Object,
-                new Mock<ILogger<AccountController>>().Object,
-                _m.HttpContextAccessor.Object);
-
-            _m.UserManager.Setup(u => u.ChangePasswordAsync(_m.ApplicationUser, It.IsAny<string>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(new IdentityResult()));
-        }
+        
 
         [Fact]
         public async Task Handle_when_user_has_no_password_returns_error()
         {
-            _m.ApplicationUser.PasswordHash = null;
+            await EditCurrentUser(u => u.PasswordHash = null);
 
-            var res = await _sut.Handle(new ChangePasswordCommand()
+            var res = await _mediator.Send(new ChangePasswordCommand()
             {
                 ConfirmPassword = "test2",
                 NewPassword = "test2",
                 OldPassword = "test"
-            },
-            new System.Threading.CancellationToken());
-            _m.UserManager.Verify(u => u.ChangePasswordAsync(_m.ApplicationUser, It.IsAny<string>(), It.IsAny<string>()), Times.Never());
-            _m.EmailSender.Verify(e => e.SendEmailConfirmationAsync(_m.ApplicationUser.Email, _m.ApplicationUser.UserName, It.IsAny<string>()), Times.Never());
+            });
             Assert.False(res.IsSucess);
             Assert.True(res.Errors.ContainsKey("User"));
         }
