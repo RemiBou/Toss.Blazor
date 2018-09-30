@@ -28,20 +28,21 @@ namespace Toss.Server.Services
 
 
     /// <summary>
-    /// Fake implementation of randomwill return 0 every time unless NextResultis set
+    /// Fake implementation of randomwill return 0 every time unless NextResults set
     /// </summary>
     public class RandomFake : IRandom
     {
         /// <summary>
-        /// If changed will be set to 1 after each call to NewRandom
+        /// Next result to return, if none, 0 willbe returned
         /// </summary>
-        public static int NextResult { get; set; } = 0;
+        public static Queue<int> NextResults { get; set; } = new Queue<int>();
 
         public int NewRandom(int maxValue)
         {
-            var res = NextResult;
-            NextResult = 0;
-            return res;
+            int res;
+            if (NextResults.TryDequeue(out res))
+                return res;
+            return 0;
         }
     }
 }

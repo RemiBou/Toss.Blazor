@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Services;
@@ -155,14 +156,47 @@ namespace Toss.Tests.Server.Models.Tosses
                 StripeChargeToken = "AAA"
             });
 
-            
+
+            RandomFake.NextResults.Enqueue(0);//first user selection
+            RandomFake.NextResults.Enqueue(0);//first toss selection
+            RandomFake.NextResults.Enqueue(1);//second user selection
+            RandomFake.NextResults.Enqueue(0);//second toss selection
+
             var res = await _mediator.Send(new SponsoredTossQuery("toto"));
             Assert.Contains("user 1", res.Content);
-            RandomFake.NextResult = 1;
 
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
             Assert.Contains("user 2", res.Content);
         }
 
+        [Fact]
+        public async Task sponsored_toss_displayed_randomly_among_toss_of_one_user()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum erzer zer zer ze rze rezr zer from user 1 toss no 1  #toto",
+                SponsoredDisplayedCount = 10,
+                StripeChargeToken = "AAA"
+            });
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum erzer zer zer ze rze rezr zer from user 1 toss no 2 #toto",
+                SponsoredDisplayedCount = 10,
+                StripeChargeToken = "AAA"
+            });
+
+
+            RandomFake.NextResults.Enqueue(0);//first user selection
+            RandomFake.NextResults.Enqueue(0);//first toss selection
+            RandomFake.NextResults.Enqueue(0);//second user selection
+            RandomFake.NextResults.Enqueue(1);//second toss selection
+
+            var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.Contains("toss no 1", res.Content);
+            
+
+            res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.Contains("toss no 2", res.Content);
+        }
     }
 }

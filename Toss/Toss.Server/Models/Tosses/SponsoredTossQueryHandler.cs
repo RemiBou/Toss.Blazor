@@ -42,8 +42,8 @@ namespace Toss.Server.Models.Tosses
             if (!resCollection.Any())
                 return null;
             var index = random.NewRandom(resCollection.Length - 1);
-            var res = resCollection[index].First();
-
+            var userToss = resCollection[index].ToArray();
+            var res = userToss[random.NewRandom(userToss.Count() - 1)];
             await mediator.Publish(new SponsoredTossDisplayed(res.Id));
             return res;
 
