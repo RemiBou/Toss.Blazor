@@ -108,7 +108,7 @@ namespace Toss.Tests.Server.Models.Tosses
         }
 
         [Fact]
-        public async Task returns_sponsored_toss_from_sponsored_toss_query()
+        public async Task returns_sponsored_toss_from_sponsored_toss_query_and_dont_disply_after_count_done()
         {
 
             await _mediator.Send(new TossCreateCommand()
@@ -136,6 +136,33 @@ namespace Toss.Tests.Server.Models.Tosses
 
 
         }
-        
+
+        [Fact]
+        public async Task sponsored_toss_displayed_randomly_among_users()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum erzer zer zer ze rze rezr zer from user 1 #toto",
+                SponsoredDisplayedCount = 10,
+                StripeChargeToken = "AAA"
+            });
+            await TestFixture.ChangeCurrentUser("test2");
+
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum erzer zer zer ze rze rezr zer from user 2 #toto",
+                SponsoredDisplayedCount = 10,
+                StripeChargeToken = "AAA"
+            });
+
+            
+            var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.Contains("user 1", res.Content);
+            RandomFake.NextResult = 1;
+
+            res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.Contains("user 2", res.Content);
+        }
+
     }
 }

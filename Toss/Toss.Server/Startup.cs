@@ -81,11 +81,13 @@ namespace Toss.Server
             // Add application services.
             if (Configuration.GetValue<string>("test") == null)
             {
+                services.AddTransient<IRandom, RandomTrue>();
                 services.AddTransient<IEmailSender, EmailSender>();
                 services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
             }
             else
             {
+                services.AddSingleton<IRandom, RandomFake>();
                 //We had it as singleton so we can get the content later during the asset phase
                 services.AddSingleton<IEmailSender, FakeEmailSender>();
                 services.AddSingleton<IStripeClient, FakeStripeClient>();

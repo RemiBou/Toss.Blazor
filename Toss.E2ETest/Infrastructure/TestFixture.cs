@@ -24,6 +24,7 @@ namespace Toss.Tests.Infrastructure
         //only mock we need :)
         private static Mock<IHttpContextAccessor> _httpContextAccessor;
 
+        private static DefaultHttpContext HttpContext;
         public static ClaimsPrincipal ClaimPrincipal { get; set; }
 
         static TestFixture()
@@ -61,29 +62,33 @@ namespace Toss.Tests.Infrastructure
 
         public async static Task CreateTestUser()
         {
-            var userManager =  _provider.GetService<UserManager<ApplicationUser>>();
+            await ChangeCurrentUser(TestFixture.UserName);
+        }
+
+        public static async Task ChangeCurrentUser(string userName)
+        {
+            var userManager = _provider.GetService<UserManager<ApplicationUser>>();
             ApplicationUser user = new ApplicationUser()
             {
-                UserName = UserName,
-                Email = "test@yopmail.com",
+                UserName = userName,
+                Email = userName+"@yopmail.com",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(user);
             ClaimPrincipal = new ClaimsPrincipal(
                       new ClaimsIdentity(new Claim[]
                          {
-                                    new Claim(ClaimTypes.Name, UserName)
+                                    new Claim(ClaimTypes.Name, userName),
+                                    new Claim(ClaimTypes.NameIdentifier, user.Id)
                          },
                       "Basic"));
-            (ClaimPrincipal.Identity as ClaimsIdentity).AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
+            HttpContext = new DefaultHttpContext()
+            {
+                User = ClaimPrincipal
+            };
             _httpContextAccessor
               .SetupGet(h => h.HttpContext)
-              .Returns(() =>
-              new DefaultHttpContext()
-              {
-                  User = ClaimPrincipal
-                  
-              });
+              .Returns(() => HttpContext);
         }
 
         public static void SetControllerContext(Controller controller)

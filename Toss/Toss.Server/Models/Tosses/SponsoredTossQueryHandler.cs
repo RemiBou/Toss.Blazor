@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
 namespace Toss.Server.Models.Tosses
@@ -12,20 +13,18 @@ namespace Toss.Server.Models.Tosses
     {
         private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
         private IMediator mediator;
+        private IRandom random;
 
-        public SponsoredTossQueryHandler(ICosmosDBTemplate<TossEntity> cosmosDBTemplate)
+        public SponsoredTossQueryHandler(ICosmosDBTemplate<TossEntity> cosmosDBTemplate, IMediator mediator, IRandom random)
         {
             this.cosmosDBTemplate = cosmosDBTemplate;
-        }
-
-        public SponsoredTossQueryHandler(ICosmosDBTemplate<TossEntity> cosmosDBTemplate, IMediator mediator) : this(cosmosDBTemplate)
-        {
             this.mediator = mediator;
+            this.random = random;
         }
 
         public async Task<TossLastQueryItem> Handle(SponsoredTossQuery request, CancellationToken cancellationToken)
         {
-            var res = (await cosmosDBTemplate.CreateDocumentQuery<SponsoredTossEntity>())
+            var resCollection = (await cosmosDBTemplate.CreateDocumentQuery<SponsoredTossEntity>())
                 .Where(s => s.Type == nameof(SponsoredTossEntity))
                 .Where(s => s.Content.Contains("#" + request.Hashtag))
                 .Where(s => s.DisplayedCount > 0)
@@ -36,14 +35,18 @@ namespace Toss.Server.Models.Tosses
                     Id = t.Id,
                     UserName = t.UserName
                 })
-                //first or default does not work in the current cosmodb sdk
-                .Take(1)
+                
                 .AsEnumerable()
-                .FirstOrDefault();
-            if (res != null)
-                await mediator.Publish(new SponsoredTossDisplayed(res.Id));
+                .ToLookup(t => t.UserName)
+                .ToArray();
+            if (!resCollection.Any())
+                return null;
+            var index = random.NewRandom(resCollection.Length - 1);
+            var res = resCollection[index].First();
+
+            await mediator.Publish(new SponsoredTossDisplayed(res.Id));
             return res;
-            
+
         }
     }
 }
