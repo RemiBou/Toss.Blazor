@@ -4,10 +4,21 @@ using System.Collections.Generic;
 
 namespace Toss.Server.Data
 {
-    public class TossEntity
+    public abstract class CosmosDBEntity
     {
-        [Newtonsoft.Json.JsonProperty(PropertyName="id")]
+        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
         public string Id { get; set; }
+        public string Type { get {
+                if (string.IsNullOrEmpty(_type))
+                {
+                    _type = this.GetType().Name;
+                }
+                return _type; } set => _type = value; }
+
+        private string _type;
+    }
+    public class TossEntity : CosmosDBEntity
+    {
         public string Content { get; set; }
         public string UserName { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
@@ -22,18 +33,5 @@ namespace Toss.Server.Data
         public TossEntity()
         {
         }
-    }
-
-    public class SponsoredTossEntity : TossEntity
-    {
-        public SponsoredTossEntity() { }
-        public SponsoredTossEntity(string content, string userId, DateTimeOffset dateOfPost, int displayCount) : base(content, userId, dateOfPost)
-        {
-            DisplayedCount = displayCount;
-            DisplayedCountBought = displayCount;
-        }
-
-        public int DisplayedCount { get; set; }
-        public int DisplayedCountBought { get; set; }
     }
 }

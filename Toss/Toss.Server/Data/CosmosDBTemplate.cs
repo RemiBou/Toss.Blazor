@@ -63,6 +63,11 @@ namespace Toss.Server.Data
             return _documentClient.CreateDocumentQuery<T>(await GetCollectionUri(), sql);
         }
 
+
+        public async Task<IQueryable<TReturn>> CreateDocumentQuery<TReturn>()
+        {
+            return _documentClient.CreateDocumentQuery<TReturn>(await GetCollectionUri());
+        }
         public async Task<IQueryable<TReturn>> CreateDocumentQuery<TReturn>(string sql)
         {
             return _documentClient.CreateDocumentQuery<TReturn>(await GetCollectionUri(), sql);
@@ -70,6 +75,11 @@ namespace Toss.Server.Data
         public async Task<string> Insert(T instance)
         {
             return (await _documentClient.CreateDocumentAsync(await GetCollectionUri(), instance)).Resource.Id;
+        }
+
+        public async Task Update(T instance)
+        {
+            var res = (await _documentClient.UpsertDocumentAsync(await GetCollectionUri(), instance)).Resource.Id;
         }
 
         private async Task<Uri> GetCollectionUri()

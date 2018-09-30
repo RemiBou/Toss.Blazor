@@ -105,11 +105,37 @@ namespace Toss.Tests.Server.Models.Tosses
             var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
 
             Assert.Null(toss);
+        }
+
+        [Fact]
+        public async Task returns_sponsored_toss_from_sponsored_toss_query()
+        {
+
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "non sponsored toss content bla bla #toto"
+            });
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum erzer zer zer ze rze rezr zer #toto",
+                SponsoredDisplayedCount = 10,
+                StripeChargeToken = "AAA"
+            });
+
+            for (int i = 0; i < 10; i++)
+            {
+                var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+                
+                Assert.NotNull(res);
+                Assert.Equal("lorem ipsum erzer zer zer ze rze rezr zer #toto", res.Content);
+            }
+
+            var resNull = await _mediator.Send(new SponsoredTossQuery("toto"));
+
+            Assert.Null(resNull);
 
 
         }
-
         
-
     }
 }
