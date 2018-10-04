@@ -24,7 +24,7 @@ namespace Toss.Tests.Server.Models.Account
             var first = res.FirstOrDefault();
             Assert.Equal("username", first.UserName);
             Assert.NotEmpty(first.Id);
-            Assert.Equal("test@yopmail.com", first.Email);
+            Assert.Equal("username@yopmail.com", first.Email);
             Assert.True(first.EmailConfirmed);
 
         }
