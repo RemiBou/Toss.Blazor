@@ -5,13 +5,17 @@
 @inject IAccountService AccountService
 
 <div class="row">
-    <div class="col-2">  <NewToss OnNewTossCreated="@RefreshTossList"></NewToss></div>
+    <div class="col-2">
+        @if (currentAccount != null)
+        {
+            <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
+        }
+    </div>
     <div class="col-10">
         <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
     </div>
 </div>
 <div class="row">
-  
     @if (string.IsNullOrEmpty(CurrentTag))
     {
         <div class="col-md-3 col-sm-6 my-2">
@@ -22,20 +26,29 @@
                 </div>
             </div>
         </div>
-
     }
-    <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-    @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
+    else
     {
+        <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
+        @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
+        {
             <OneToss toss="@toss" />
- 
+        }
     }
 </div>
 @functions{
-    
+
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     [Parameter]
     private string CurrentTag { get; set; } = "";
+
+    private AccountViewModel currentAccount;
+
+    protected async override Task OnInitAsync()
+    {
+        currentAccount = await AccountService.CurrentAccount();
+        
+    }
 
     protected override async Task OnParametersSetAsync()
     {

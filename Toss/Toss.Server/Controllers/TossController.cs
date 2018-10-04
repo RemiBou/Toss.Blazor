@@ -37,7 +37,7 @@ namespace Toss.Server.Controllers
         /// Returns the last created Toss for the homepage
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Last([FromQuery] TossLastQuery hashTag)
         {
             return Ok(await _mediator.Send(hashTag));
@@ -47,7 +47,7 @@ namespace Toss.Server.Controllers
         /// Returns the last created Toss for the homepage
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Sponsored([FromQuery] SponsoredTossQuery query)
         {
             return Ok(await _mediator.Send(query));
