@@ -44,6 +44,16 @@ namespace Toss.Server.Controllers
         }
 
         /// <summary>
+        /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> Sponsored([FromQuery] SponsoredTossQuery query)
+        {
+            return Ok(await _mediator.Send(query));
+        }
+
+        /// <summary>
         /// Creates a new toss
         /// </summary>
         /// <param name="createTossCommand"></param>

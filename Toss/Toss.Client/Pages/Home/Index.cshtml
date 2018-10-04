@@ -24,14 +24,15 @@
         </div>
 
     }
+    <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
     @foreach (var toss in Tosses.OrderByDescending(t => t.CreatedOn))
     {
-        <div class="col-md-3 col-sm-6 my-2 toss">
             <OneToss toss="@toss" />
-        </div>
+ 
     }
 </div>
 @functions{
+    
     List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
     [Parameter]
     private string CurrentTag { get; set; } = "";

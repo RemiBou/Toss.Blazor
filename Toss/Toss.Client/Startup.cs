@@ -47,7 +47,8 @@ namespace Toss.Client
 
             JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages")
                 .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
-                .ContinueWith(t => app.AddComponent<App>("app"));
+                ;
+            app.AddComponent<App>("app");
         }
     }
 }

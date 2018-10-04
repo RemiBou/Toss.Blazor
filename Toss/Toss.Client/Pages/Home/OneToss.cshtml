@@ -1,33 +1,45 @@
-﻿
-@using Markdig
-<!-- Modal -->
-<div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
+﻿@using Markdig
 
-            <div class="modal-body">
-                @((MarkupString)Markdown.ToHtml(toss.Content))
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<div class="col-md-3 col-sm-6 my-2 toss">
+    <div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
 
+                <div class="modal-body">
+                    @((MarkupString)Markdown.ToHtml(toss.Content))
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </div>
             </div>
         </div>
     </div>
-</div>
-<div class="card  h-100" data-toggle="modal" onclick="@(async () => await ShowModal(toss))" style="cursor:zoom-in">
-    <div class="card-body p-2">
-        <p class="card-text" style="max-height:200px;overflow-y: hidden;">
-            @((MarkupString)Markdown.ToHtml(toss.Content))
-        </p>
-        <p class="card-text">
-            <small cl
-                   ass="text-muted">By @toss.UserName @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago</small>
+    <div class="card  h-100 @additionnalClass" data-toggle="modal" onclick="@(async () => await ShowModal(toss))" style="cursor:zoom-in">
+        @if(headerText != null)
+        {
+            <div class="card-header">
+                @headerText
+            </div>
+        }
+        <div class="card-body p-2">
+            <p class="card-text" style="max-height:200px;overflow-y: hidden;">
+                @((MarkupString)Markdown.ToHtml(toss.Content))
+            </p>
+            <p class="card-text">
+                <small class="text-muted">
+                    @toss.UserName <br/> 
+                    @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
+                </small>
             </p>
         </div>
     </div>
-
+</div>
     @functions{
+        [Parameter]
+        string headerText { get; set; }
+        [Parameter]
+        string additionnalClass { get; set; }
         [Parameter]
         TossLastQueryItem toss { get; set; }
         protected async Task ShowModal(TossLastQueryItem toss)

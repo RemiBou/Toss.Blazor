@@ -36,7 +36,7 @@ namespace Toss.Server.Services
             };
             var chargeService = new StripeChargeService();
             StripeCharge charge = chargeService.Create(chargeOptions);
-            return charge.FailureMessage != null && charge.Paid;
+            return charge.FailureMessage == null && charge.Paid;
         }
     }
 }
