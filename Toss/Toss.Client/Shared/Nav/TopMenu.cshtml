@@ -12,16 +12,22 @@
                     Home
                 </NavLink>
             </li>
-            <li class="nav-item">
-                <NavLink class="nav-link btn btn-sm " href="/account" Match="NavLinkMatch.Prefix">
-                    Account
-                </NavLink>
-            </li>
-            @*<li class="nav-item">
-            <NavLink class="nav-link btn btn-sm " href="/ads" Match="NavLinkMatch.Prefix">
-                Ads
-            </NavLink>
-        </li>*@
+            @if (account != null)
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link btn btn-sm " href="/account" Match="NavLinkMatch.Prefix">
+                        Account
+                    </NavLink>
+                </li>
+            }
+            else
+            {
+                <li class="nav-item">
+                    <NavLink class="nav-link btn btn-sm " href="/login" Match="NavLinkMatch.Prefix">
+                        Login
+                    </NavLink>
+                </li>
+            }
             @if (account != null && account.IsAdmin)
             {
                 <li class="nav-item">
@@ -35,13 +41,15 @@
                     About
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="#" id="LinkLogout" class="nav-link btn btn-sm " onclick="@(async () => await LogOff())">
-                    Signout
-                </a>
-            </li>
-
-        </ul>
+            @if (account != null)
+            {
+                <li class="nav-item">
+                    <a href="#" id="LinkLogout" class="nav-link btn btn-sm " onclick="@(async () => await LogOff())">
+                        Signout
+                    </a>
+                </li>
+            }
+            </ul>
     </div>
 </nav>
 @functions {

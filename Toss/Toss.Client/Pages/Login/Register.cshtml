@@ -1,45 +1,62 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-<h4>Create a Toss account</h4>
+<div class="card">
+    <div class="card-header">Create a Toss account</div>
+    <div class="card-body p-2">
+        <ValidatedForm OnSubmit="CreateAccount" Model="registerCommand">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
-<ValidatedForm OnSubmit="CreateAccount" Model="registerCommand">
-    <div asp-validation-summary="All" class="text-danger"></div>
-    <div class="form-group">
-        <label for="NewEmail">Email</label>
-        <input id="NewEmail" bind="@registerCommand.Email" class="form-control" />
-        <ClientValidationError FieldName="Email" Model="registerCommand" />
-        <ValidationError FieldName="Email" Errors="@_errors" />
+                <div class="col-sm-9">
+                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control" />
+                    <ClientValidationError FieldName="Email" Model="registerCommand" />
+                    <ValidationError FieldName="Email" Errors="@_errors" />
+                </div>
 
+            </div>
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="NewName">Name</label>
+
+                <div class="col-sm-9">
+                    <input id="NewName" bind="@registerCommand.Name" class="form-control" />
+                    <ValidationError FieldName="Name" Errors="@_errors" />
+                </div>
+            </div>
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
+
+                <div class="col-sm-9">
+                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control" />
+                    <ValidationError FieldName="Password" Errors="@_errors" />
+                </div>
+            </div>
+            <div class="form-group row mb-1">
+                <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
+
+                <div class="col-sm-9">
+                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
+                    <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
+                </div>
+            </div>
+            <div class="form-group text-center mb-0">
+                <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-default">Register</button>
+                <ValidationError FieldName="Other" Errors="@_errors" />
+            </div>
+        </ValidatedForm>
     </div>
-    <div class="form-group">
-        <label for="NewName">Name</label>
-        <input id="NewName" bind="@registerCommand.Name" class="form-control" />
-        <ValidationError FieldName="Name" Errors="@_errors" />
-    </div>
-    <div class="form-group">
-        <label for="NewPassword">Password</label>
-        <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control" />
-        <ValidationError FieldName="Password" Errors="@_errors" />
-    </div>
-    <div class="form-group">
-        <label for="NewConfirmPassword">Confirm your password</label>
-        <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
-        <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
-    </div>
-    <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-default">Register</button>
-    <ValidationError FieldName="Other" Errors="@_errors" />
-</ValidatedForm>
+</div>
 @functions{
     ElementRef createButton;
     RegisterCommand registerCommand = new RegisterCommand();
-    Dictionary<string,List<string>> _errors;
+    Dictionary<string, List<string>> _errors;
     async Task CreateAccount(UIEventArgs ev)
     {
         _errors = null;
         await ClientFactory.Create("/api/account/register", createButton)
-            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string, List<string>>>(errors => _errors = errors)
             .OnOK(async () =>
             {
-                await JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to "+ registerCommand.Email);
+                await JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to " + registerCommand.Email);
                 registerCommand = new RegisterCommand();
             })
             .Post(registerCommand);

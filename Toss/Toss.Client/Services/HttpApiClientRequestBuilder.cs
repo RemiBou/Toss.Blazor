@@ -67,7 +67,6 @@ namespace Toss.Client.Services
                     break;
                 case System.Net.HttpStatusCode.Unauthorized:
                 case System.Net.HttpStatusCode.Forbidden:
-                    uriHelper.NavigateTo("/login");
                     break;
                 case System.Net.HttpStatusCode.InternalServerError:
                     await JsInterop.Toastr("error", "A server error occured, sorry");

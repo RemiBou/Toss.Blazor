@@ -1,28 +1,32 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory Http;
 @inject IUriHelper UriHelper;
-<h4>Use another service to log in.</h4>
-@foreach (var provider in loginProviders)
-{
-    <form action="/api/account/externalLogin" method="post">
-        <button type="submit"
-                class="btn btn-default"
-                name="provider"
-                value="@provider.Name"
-                title="@("Log in using your "+provider.DisplayName+" account")">
-            @provider.Name
-        </button>
-    </form>
-}
-@functions{
-    IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
-    protected override async Task OnInitAsync()
-    {
-        await Http.Create("/api/account/loginProviders")
-            .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
-            .Get();
+<div class="card mt-3">
+    <div class="card-header">Use another service to log in.</div>
+    <div class="card-body p-2">
+        @foreach (var provider in loginProviders)
+        {
+            <form action="/api/account/externalLogin" method="post">
+                <button type="submit"
+                        class="btn btn-default"
+                        name="provider"
+                        value="@provider.Name"
+                        title="@("Log in using your "+provider.DisplayName+" account")">
+                    @provider.Name
+                </button>
+            </form>
+        }
+    </div>
+</div>
+    @functions{
+        IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
+        protected override async Task OnInitAsync()
+        {
+            await Http.Create("/api/account/loginProviders")
+                .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
+                .Get();
 
-        StateHasChanged();
+            StateHasChanged();
+        }
+
+
     }
-
-
-}

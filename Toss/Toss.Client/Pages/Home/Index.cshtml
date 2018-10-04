@@ -37,15 +37,10 @@
     [Parameter]
     private string CurrentTag { get; set; } = "";
 
-
-
     protected override async Task OnParametersSetAsync()
     {
         await RefreshTossList();
     }
-
-
-
 
     public override void SetParameters(ParameterCollection parameters)
     {
