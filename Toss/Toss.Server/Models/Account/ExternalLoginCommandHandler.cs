@@ -9,10 +9,13 @@ namespace Toss.Server.Controllers
     public class ExternalLoginCommandHandler : IRequestHandler<ExternalLoginCommand, SignInResult>
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserLoginStore<ApplicationUser> userManager;
 
-        public ExternalLoginCommandHandler(SignInManager<ApplicationUser> signInManager)
+
+        public ExternalLoginCommandHandler(SignInManager<ApplicationUser> signInManager, IUserStore<ApplicationUser> userManager)
         {
-            _signInManager = signInManager;
+            this.userManager = (IUserLoginStore<ApplicationUser>)userManager;
+            this._signInManager = signInManager;
         }
 
         public async Task<SignInResult> Handle(ExternalLoginCommand request, CancellationToken cancellationToken)
@@ -22,7 +25,6 @@ namespace Toss.Server.Controllers
             {
                 return null;
             }
-
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
             return result;

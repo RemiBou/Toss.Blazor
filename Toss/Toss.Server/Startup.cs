@@ -53,7 +53,7 @@ namespace Toss.Server
             });
             DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.Objects
             });
             services.AddSingleton(documentClient);
             string DataBaseName = Configuration.GetValue("databaseName", "Toss");
