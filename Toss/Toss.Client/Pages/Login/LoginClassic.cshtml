@@ -1,5 +1,6 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IUriHelper UriHelper
+@inject IAccountService AccountService;
 <div class="card">
     <div class="card-header">
         Use a Toss account to log in.
@@ -49,13 +50,8 @@
     Dictionary<string, List<string>> _errors;
     async Task<bool> TryLogin(UIEventArgs even)
     {
-        var test = Json.Deserialize<Dictionary<string, List<string>>>("{\"Name\":[\"The Name field is required.\"],\"Email\":[\"The Email field is required.\"],\"Password\":[\"The Password field is required.\"]}");
-
-        _errors = null;
-        await ClientFactory.Create("/api/account/login", loginButton)
-            .OnBadRequest<Dictionary<string, List<string>>>(errors => _errors = errors)
-            .OnOK(null, "/")
-            .Post(loginCommand);
+        
+        _errors = await AccountService.Login(loginCommand,loginButton);
         StateHasChanged();
         return false;
     }

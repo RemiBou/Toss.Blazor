@@ -56,15 +56,23 @@
     AccountViewModel account;
     protected override async Task OnInitAsync()
     {
+        AccountService.OnLoginDone += async (s, e) =>
+        {
+            account = await AccountService.CurrentAccount();
+            StateHasChanged();
+        };
+        AccountService.OnLogoutDone += (s, e) =>
+        {
+            account = null;
+            StateHasChanged();
+        };
         //forces call to get current account details so the user get redirected if not logged (TODO : make a batter abstraction)
         account = await AccountService.CurrentAccount();
         StateHasChanged();
     }
     protected async Task LogOff()
     {
-        await ClientFactory.Create("/api/account/logout")
-            .OnOK("You have successfuly logged off.", "/login")
-            .Post();
+        await AccountService.Logout();
 
     }
 }
