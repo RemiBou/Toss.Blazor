@@ -3,21 +3,6 @@
 @inject IUriHelper urlHelper;
 
 <div class="form-group" id="BlockHashTagBar">
-    @if (_account != null)
-    {
-        @foreach (var hashTag in _account.Hashtags ?? new List<string>())
-        {
-            <div class="input-group m-1 btn-group" role="group">
-                <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
-                    #@hashTag
-                </NavLink>
-                @if (hashTag == CurrentTag)
-                {
-                    <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
-                }
-            </div>
-        }
-    }
     <div class="input-group m-1">
         <input type="text" class="form-control" id="TxtAddHashTag" bind="@newHashtag" placeholder="Hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
         <div class="input-group-append">
@@ -33,6 +18,23 @@
         </div>
     </div>
 </div>
+@if (_account != null)
+{
+    @foreach (var hashTag in _account.Hashtags ?? new List<string>())
+    {
+        <div class="form-group">
+            <div class="input-group m-1 btn-group" role="group">
+                <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
+                    #@hashTag
+                </NavLink>
+                @if (hashTag == CurrentTag)
+                {
+                    <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
+                }
+            </div>
+        </div>
+    }
+}
 @functions{
     AccountViewModel _account;
     string newHashtag;
