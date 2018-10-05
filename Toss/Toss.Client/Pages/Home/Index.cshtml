@@ -4,79 +4,86 @@
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
 
-<div class="row">
-    <div class="col-2">
+    <div class="form-inline">
         @if (currentAccount != null)
         {
             <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
         }
-    </div>
-    <div class="col-10">
         <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
     </div>
-</div>
-<div class="row">
-    @if (string.IsNullOrEmpty(CurrentTag))
-    {
-        <div class="col-md-3 col-sm-6 my-2">
-            <div class="card text-white bg-warning   h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Select a hashtag</h5>
-                    <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
+    <div class="row">
+        @if (string.IsNullOrEmpty(CurrentTag))
+        {
+            <div class="col-md-3 col-sm-6 my-2">
+                <div class="card text-white bg-warning   h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Select a hashtag</h5>
+                        <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-        @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
-        {
-            <OneToss toss="@toss" />
         }
-    }
-</div>
-@functions{
-
-    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
-    [Parameter]
-    private string CurrentTag { get; set; } = "";
-
-    private AccountViewModel currentAccount;
-
-    protected async override Task OnInitAsync()
-    {
-        currentAccount = await AccountService.CurrentAccount();
-        
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        await RefreshTossList();
-    }
-
-    public override void SetParameters(ParameterCollection parameters)
-    {
-        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
+        else
         {
-            CurrentTag = null;
-        }
-        base.SetParameters(parameters);
-    }
-
-    protected async Task RefreshTossList()
-    {
-        Tosses = new List<TossLastQueryItem>();
-        if (string.IsNullOrWhiteSpace(CurrentTag))
-            return;
-        await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
-            .OnOK<List<TossLastQueryItem>>(l =>
+            <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
+            @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
             {
-                Tosses = l;
-                StateHasChanged();
-            })
-            .Get();
+                <OneToss toss="@toss" />
+            }
+            @if (Tosses != null && !Tosses.Any())
+            {
+                <div class="col-md-3 col-sm-6 my-2">
+                    <div class="card text-white bg-warning   h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Nothing to show</h5>
+                            <p class="card-text">There is not Toss for #@CurrentTag yet :( <br/> It's up to you to start something.</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    @functions{
+
+        List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
+        [Parameter]
+        private string CurrentTag { get; set; } = "";
+
+        private AccountViewModel currentAccount;
+
+        protected async override Task OnInitAsync()
+        {
+            currentAccount = await AccountService.CurrentAccount();
+
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await RefreshTossList();
+        }
+
+        public override void SetParameters(ParameterCollection parameters)
+        {
+            if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
+            {
+                CurrentTag = null;
+            }
+            base.SetParameters(parameters);
+        }
+
+        protected async Task RefreshTossList()
+        {
+            Tosses = new List<TossLastQueryItem>();
+            if (string.IsNullOrWhiteSpace(CurrentTag))
+                return;
+            await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
+                .OnOK<List<TossLastQueryItem>>(l =>
+                {
+                    Tosses = l;
+                    StateHasChanged();
+                })
+                .Get();
+        }
+
+
     }
-
-
-}

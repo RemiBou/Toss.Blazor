@@ -2,41 +2,37 @@
 @inject IAccountService AccountService
 @inject IUriHelper urlHelper;
 
-<div class="form-inline">
-
-    <div class="form-group" id="BlockHashTagBar">
-        @if (_account != null)
+<div class="form-group" id="BlockHashTagBar">
+    @if (_account != null)
+    {
+        @foreach (var hashTag in _account.Hashtags ?? new List<string>())
         {
-            @foreach (var hashTag in _account.Hashtags ?? new List<string>())
-            {
-                <div class="input-group m-1 btn-group" role="group">
-                    <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
-                        #@hashTag
-                    </NavLink>
-                    @if (hashTag == CurrentTag)
-                    {
-                        <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
-                    }
-                </div>
-            }
-        }
-        <div class="input-group m-1">
-            <input type="text" class="form-control" id="TxtAddHashTag" bind="@newHashtag" placeholder="Hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
-            <div class="input-group-append">
-                @if (_account != null)
+            <div class="input-group m-1 btn-group" role="group">
+                <NavLink href="@GetUrl(hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary">
+                    #@hashTag
+                </NavLink>
+                @if (hashTag == CurrentTag)
                 {
-                    <button class="btn btn-outline-secondary" id="BtnAddHashTag" onclick="@(async () => await AddHashtag())" type="button">
-                        <i class="fas fa-plus"></i>
-                    </button>
+                    <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
                 }
-                <button class="btn btn-outline-secondary" id="BtnSeeHashTag" onclick="@(() => SeeHashtag())" type="button">
-                    <i class="fas fa-eye"></i>
-                </button>
             </div>
+        }
+    }
+    <div class="input-group m-1">
+        <input type="text" class="form-control" id="TxtAddHashTag" bind="@newHashtag" placeholder="Hashtag" aria-label="Add hashtag" aria-describedby="basic-addon2" />
+        <div class="input-group-append">
+            @if (_account != null)
+            {
+                <button class="btn btn-outline-secondary" id="BtnAddHashTag" onclick="@(async () => await AddHashtag())" type="button">
+                    <i class="fas fa-plus"></i>
+                </button>
+            }
+            <button class="btn btn-outline-secondary" id="BtnSeeHashTag" onclick="@(() => SeeHashtag())" type="button">
+                <i class="fas fa-eye"></i>
+            </button>
         </div>
     </div>
 </div>
-
 @functions{
     AccountViewModel _account;
     string newHashtag;

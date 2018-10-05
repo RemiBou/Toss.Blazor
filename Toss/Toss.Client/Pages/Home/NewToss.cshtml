@@ -4,7 +4,7 @@
 <!-- Modal -->
 <div class="modal fade" id="modal-new-toss" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
-       
+
         <div class="modal-content">
             <ValidatedForm method="post" Model="@newToss" onsubmit="@SendToss">
                 <div class="modal-body">
@@ -23,15 +23,15 @@
                             <ul>
                                 <li>It'll be displayed as first Toss during 30 sec for the number of times entered below</li>
                                 <li>Only one sponsored toss is displayed at a time, if multiple matches the current tag, one is picked randomly. </li>
-                                <li>One display costs @(TossCreateCommand.CtsCostPerDisplay/100) €, you have to get between 50 and 1000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
+                                <li>One display costs @(TossCreateCommand.CtsCostPerDisplay / 100) €, you have to get between 50 and 1000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
                                 <li>The TOSS will be displayed as a normal toss, once we get the payment confirmation it will be displayed as a sponsored toss like said before.</li>
                                 <li>You can read more details about it <a href="https://github.com">here</a>. By creating a sponsored toss, you agree on the conditions explained on the provided link.</li>
-                                
+
                             </ul>
                         </div>
                         <div class="form-group">
                             <label for="TxtDisplayCount">Display count</label>
-                            <input type="number" class="form-control" id="TxtDisplayCount" bind="@newToss.SponsoredDisplayedCountStr" placeholder="Display count"/>
+                            <input type="number" class="form-control" id="TxtDisplayCount" bind="@newToss.SponsoredDisplayedCountStr" placeholder="Display count" />
                             <ValidationError FieldName="SponsoredDisplayCount" Errors="@_errors" />
                             <ClientValidationError FieldName="SponsoredDisplayCount" Model="newToss" />
                         </div>
@@ -47,11 +47,9 @@
     </div>
 </div>
 
-<div class="form-inline">
-    <div class="form-group">
-        <div class="input-group m-1 btn-group" role="group">
-            <button type="button" class="btn btn-primary" onclick="@(async () => await ShowModal())"><i class="fas fa-plus"></i> New TOSS</button>
-        </div>
+<div class="form-group">
+    <div class="input-group m-1 btn-group" role="group">
+        <button type="button" class="btn btn-primary" onclick="@(async () => await ShowModal())"><i class="fas fa-plus"></i> New TOSS</button>
     </div>
 </div>
 @functions{
@@ -69,10 +67,10 @@
     {
         if (isSpsonsoredToss)
         {
-            await JsInterop.OpenStripe(this, newToss.SponsoredDisplayedCount.Value*TossCreateCommand.CtsCostPerDisplay);
+            await JsInterop.OpenStripe(this, newToss.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay);
             return;
         }
-       await DoSendToss();
+        await DoSendToss();
 
     }
     private async Task DoSendToss()
@@ -97,6 +95,6 @@
     public async Task TokenReceived(string token)
     {
         newToss.StripeChargeToken = token;
-       await DoSendToss();
+        await DoSendToss();
     }
 }
