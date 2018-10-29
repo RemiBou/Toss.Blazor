@@ -15,9 +15,8 @@ namespace Toss.Tests.E2E
         public FakeEmailSender EmailSender { get; private set; }
         public Uri RootUri => _rootUriInitializer.Value;
 
-        public IWebHost Host { get => _host; set => _host = value; }
-
-        private IWebHost _host;
+        public IWebHost Host { get; set; }
+  
         private readonly Lazy<Uri> _rootUriInitializer;
 
         public AspNetSiteServerFixture()
@@ -91,7 +90,7 @@ namespace Toss.Tests.E2E
                 "--contentroot", sampleSitePath,
                 "--environment", "development",
                 "--databaseName",CosmosDBFixture.DatabaseName,
-                "--e2eTest","true"
+                "--test","true"
             });
         }
     }

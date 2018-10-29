@@ -9,7 +9,9 @@ namespace Toss.Tests.E2E
 {
     [CaptureSeleniumLogs]
     public abstract class ServerTestBase
-        :  IClassFixture<AspNetSiteServerFixture>, IClassFixture<BrowserFixture>, IClassFixture<CosmosDBFixture>
+        : IClassFixture<CosmosDBFixture>, 
+        IClassFixture<AspNetSiteServerFixture>,
+        IClassFixture<BrowserFixture>
     {
         protected readonly AspNetSiteServerFixture _serverFixture;
         protected readonly CosmosDBFixture cosmosDBFixture;
@@ -22,13 +24,13 @@ namespace Toss.Tests.E2E
         public static ILogs Logs => _logs.Value;
         public static ITestOutputHelper Output => _output.Value;
         public ServerTestBase(BrowserFixture browserFixture,
-            AspNetSiteServerFixture serverFixture, 
+            AspNetSiteServerFixture serverFixture,
             CosmosDBFixture cosmosDBFixture,
             ITestOutputHelper output)
            
         {
-            _serverFixture = serverFixture;
             this.cosmosDBFixture = cosmosDBFixture;
+            _serverFixture = serverFixture;
             _browser.Value = browserFixture.Browser;
             _logs.Value = browserFixture.Logs;
             _output.Value = output;

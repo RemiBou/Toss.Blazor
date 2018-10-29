@@ -12,7 +12,7 @@ namespace Toss.Tests.E2E
     public class E2ETest : ServerTestBase
     {
         private readonly WebDriverWait _webDriveWaitDefault;
-        private const int DefaultWaitSecondsForPageChange = 60;
+        private const int DefaultWaitSecondsForPageChange = 20;
         private const string SubscribeEmail = "toss-unittests@yopmail.com";
         private const string SubscribePassword = "tossUnittests123456!!";
         private const string SubscribeLogin = "tossunittests";
@@ -20,9 +20,9 @@ namespace Toss.Tests.E2E
         public E2ETest(
             BrowserFixture browserFixture,
             AspNetSiteServerFixture serverFixture,
-            ITestOutputHelper output,
-            CosmosDBFixture comosDbFixture)
-            : base(browserFixture, serverFixture, comosDbFixture, output)
+            CosmosDBFixture cosmosDBFixture,
+            ITestOutputHelper output)
+            : base(browserFixture, serverFixture,cosmosDBFixture, output)
         {
             Navigate("/", noReload: true);
             WaitUntilLoaded();
@@ -38,11 +38,11 @@ namespace Toss.Tests.E2E
         public void FullE2eTest()
         {
 
-            Browser.Manage().Window.FullScreen();
-            Navigate("/");
+            //Browser.Manage().Window.FullScreen();
+            Navigate("/login");
             Assert.Equal("TOSS", Browser.Title);
             //load and redirect to /login
-            _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
+            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")) != null);
             //subscribe
             Browser.FindElement(By.Id("NewEmail")).SendKeys(SubscribeEmail);
             Browser.FindElement(By.Id("NewName")).SendKeys(SubscribeLogin);

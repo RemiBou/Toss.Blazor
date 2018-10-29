@@ -33,19 +33,8 @@ namespace Toss.Tests.E2E
                 Console.WriteLine($"Set {nameof(ChromeOptions)}.{nameof(opts.BinaryLocation)} to {binaryLocation}");
             }
 
-            try
-            {
-                var driver = new RemoteWebDriver(opts);
-                Browser = driver;
-                Logs = new RemoteLogs(driver);
-            }
-            catch (WebDriverException ex)
-            {
-                var message =
-                    "Failed to connect to the web driver. Please see the readme and follow the instructions to install selenium." +
-                    "Remember to start the web driver with `selenium-standalone start` before running the end-to-end tests.";
-                throw new InvalidOperationException(message, ex);
-            }
+            var driver = new ChromeDriver(".");
+            Browser = driver;
         }
 
         public void Dispose()
