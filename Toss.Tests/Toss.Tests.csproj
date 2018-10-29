@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Toss\Toss.Client\Toss.Client.csproj" />
-    <ProjectReference Include="..\Toss\Toss.Server\Toss.Server.csproj" />
-    <ProjectReference Include="..\Toss\Toss.Shared\Toss.Shared.csproj" />
+    <ProjectReference Include="..\Toss.Client\Toss.Client.csproj" />
+    <ProjectReference Include="..\Toss.Server\Toss.Server.csproj" />
+    <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
