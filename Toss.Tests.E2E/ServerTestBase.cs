@@ -7,7 +7,7 @@ using Xunit.Abstractions;
 
 namespace Toss.Tests.E2E
 {
-    [CaptureSeleniumLogs]
+    
     public abstract class ServerTestBase
         : IClassFixture<CosmosDBFixture>, 
         IClassFixture<AspNetSiteServerFixture>,

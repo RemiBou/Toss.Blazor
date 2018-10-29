@@ -82,7 +82,7 @@ namespace Toss.Tests.E2E
             var solutionDir = FindClosestDirectoryContaining(
                           "Toss.sln",
                           Path.GetDirectoryName(typeof(Program).Assembly.Location));
-            var sampleSitePath = Path.Combine(solutionDir, "Toss", typeof(Toss.Server.Program).Assembly.GetName().Name);
+            var sampleSitePath = Path.Combine(solutionDir, typeof(Toss.Server.Program).Assembly.GetName().Name);
           
             return Toss.Server.Program.BuildWebHost(new[]
             {

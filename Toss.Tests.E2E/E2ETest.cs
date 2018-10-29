@@ -43,6 +43,7 @@ namespace Toss.Tests.E2E
             Assert.Equal("TOSS", Browser.Title);
             //load and redirect to /login
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")) != null);
+            
             //subscribe
             Browser.FindElement(By.Id("NewEmail")).SendKeys(SubscribeEmail);
             Browser.FindElement(By.Id("NewName")).SendKeys(SubscribeLogin);
@@ -50,33 +51,42 @@ namespace Toss.Tests.E2E
             Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys(SubscribePassword);
             Browser.FindElement(By.Id("BtnRegister")).Click();
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
+            
             //validate subscription
             var confirmationLink = _serverFixture.EmailSender.GetConfirmationLink(SubscribeEmail);
             Browser.Navigate().GoToUrl(confirmationLink);
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
+            
             //log in
             Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeLogin);
             Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
             Browser.FindElement(By.Id("BtnLogin")).Click();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
+
             //publish toss
+            Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
             string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
             Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
-
             Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).GetAttribute("value") == "")  ;
+            _webDriveWaitDefault.Until(b => !b.FindElement(By.Id("TxtNewToss")).Displayed)  ;
+            
             //add new toss x 2
+            Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
             Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
-
             Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).GetAttribute("value") == "");
+            _webDriveWaitDefault.Until(b => !b.FindElement(By.Id("TxtNewToss")).Displayed);
+
             //add new hashtag
             Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
             Browser.FindElement(By.Id("BtnAddHashTag")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector("#BlockHashTagBar a")).Any());
+            _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
+            
             //filter on hashtag
-            Browser.FindElement(By.CssSelector("#BlockHashTagBar a")).Click();
+            Browser.FindElement(By.CssSelector(".tag-link")).Click();
             _webDriveWaitDefault.Until(b =>  b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
+            
             //sign out
             Browser.FindElement(By.Id("LinkLogout")).Click();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
