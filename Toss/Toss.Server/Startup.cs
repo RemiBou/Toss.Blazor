@@ -28,6 +28,10 @@ using System.Globalization;
 using Microsoft.AspNetCore.Identity;
 using IdentityRole = Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Rewrite;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using System.Text;
 
 namespace Toss.Server
 {
@@ -133,7 +137,49 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            var options = new RewriteOptions()
+                .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll",
+            skipRemainingRules: true);
+            
+
+            app.UseRewriter(options);
+
+
             app.UseResponseCompression();
+            /*app.Use(async (context, next) =>
+            {
+                
+                if (!context.Request.Path.HasValue ||
+                    (context.Request.Path.Value != "/_framework/blazor.boot.json" && context.Request.Path.Value != "/_framework/blazor.webassembly.js"))
+                {
+                    await next();
+                    return;
+                }
+                var newContent = string.Empty;
+
+                var existingBody = context.Response.Body;
+
+                using (var newBody = new MemoryStream())
+                {
+                    // We set the response body to our stream so we can read after the chain of middlewares have been called.
+                    context.Response.Body = newBody;
+
+                    await next();
+
+                    // Reset the body so nothing from the latter middlewares goes to the output.
+                    context.Response.Body = new MemoryStream();
+
+                    newBody.Seek(0, SeekOrigin.Begin);
+                    context.Response.Body = existingBody;
+                    // newContent will be `Hello`.
+                    newContent = new StreamReader(newBody).ReadToEnd();
+
+                    newContent = newContent.Replace(".dll",".toto");
+
+                    // Send our modified content to the response body.
+                    await context.Response.WriteAsync(newContent);
+                }
+            });*/
             if (env.IsDevelopment())
             {
 

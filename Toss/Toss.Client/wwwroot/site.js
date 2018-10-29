@@ -98,3 +98,13 @@ stripeCheckout = function (callBackInstance, amount) {
     });
     return Promise.resolve();
 };
+
+XMLHttpRequest.prototype.open_before = XMLHttpRequest.prototype.open;
+
+XMLHttpRequest.prototype.open = function (method, url, async) {
+    if (url.endsWith(".dll")) {
+        url = url.replace("dll", "blazor");
+    }
+    console.log("xhr get",this, url);
+    return this.open_before(method, url, async);
+};
