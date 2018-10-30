@@ -11,7 +11,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toss.Shared", "Toss.Shared\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toss.Tests", "Toss.Tests\Toss.Tests.csproj", "{6DCBAA79-DF72-4A2E-89C0-77843FA3ABF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Toss.Tests.E2E", "Toss.Tests.E2E\Toss.Tests.E2E.csproj", "{9E18C992-10AC-4E98-972F-863A08D38E90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Toss.Tests.E2E", "Toss.Tests.E2E\Toss.Tests.E2E.csproj", "{9E18C992-10AC-4E98-972F-863A08D38E90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{671F43F5-4E7D-4DC1-9D52-7E0A395C2781}"
+	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
