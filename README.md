@@ -4,7 +4,7 @@
 Twitter-like web application using Blazor 0.4.0. You can login, post a new message (a "toss") with hashtag and select your favorite hashtags for finding messages.
 
 # Tech stack
-- Blazor (0.4.0)
+- Blazor (0.6.0)
 - Bootstrap 4
 - Toastr
 - Asp.net Core 2.1.1
