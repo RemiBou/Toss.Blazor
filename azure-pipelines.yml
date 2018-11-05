@@ -20,4 +20,8 @@ steps:
   displayName: 'Run Azure Cosmos DB Emulator container'
 - script: dotnet test
   displayName: 'dotnet test'
+- task: PublishTestResults@2
+  displayName: 'Publish test results'
+  inputs:
+    testResultsFormat: 'xUnit'
 
