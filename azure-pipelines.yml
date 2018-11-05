@@ -18,6 +18,8 @@ steps:
   displayName: 'dotnet build'
 - task: azure-cosmosdb.emulator-public-preview.run-cosmosdbemulatorcontainer.CosmosDbEmulator@2
   displayName: 'Run Azure Cosmos DB Emulator container'
+- script: "echo $(CosmosDbEmulator.Endpoint)"
+  displayName: "Print CosmosDB emulator endpoint"
 - script: dotnet test
   displayName: 'dotnet test'
 - task: PublishTestResults@2
