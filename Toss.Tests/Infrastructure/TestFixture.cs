@@ -29,7 +29,7 @@ namespace Toss.Tests.Infrastructure
 
         static TestFixture()
         {
-            
+
             var dict = new Dictionary<string, string>
             {
                  { "GoogleClientId", ""},
@@ -46,18 +46,27 @@ namespace Toss.Tests.Infrastructure
 
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(dict)
+                .AddEnvironmentVariables()
                 .Build();
+            if (config.GetValue<string>("CosmosDBEmulatorEndpoint") != null)
+            {
+                dict["CosmosDBEndpoint"] = config.GetValue<string>("CosmosDBEmulatorEndpoint");
+                config = new ConfigurationBuilder()
+                    .AddInMemoryCollection(dict)
+                    .AddEnvironmentVariables()
+                    .Build();
+            }
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
-          
+
             services.AddSingleton(_httpContextAccessor.Object);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
             services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
 
             _provider = services.BuildServiceProvider();
-            
+
         }
 
         public async static Task CreateTestUser()
@@ -71,7 +80,7 @@ namespace Toss.Tests.Infrastructure
             ApplicationUser user = new ApplicationUser()
             {
                 UserName = userName,
-                Email = userName+"@yopmail.com",
+                Email = userName + "@yopmail.com",
                 EmailConfirmed = true
             };
             await userManager.CreateAsync(user);
@@ -103,7 +112,7 @@ namespace Toss.Tests.Infrastructure
         {
             controller.ControllerContext = new ControllerContext
             {
-                HttpContext  = _httpContextAccessor.Object.HttpContext
+                HttpContext = _httpContextAccessor.Object.HttpContext
             };
         }
 
