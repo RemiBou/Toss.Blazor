@@ -11,7 +11,7 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Use .NET Core sdk 1.0.4'
+  displayName: 'Install SDK 2.1.403'
   inputs:
     version: 2.1.403
 - script: dotnet build --configuration $(buildConfiguration)
