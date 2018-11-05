@@ -13,6 +13,7 @@ namespace Toss.Tests.Infrastructure
             var config = new ConfigurationBuilder()
                .AddEnvironmentVariables()
                .Build();
+            Console.WriteLine("Available config keys : "+string.Join(",", config.AsEnumerable().Select(k => k.Key)));
             Client = new DocumentClient(new Uri(config.GetValue("CosmosDBEmulatorEndpoint", "https://localhost:8081")), "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==",new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.All

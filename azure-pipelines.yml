@@ -20,8 +20,11 @@ steps:
   displayName: 'Run Azure Cosmos DB Emulator container'
 - script: "echo $(CosmosDbEmulator.Endpoint)"
   displayName: "Print CosmosDB emulator endpoint"
-- script: dotnet test
-  displayName: 'dotnet test'
+- script: dotnet test Toss.Tests\Toss.Tests.csproj
+  displayName: 'Tests'
+  env: { 'CosmosDBEmulatorEndpoint': "$(CosmosDbEmulator.Endpoint)" }  # list of environment variables to add
+- script: dotnet test Toss.Tests.E2E\Toss.Tests.E2E.csproj
+  displayName: 'E2E Tests'
   env: { 'CosmosDBEmulatorEndpoint': "$(CosmosDbEmulator.Endpoint)" }  # list of environment variables to add
 - task: PublishTestResults@2
   displayName: 'Publish test results'
