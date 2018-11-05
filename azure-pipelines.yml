@@ -22,8 +22,10 @@ steps:
   displayName: "Print CosmosDB emulator endpoint"
 - script: dotnet test
   displayName: 'dotnet test'
+  env: { 'CosmosDBEmulatorEndpoint': "$(CosmosDbEmulator.Endpoint)" }  # list of environment variables to add
 - task: PublishTestResults@2
   displayName: 'Publish test results'
+  condition: in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues', 'Failed')
   inputs:
     testResultsFormat: 'xUnit'
 
