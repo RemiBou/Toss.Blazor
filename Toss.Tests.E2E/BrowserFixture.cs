@@ -33,7 +33,7 @@ namespace Toss.Tests.E2E
                 Console.WriteLine($"Set {nameof(ChromeOptions)}.{nameof(opts.BinaryLocation)} to {binaryLocation}");
             }
 
-            var driver = new ChromeDriver(".");
+            var driver = new ChromeDriver(".", TimeSpan.FromMinutes(3));
             Browser = driver;
         }
 
