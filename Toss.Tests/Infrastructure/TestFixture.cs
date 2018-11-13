@@ -48,14 +48,7 @@ namespace Toss.Tests.Infrastructure
                 .AddInMemoryCollection(dict)
                 .AddEnvironmentVariables()
                 .Build();
-            if (config.GetValue<string>("CosmosDBEmulatorEndpoint") != null)
-            {
-                dict["CosmosDBEndpoint"] = config.GetValue<string>("CosmosDBEmulatorEndpoint");
-                config = new ConfigurationBuilder()
-                    .AddInMemoryCollection(dict)
-                    .AddEnvironmentVariables()
-                    .Build();
-            }
+          
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
