@@ -26,14 +26,14 @@ namespace Toss.Tests.E2E
 
             // On Windows/Linux, we don't need to set opts.BinaryLocation
             // But for Travis Mac builds we do
-            var binaryLocation = Environment.GetEnvironmentVariable("TEST_CHROME_BINARY");
+            var binaryLocation = Environment.GetEnvironmentVariable("ChromeWebDriver");
             if (!string.IsNullOrEmpty(binaryLocation))
             {
                 opts.BinaryLocation = binaryLocation;
                 Console.WriteLine($"Set {nameof(ChromeOptions)}.{nameof(opts.BinaryLocation)} to {binaryLocation}");
             }
 
-            var driver = new ChromeDriver(".");
+            var driver = new ChromeDriver(opts);
             Browser = driver;
         }
 
