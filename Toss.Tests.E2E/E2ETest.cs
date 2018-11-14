@@ -38,7 +38,7 @@ namespace Toss.Tests.E2E
         public void FullE2eTest()
         {
 
-            //Browser.Manage().Window.FullScreen();
+            Browser.Manage().Window.FullScreen();
             Navigate("/login");
             Assert.Equal("TOSS", Browser.Title);
             //load and redirect to /login
@@ -88,6 +88,7 @@ namespace Toss.Tests.E2E
             _webDriveWaitDefault.Until(b =>  b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
             
             //sign out
+            
             Browser.FindElement(By.Id("LinkLogout")).Click();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
             //reset password
