@@ -69,14 +69,14 @@ namespace Toss.Tests.E2E
             string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
             Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
             Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => !b.FindElement(By.Id("modal-new-toss")).Displayed)  ;
+            _webDriveWaitDefault.Until(b => !b.FindElement(By.CssSelector(".modal-backdrop")).Displayed)  ;
             
             //add new toss x 2
             Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
             Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
             Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => !b.FindElement(By.Id("modal-new-toss")).Displayed);
+            _webDriveWaitDefault.Until(b => !b.FindElement(By.CssSelector(".modal-backdrop")).Displayed);
 
             //add new hashtag
             Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
