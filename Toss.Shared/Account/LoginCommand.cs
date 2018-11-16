@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Toss.Shared.Account
 {
-    public class LoginCommand : IRequest<LoginCommandResult>
+    public class LoginCommand : NotARobot, IRequest<LoginCommandResult>
     {
         [Required]
         public string UserName { get; set; }

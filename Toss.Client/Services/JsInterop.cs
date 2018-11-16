@@ -10,8 +10,11 @@ namespace Toss.Client.Services
     /// </summary>
     public static class JsInterop
     {
-      
 
+        public static async Task<string> Captcha(string actionName)
+        {
+            return await JSRuntime.Current.InvokeAsync<string>("runCaptcha",actionName);
+        }
         public static async Task Toastr(string toastType, string message)
         {
             await JSRuntime.Current.InvokeAsync<bool>("toastrShow", toastType, message);

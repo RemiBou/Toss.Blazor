@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Toss.Shared.Account
 {
-    public class RegisterCommand : IRequest<CommandResult>
+    public class RegisterCommand : NotARobot, IRequest<CommandResult>
     {
         [Required]
         [EmailAddress]

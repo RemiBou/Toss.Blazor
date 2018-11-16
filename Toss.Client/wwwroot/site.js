@@ -108,3 +108,14 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     console.log("xhr get",this, url);
     return this.open_before(method, url, async);
 };
+runCaptcha = function (actionName) {
+    return new Promise((resolve, reject) => {
+        grecaptcha.ready(function () {
+            grecaptcha.execute('6LcySnsUAAAAAKFZn_ve4gTT5kr71EXVkQ_QsGot', { action: actionName })
+                .then(function (token) {
+                    resolve(token);
+                });
+        });
+
+    });
+}

@@ -40,10 +40,11 @@ namespace Toss.Tests.E2E
 
             Browser.Manage().Window.FullScreen();
             Navigate("/login");
+            DisableRecaptcha();
             Assert.Equal("TOSS", Browser.Title);
             //load and redirect to /login
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")) != null);
-            
+
             //subscribe
             Browser.FindElement(By.Id("NewEmail")).SendKeys(SubscribeEmail);
             Browser.FindElement(By.Id("NewName")).SendKeys(SubscribeLogin);
@@ -51,12 +52,13 @@ namespace Toss.Tests.E2E
             Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys(SubscribePassword);
             Browser.FindElement(By.Id("BtnRegister")).Click();
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
-            
+
             //validate subscription
             var confirmationLink = _serverFixture.EmailSender.GetConfirmationLink(SubscribeEmail);
             Browser.Navigate().GoToUrl(confirmationLink);
+            DisableRecaptcha();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
-            
+
             //log in
             Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeLogin);
             Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
@@ -70,7 +72,7 @@ namespace Toss.Tests.E2E
             Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
             Browser.FindElement(By.Id("BtnNewToss")).Click();
             _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
-            
+
             //add new toss x 2
             Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
             _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
@@ -82,13 +84,13 @@ namespace Toss.Tests.E2E
             Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
             Browser.FindElement(By.Id("BtnAddHashTag")).Click();
             _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
-            
+
             //filter on hashtag
             Browser.FindElement(By.CssSelector(".tag-link")).Click();
-            _webDriveWaitDefault.Until(b =>  b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
-            
+            _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
+
             //sign out
-            
+
             Browser.FindElement(By.Id("LinkLogout")).Click();
             _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
             //reset password
@@ -97,6 +99,14 @@ namespace Toss.Tests.E2E
             //connect
         }
 
+        private static void DisableRecaptcha()
+        {
+            if (Browser is IJavaScriptExecutor)
+            {
+                //in E2E test we disable getting the token from recaptcha
+                ((IJavaScriptExecutor)Browser).ExecuteScript("runCaptcha = function(actionName) { return Promise.resolve('test'); }");
+            }
+        }
 
         private void WaitUntilLoaded()
         {

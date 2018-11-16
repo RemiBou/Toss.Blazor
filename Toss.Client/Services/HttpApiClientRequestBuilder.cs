@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Toss.Shared;
 
 namespace Toss.Client.Services
 {
@@ -40,6 +41,7 @@ namespace Toss.Client.Services
         }
         public async Task Post<T>(T data)
         {
+            await SetCaptchaToken(data);
             await ExecuteHttpQuery(async () =>
             {
                 var requestJson = Json.Serialize(data);
@@ -49,6 +51,15 @@ namespace Toss.Client.Services
                 }));
             });
         }
+
+        private static async Task SetCaptchaToken<T>(T data)
+        {
+            if (data is NotARobot)
+            {
+                (data as NotARobot).Token = await JsInterop.Captcha("register");
+            }
+        }
+
         public async Task Post()
         {
             await ExecuteHttpQuery(async () => await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Post, _uri)));

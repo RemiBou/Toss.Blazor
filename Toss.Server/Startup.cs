@@ -32,6 +32,7 @@ using Microsoft.AspNetCore.Rewrite;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System.Text;
+using System.Net.Http;
 
 namespace Toss.Server
 {
@@ -74,7 +75,7 @@ namespace Toss.Server
 
 
             services.AddHttpContextAccessor();
-            
+            services.AddHttpClient();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(factory =>
             {
@@ -85,12 +86,17 @@ namespace Toss.Server
             // Add application services.
             if (Configuration.GetValue<string>("test") == null)
             {
+                services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
+                    Configuration["GoogleCaptchaSecret"],
+                    
+                    s.GetRequiredService<IHttpClientFactory>(),s.GetRequiredService<IHttpContextAccessor>()));
                 services.AddTransient<IRandom, RandomTrue>();
                 services.AddTransient<IEmailSender, EmailSender>();
                 services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
             }
             else
             {
+                services.AddSingleton<ICaptchaValidator, FakeCaptchaValidator>();
                 services.AddSingleton<IRandom, RandomFake>();
                 //We had it as singleton so we can get the content later during the asset phase
                 services.AddSingleton<IEmailSender, FakeEmailSender>();
@@ -114,9 +120,9 @@ namespace Toss.Server
             });
 
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
-            services.AddMediatR(typeof(Startup));
-            services.AddMediatR(typeof(ChangePasswordCommand));
-            services.AddAntiforgery(options =>
+            services.AddMediatR(typeof(Startup),typeof(ChangePasswordCommand));
+            services.AddScoped(typeof(IPipelineBehavior<, >), typeof(CaptchaMediatRAdapter<,>));
+               services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-CSRF-TOKEN";
             });
