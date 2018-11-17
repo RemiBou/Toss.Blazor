@@ -26,16 +26,16 @@ namespace Toss.Server.Services
         {
            
 
-            var chargeOptions = new StripeChargeCreateOptions()
+            var chargeOptions = new ChargeCreateOptions()
             {
                 Amount = amount,
                 Currency = "eur",
                 Description = description,
-                SourceTokenOrExistingSourceId = token,
+                SourceId = token,
                 ReceiptEmail = email
             };
-            var chargeService = new StripeChargeService();
-            StripeCharge charge = chargeService.Create(chargeOptions);
+            var chargeService = new ChargeService();
+            Charge charge = chargeService.Create(chargeOptions);
             return charge.FailureMessage == null && charge.Paid;
         }
     }
