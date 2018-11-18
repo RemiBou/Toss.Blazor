@@ -35,7 +35,7 @@ namespace Toss.Server.Services
                 ReceiptEmail = email
             };
             var chargeService = new ChargeService();
-            Charge charge = chargeService.Create(chargeOptions);
+            Charge charge = await chargeService.CreateAsync(chargeOptions);
             return charge.FailureMessage == null && charge.Paid;
         }
     }

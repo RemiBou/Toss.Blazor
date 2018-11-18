@@ -21,16 +21,16 @@ namespace Toss.Server.Models.Account
             this.userManager = userManager;
         }
 
-        public async Task<List<AdminAccountListItem>> Handle(AccountListQuery request, CancellationToken cancellationToken)
+        public Task<List<AdminAccountListItem>> Handle(AccountListQuery request, CancellationToken cancellationToken)
         {
             var users = userManager.Users.ToList();
-            return users.Select(u => new AdminAccountListItem()
+            return Task.FromResult(users.Select(u => new AdminAccountListItem()
             {
                 Email = u.Email,
                 EmailConfirmed = u.EmailConfirmed,
                 Id = u.Id,
                 UserName = u.UserName                
-            }).ToList();
+            }).ToList());
         }
     }
 }
