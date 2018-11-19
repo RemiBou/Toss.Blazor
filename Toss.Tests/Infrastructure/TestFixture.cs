@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,6 +24,7 @@ namespace Toss.Tests.Infrastructure
         private static ServiceProvider _provider;
         //only mock we need :)
         private static Mock<IHttpContextAccessor> _httpContextAccessor;
+        private static Mock<IActionContextAccessor> _actionContextAccessor;
 
         private static DefaultHttpContext HttpContext;
         public static ClaimsPrincipal ClaimPrincipal { get; set; }
@@ -53,8 +55,10 @@ namespace Toss.Tests.Infrastructure
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
-
+            _actionContextAccessor = new Mock<IActionContextAccessor>();
+            _actionContextAccessor.SetupGet(a => a.ActionContext).Returns(new ActionContext());
             services.AddSingleton(_httpContextAccessor.Object);
+            services.AddSingleton(_actionContextAccessor.Object);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
             services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
 

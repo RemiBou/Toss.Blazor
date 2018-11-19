@@ -87,9 +87,9 @@ namespace Toss.Server
             if (Configuration.GetValue<string>("test") == null)
             {
                 services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
-                    Configuration["GoogleCaptchaSecret"],
-                    
-                    s.GetRequiredService<IHttpClientFactory>(),s.GetRequiredService<IHttpContextAccessor>()));
+                    Configuration["GoogleCaptchaSecret"],                    
+                    s.GetRequiredService<IHttpClientFactory>(),
+                    s.GetRequiredService<IHttpContextAccessor>()));
                 services.AddTransient<IRandom, RandomTrue>();
                 services.AddTransient<IEmailSender, EmailSender>();
                 services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
