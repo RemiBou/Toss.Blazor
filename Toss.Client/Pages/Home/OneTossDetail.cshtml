@@ -1,0 +1,55 @@
+﻿@implements IModalCloseCallback
+@using Markdig
+@inject IHttpApiClientRequestBuilderFactory httpBuilder
+
+@if (tossDetail != null)
+{
+    <div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-body">
+                    @((MarkupString)Markdown.ToHtml(tossDetail.Content))
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@functions{
+    [Parameter]
+    Func<Task> OnTossDetailHide { get; set; }
+
+    ElementRef modal { get; set; }
+
+    private TossDetail tossDetail
+    {
+        get;
+        set;
+    }
+    public async Task ShowDetail(string tossId)
+    {
+
+        StateHasChanged();
+        await httpBuilder.Create("/api/toss/detail/" + tossId)
+              .OnOK<TossDetail>(async r =>
+              {
+                  this.tossDetail = r;
+                  StateHasChanged();
+                  if (tossDetail != null)
+                      await JsInterop.ShowModal(modal, this);
+              })
+              .Get();
+
+    }
+
+    [JSInvokable]
+    public async Task OnClose()
+    {
+        tossDetail = null;
+        await this.OnTossDetailHide();
+    }
+}

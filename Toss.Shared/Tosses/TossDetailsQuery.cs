@@ -6,18 +6,18 @@ using MediatR;
 
 namespace Toss.Shared.Tosses
 {
-    public class TossDetailsQuery : IRequest<TossDetail>
+    public class TossDetailQuery : IRequest<TossDetail>
     {
-        public TossDetailsQuery()
+        public TossDetailQuery()
         {
         }
 
-        public TossDetailsQuery(string tossId)
+        public TossDetailQuery(string tossId)
         {
             TossId = tossId;
         }
 
         [Required]
-        public string TossId { get; private set; }
+        public string TossId { get; set; }
     }
 }

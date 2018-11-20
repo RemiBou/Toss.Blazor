@@ -42,8 +42,14 @@ ajaxLoaderHide = function (id) {
     ajaxLoader.hide(id);
     return true;
 };
-showModal = function (id) {
-    $("#" + id).modal("show");
+showModal = function (elementRef, closeCallBack) {
+    $(elementRef).modal("show");
+    if (closeCallBack) {
+        $(elementRef).on('hidden.bs.modal', function (e) {
+            closeCallBack.invokeMethodAsync('OnClose');
+            $(elementRef).off('hidden.bs.modal');//we unsubscribe the event as we won't need it anymore
+        });
+    }
     return true;
 };
 hideModal = function (id) {
@@ -105,7 +111,7 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     if (url.endsWith(".dll")) {
         url = url.replace("dll", "blazor");
     }
-    console.log("xhr get",this, url);
+    console.log("xhr get", this, url);
     return this.open_before(method, url, async);
 };
 runCaptcha = function (actionName) {

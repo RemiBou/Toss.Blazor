@@ -25,18 +25,20 @@ namespace Toss.Server.Controllers
             var results = await query
                 .Where(t => t.Content.Contains("#" + request.HashTag))
                 .OrderByDescending(t => t.CreatedOn)
+                 .Select(t => new TossLastQueryItem()
+                 {
+                     Content = t.Content.Substring(0,100),
+                     CreatedOn = t.CreatedOn,
+                     Id = t.Id,
+                     UserName = t.UserName
+                 })
                 .Take(50)
                 .AsDocumentQuery()
                 .GetAllResultsAsync();
 
             return results
-                .Select(t => new TossLastQueryItem()
-                    {
-                        Content = t.Content,
-                        CreatedOn = t.CreatedOn,
-                        Id = t.Id,
-                        UserName = t.UserName
-                    });
+               
+                    .ToList();
         }
     }
 }

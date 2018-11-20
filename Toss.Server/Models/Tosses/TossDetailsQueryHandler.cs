@@ -10,7 +10,7 @@ using Toss.Shared.Tosses;
 
 namespace Toss.Server.Models.Tosses
 {
-    public class TossDetailsQueryHandler : IRequestHandler<TossDetailsQuery, TossDetail>
+    public class TossDetailsQueryHandler : IRequestHandler<TossDetailQuery, TossDetail>
     {
         private readonly ICosmosDBTemplate<TossEntity> _dbTemplate;
 
@@ -19,7 +19,7 @@ namespace Toss.Server.Models.Tosses
             _dbTemplate = dbTemplate;
         }
 
-        public async Task<TossDetail> Handle(TossDetailsQuery request, CancellationToken cancellationToken)
+        public async Task<TossDetail> Handle(TossDetailQuery request, CancellationToken cancellationToken)
         {
             var res =await (await _dbTemplate.CreateDocumentQuery<TossEntity>())
                 .Where(t => t.Id == request.TossId)
@@ -27,7 +27,8 @@ namespace Toss.Server.Models.Tosses
                 {
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
-                    UserName = t.UserName
+                    UserName = t.UserName,
+                    Id = t.Id
                 })
                 .AsDocumentQuery()
                 .GetAllResultsAsync();

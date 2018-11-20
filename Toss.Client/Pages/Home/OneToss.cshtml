@@ -1,21 +1,7 @@
 ﻿@using Markdig
-
 <div class="col-md-3 col-sm-6 my-2 toss">
-    <div class="modal fade" id="@GetTossDetailsId(toss)" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-
-                <div class="modal-body">
-                    @((MarkupString)Markdown.ToHtml(toss.Content))
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card  h-100 @additionnalClass" data-toggle="modal" onclick="@(async () => await ShowModal(toss))" style="cursor:zoom-in">
+    
+    <div class="card  h-100 @additionnalClass" data-toggle="modal" onclick="@(async () => await ShowDetail())" style="cursor:zoom-in">
         @if(headerText != null)
         {
             <div class="card-header">
@@ -37,18 +23,18 @@
 </div>
     @functions{
         [Parameter]
+        Func<string, Task> ShowDetailDelegate { get; set; }
+
+        [Parameter]
         string headerText { get; set; }
         [Parameter]
         string additionnalClass { get; set; }
         [Parameter]
         TossLastQueryItem toss { get; set; }
-        protected async Task ShowModal(TossLastQueryItem toss)
-        {
-            await JsInterop.ShowModal(GetTossDetailsId(toss));
-        }
-        protected string GetTossDetailsId(TossLastQueryItem toss)
-        {
-            return string.Format("toss-details-{0}", toss.Id);
 
+
+        protected async Task ShowDetail()
+        {
+            await this.ShowDetailDelegate(toss.Id);
         }
     }

@@ -1,89 +1,119 @@
 ﻿@page "/"
+@page "/tag/{CurrentTag}/{TossId}"
 @page "/tag/{CurrentTag}"
 @page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IAccountService AccountService
+@inject IUriHelper uriHelper
 
-    <div class="form-inline">
-        @if (currentAccount != null)
+<div class="form-inline">
+    @if (currentAccount != null)
+    {
+        <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
+    }
+    <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
+</div>
+<div class="row">
+    @if (string.IsNullOrEmpty(CurrentTag))
+    {
+        <div class="col-md-3 col-sm-6 my-2">
+            <div class="card text-white bg-warning   h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Select a hashtag</h5>
+                    <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <OneTossDetail ref="tossDetail" OnTossDetailHide="OnTossDetailHide"></OneTossDetail>
+        <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
+        @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
         {
-            <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
+            <OneToss toss="@toss" ShowDetailDelegate="ShowDetail" />
         }
-        <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
-    </div>
-    <div class="row">
-        @if (string.IsNullOrEmpty(CurrentTag))
+        @if (Tosses != null && !Tosses.Any())
         {
             <div class="col-md-3 col-sm-6 my-2">
                 <div class="card text-white bg-warning   h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Select a hashtag</h5>
-                        <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
+                        <h5 class="card-title">Nothing to show</h5>
+                        <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
                     </div>
                 </div>
             </div>
         }
-        else
-        {
-            <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-            @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
-            {
-                <OneToss toss="@toss" />
-            }
-            @if (Tosses != null && !Tosses.Any())
-            {
-                <div class="col-md-3 col-sm-6 my-2">
-                    <div class="card text-white bg-warning   h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">Nothing to show</h5>
-                            <p class="card-text">There is not Toss for #@CurrentTag yet :( <br/> It's up to you to start something.</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-    </div>
-    @functions{
+    }
+</div>
+@functions{
+    OneTossDetail tossDetail;
 
-        List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
-        [Parameter]
-        private string CurrentTag { get; set; } = "";
+    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
 
-        private AccountViewModel currentAccount;
+    [Parameter]
+    private string CurrentTag { get; set; } = "";
 
-        protected async override Task OnInitAsync()
-        {
-            currentAccount = await AccountService.CurrentAccount();
+    [Parameter]
+    private string TossId { get; set; } = "";
 
-        }
+    private string DisplayedTag;
 
-        protected override async Task OnParametersSetAsync()
-        {
-            await RefreshTossList();
-        }
+    private AccountViewModel currentAccount;
 
-        public override void SetParameters(ParameterCollection parameters)
-        {
-            if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
-            {
-                CurrentTag = null;
-            }
-            base.SetParameters(parameters);
-        }
-
-        protected async Task RefreshTossList()
-        {
-            Tosses = new List<TossLastQueryItem>();
-            if (string.IsNullOrWhiteSpace(CurrentTag))
-                return;
-            await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
-                .OnOK<List<TossLastQueryItem>>(l =>
-                {
-                    Tosses = l;
-                    StateHasChanged();
-                })
-                .Get();
-        }
-
+    protected async override Task OnInitAsync()
+    {
+        currentAccount = await AccountService.CurrentAccount();
 
     }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (DisplayedTag != CurrentTag)
+            await RefreshTossList();
+        if (!string.IsNullOrEmpty(TossId))
+            await tossDetail.ShowDetail(TossId);
+    }
+
+    public override void SetParameters(ParameterCollection parameters)
+    {
+
+        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
+        {
+            CurrentTag = null;
+        }
+        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("TossId")))
+        {
+            TossId = null;
+        }
+        base.SetParameters(parameters);
+    }
+
+    protected async Task RefreshTossList()
+    {
+        DisplayedTag = CurrentTag;
+        Tosses = new List<TossLastQueryItem>();
+        if (string.IsNullOrWhiteSpace(CurrentTag))
+            return;
+        await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
+            .OnOK<List<TossLastQueryItem>>(l =>
+            {
+                Tosses = l;
+                StateHasChanged();
+            })
+            .Get();
+    }
+
+    protected Task ShowDetail(string tossId)
+    {
+        this.uriHelper.NavigateTo("/tag/" + CurrentTag + "/" + tossId);
+        return Task.CompletedTask;
+    }
+
+    private Task OnTossDetailHide()
+    {
+        this.uriHelper.NavigateTo("/tag/" + CurrentTag);
+        return Task.CompletedTask;
+
+    }
+}

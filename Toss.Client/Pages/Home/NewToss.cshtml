@@ -2,7 +2,7 @@
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @implements IStripeCallBack
 <!-- Modal -->
-<div class="modal fade" id="modal-new-toss" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
@@ -53,6 +53,8 @@
     </div>
 </div>
 @functions{
+    ElementRef modal;
+
     bool isSpsonsoredToss = false;
 
     [Parameter]
@@ -89,7 +91,7 @@
     }
     protected async Task ShowModal()
     {
-        await JsInterop.ShowModal("modal-new-toss");
+        await JsInterop.ShowModal(modal);
     }
     [JSInvokable]
     public async Task TokenReceived(string token)

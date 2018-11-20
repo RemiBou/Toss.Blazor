@@ -32,9 +32,13 @@ namespace Toss.Client.Services
         {
             await JSRuntime.Current.InvokeAsync<bool>("ajaxLoaderHide", id);
         }
-        public static async Task ShowModal(string id)
+        public static async Task ShowModal(ElementRef elementRef)
         {
-            await JSRuntime.Current.InvokeAsync<bool>("showModal", id);
+            await JSRuntime.Current.InvokeAsync<bool>("showModal", elementRef);
+        }
+        public static async Task ShowModal(ElementRef elementRef, IModalCloseCallback closeCallback)
+        {
+            await JSRuntime.Current.InvokeAsync<bool>("showModal", elementRef, new DotNetObjectRef(closeCallback));
         }
         public static async Task HideModal(string id)
         {

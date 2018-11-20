@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Toss.Shared.Tosses;
 
@@ -22,7 +23,8 @@ namespace Toss.Server.Controllers
         [HttpGet, Authorize(Roles = "Admin")]
         public async Task<IActionResult> List([FromQuery] TossListAdminQuery query)
         {
-            return Ok(await _mediator.Send(query));
+
+            return base.Ok(await _mediator.Send(query));
         }
         /// <summary>
         /// Returns the last created Toss for the homepage
@@ -40,7 +42,19 @@ namespace Toss.Server.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Last([FromQuery] TossLastQuery hashTag)
         {
-            return Ok(await _mediator.Send(hashTag));
+            var result = await _mediator.Send(hashTag);
+            return base.Ok(result);
+        }
+
+        /// <summary>
+        /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{tossId}"), AllowAnonymous]
+        public async Task<IActionResult> Detail([FromRoute] TossDetailQuery query)
+        {
+            var result = await _mediator.Send(query);
+            return base.Ok(result);
         }
 
         /// <summary>

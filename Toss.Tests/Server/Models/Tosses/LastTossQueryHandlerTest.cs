@@ -6,19 +6,20 @@ using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
 using Toss.Server.Data;
+using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
 using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    
+
     public class LastTossQueryHandlerTest : BaseCosmosTest
     {
         private ICosmosDBTemplate<TossEntity> tossTemplate;
         public LastTossQueryHandlerTest()
         {
             tossTemplate = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
-            
+
         }
 
         [Fact]
@@ -34,7 +35,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 });
             }
 
-            var res = await _mediator.Send(new Toss.Shared.Tosses.TossLastQuery("ipsum")) ;
+            var res = await _mediator.Send(new Toss.Shared.Tosses.TossLastQuery("ipsum"));
 
             Assert.Equal(50, res.Count());
             Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
@@ -65,6 +66,21 @@ namespace Toss.Tests.Server.Models.Tosses
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
             Assert.Equal(3, tosses.Count());
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));
+        }
+
+        [Fact]
+        public async Task last_returns_toss_content_truncated()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = string.Join(" ", Enumerable.Range(0, 100).Select(i => "lorem #ipsum #toto num")),
+
+            });
+
+
+            var tosses = await _mediator.Send(
+                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
+            Assert.Equal(100, tosses.First().Content.Length);
         }
     }
 }

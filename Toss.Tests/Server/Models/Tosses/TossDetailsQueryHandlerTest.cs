@@ -21,7 +21,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await _mediator.Send(request);
             var lastToss = await _mediator.Send(new TossLastQuery("test"));
 
-            var res = await _mediator.Send(new TossDetailsQuery(lastToss.First().Id));
+            var res = await _mediator.Send(new TossDetailQuery(lastToss.First().Id));
 
             Assert.Equal(request.Content, res.Content);
             Assert.Equal(lastToss.First().CreatedOn, res.CreatedOn);
@@ -31,7 +31,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task returns_null_if_does_not_exists()
         {
-            var res = await _mediator.Send(new TossDetailsQuery("iamascatman"));
+            var res = await _mediator.Send(new TossDetailQuery("iamascatman"));
 
             Assert.Null(res);
         }
