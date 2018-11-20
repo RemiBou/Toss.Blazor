@@ -83,7 +83,7 @@
                 newToss = new TossCreateCommand();
                 _errors = null;
                 await OnNewTossCreated?.Invoke();
-                await JsInterop.HideModal("modal-new-toss");
+                await JsInterop.HideModal(modal);
             })
             .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
             .Post(newToss);

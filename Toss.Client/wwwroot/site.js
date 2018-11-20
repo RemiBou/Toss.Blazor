@@ -52,8 +52,8 @@ showModal = function (elementRef, closeCallBack) {
     }
     return true;
 };
-hideModal = function (id) {
-    $("#" + id).modal("hide");
+hideModal = function (elementRef) {
+    $(elementRef).modal("hide");
     return true;
 };
 

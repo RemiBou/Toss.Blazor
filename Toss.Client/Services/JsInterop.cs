@@ -40,9 +40,9 @@ namespace Toss.Client.Services
         {
             await JSRuntime.Current.InvokeAsync<bool>("showModal", elementRef, new DotNetObjectRef(closeCallback));
         }
-        public static async Task HideModal(string id)
+        public static async Task HideModal(ElementRef elementRef)
         {
-            await JSRuntime.Current.InvokeAsync<bool>("hideModal", id);
+            await JSRuntime.Current.InvokeAsync<bool>("hideModal", elementRef);
         }
         private class StringHolder
         {
