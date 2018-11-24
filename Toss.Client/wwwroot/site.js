@@ -124,4 +124,4 @@ runCaptcha = function (actionName) {
         });
 
     });
-}
+};

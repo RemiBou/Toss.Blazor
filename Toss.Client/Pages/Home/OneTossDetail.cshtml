@@ -1,5 +1,6 @@
 ﻿@implements IModalCloseCallback
 @using Markdig
+@using System.Web
 @inject IHttpApiClientRequestBuilderFactory httpBuilder
 
 @if (tossDetail != null)
@@ -9,7 +10,7 @@
             <div class="modal-content">
 
                 <div class="modal-body">
-                    @((MarkupString)Markdown.ToHtml(tossDetail.Content))
+                    @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(tossDetail.Content)))
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

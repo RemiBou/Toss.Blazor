@@ -52,11 +52,11 @@ namespace Toss.Client.Services
             });
         }
 
-        private static async Task SetCaptchaToken<T>(T data)
+        private  async Task SetCaptchaToken<T>(T data)
         {
             if (data is NotARobot)
             {
-                (data as NotARobot).Token = await JsInterop.Captcha("register");
+                (data as NotARobot).Token = await JsInterop.Captcha(this._uri);
             }
         }
 

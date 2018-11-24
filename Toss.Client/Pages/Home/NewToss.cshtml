@@ -11,6 +11,8 @@
 
                     <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
                     <ValidationError FieldName="Content" Errors="@_errors" />
+                    <ClientValidationError FieldName="Content" Model="newToss" />
+
                     <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" bind="isSpsonsoredToss" class="custom-control-input" id="customCheck1" />
