@@ -56,6 +56,7 @@ namespace Toss.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
+
             DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects
@@ -87,7 +88,7 @@ namespace Toss.Server
             if (Configuration.GetValue<string>("test") == null)
             {
                 services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
-                    Configuration["GoogleCaptchaSecret"],                    
+                    Configuration["GoogleCaptchaSecret"],
                     s.GetRequiredService<IHttpClientFactory>(),
                     s.GetRequiredService<IHttpContextAccessor>()));
                 services.AddTransient<IRandom, RandomTrue>();
@@ -120,12 +121,12 @@ namespace Toss.Server
             });
 
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
-            services.AddMediatR(typeof(Startup),typeof(ChangePasswordCommand));
-            services.AddScoped(typeof(IPipelineBehavior<, >), typeof(CaptchaMediatRAdapter<,>));
-               services.AddAntiforgery(options =>
-            {
-                options.HeaderName = "X-CSRF-TOKEN";
-            });
+            services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
+            services.AddAntiforgery(options =>
+         {
+             options.HeaderName = "X-CSRF-TOKEN";
+         });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -146,7 +147,7 @@ namespace Toss.Server
             var options = new RewriteOptions()
                 .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll",
             skipRemainingRules: true);
-            
+
 
             app.UseRewriter(options);
 
@@ -154,7 +155,6 @@ namespace Toss.Server
             app.UseResponseCompression();
             if (env.IsDevelopment())
             {
-
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -179,14 +179,15 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "/api/{controller}/{action}/{id?}");
             });
+
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
+
             app.UseBlazor<Toss.Client.Program>();
         }
     }
