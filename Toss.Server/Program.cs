@@ -20,8 +20,9 @@ namespace Toss.Server
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseConfiguration(new ConfigurationBuilder()
-                    .AddCommandLine(args)                                  
+                    .AddCommandLine(args)
                     .AddEnvironmentVariables()
+                    .AddUserSecrets<Startup>()
                     .Build())
                 .UseStartup<Startup>()
                 .Build();
