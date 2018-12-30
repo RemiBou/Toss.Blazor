@@ -16,11 +16,16 @@ namespace Toss.Server.Models.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator mediator;
 
-        public EditAccountCommandHandler(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public EditAccountCommandHandler(
+            UserManager<ApplicationUser> userManager, 
+            IHttpContextAccessor httpContextAccessor,
+            IMediator mediator)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
+            this.mediator = mediator;
         }
 
         public async Task<Unit> Handle(EditAccountCommand request, CancellationToken cancellationToken)
@@ -39,6 +44,17 @@ namespace Toss.Server.Models.Account
                 {
                     throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
                 }
+            }
+            if(request.Name != user.UserName)
+            {
+                var setUserName = await _userManager.SetUserNameAsync(user, request.Name);
+                if (!setUserName.Succeeded)
+                {                    
+                    throw new ApplicationException($"Unexpected error occurred setting name for user with ID '{user.Id}'.");
+                }
+                user.UserName = request.Name;
+                await mediator.Publish(new AccountUserNameUpdated(user));
+                
             }
             return Unit.Value;
         }

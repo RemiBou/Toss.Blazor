@@ -33,21 +33,23 @@ namespace Toss.Server.Controllers
         public async Task<Unit> Handle(TossCreateCommand command, CancellationToken cancellationToken)
         {
             TossEntity toss;
+            var user = _httpContextAccessor.HttpContext.User;
             if (!command.SponsoredDisplayedCount.HasValue)
                 toss = new TossEntity(
                     command.Content,
-                    _httpContextAccessor.HttpContext.User.Identity.Name,
+                    user.UserId(),
                     DateTimeOffset.Now);
             else
                 toss = new SponsoredTossEntity(
                     command.Content,
-                    _httpContextAccessor.HttpContext.User.Identity.Name,
+                    user.UserId(),
                     DateTimeOffset.Now,
                     command.SponsoredDisplayedCount.Value);
+            toss.UserName = user.Identity.Name;
             toss.Id = await _dbTemplate.Insert(toss);
             if (command.SponsoredDisplayedCount.HasValue)
             {
-                ApplicationUser applicationUser = (await userManager.GetUserAsync(_httpContextAccessor.HttpContext.User));
+                ApplicationUser applicationUser = (await userManager.GetUserAsync(user));
                 var paymentResult = await stripeClient.Charge(command.StripeChargeToken, command.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay, "Payment for sponsored Toss #" + toss.Id, applicationUser.Email);
                 if (!paymentResult)
                 {

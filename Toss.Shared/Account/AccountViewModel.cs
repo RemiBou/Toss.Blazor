@@ -11,6 +11,8 @@ namespace Toss.Shared
        
         public string Email { get; set; }
 
+        public string Name { get; set; }
+
         public List<string> Hashtags { get; set; } = new List<string>();
 
         /// <summary>

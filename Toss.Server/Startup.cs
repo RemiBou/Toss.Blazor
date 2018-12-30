@@ -118,7 +118,6 @@ namespace Toss.Server
                 options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
-
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup),typeof(ChangePasswordCommand));
             services.AddScoped(typeof(IPipelineBehavior<, >), typeof(CaptchaMediatRAdapter<,>));

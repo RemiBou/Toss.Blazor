@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Server.Services;
@@ -10,9 +12,9 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class CreateTossCommandHandlerTest : BaseCosmosTest
+    public class TossCreateCommandHandlerTest : BaseCosmosTest
     {   private ICosmosDBTemplate<TossEntity> tossTemplate;
-        public CreateTossCommandHandlerTest()
+        public TossCreateCommandHandlerTest()
         {
             tossTemplate = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
         }
@@ -27,7 +29,8 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
 
-            Assert.Equal(TestFixture.UserName, toss.UserName);
+            Assert.Equal(TestFixture.ClaimPrincipal.UserId(), toss.UserId);
+            Assert.Equal(TestFixture.ClaimPrincipal.Identity.Name, toss.UserName);
 
         }
         [Fact]

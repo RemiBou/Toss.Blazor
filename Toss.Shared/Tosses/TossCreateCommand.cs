@@ -44,5 +44,14 @@ namespace Toss.Shared.Tosses
         public string StripeChargeToken { get; set; }
 
         public const int CtsCostPerDisplay = 1;
+
+        public TossCreateCommand()
+        {
+        }
+
+        public TossCreateCommand(string content)
+        {
+            Content = content ?? throw new ArgumentNullException(nameof(content));
+        }
     }
 }

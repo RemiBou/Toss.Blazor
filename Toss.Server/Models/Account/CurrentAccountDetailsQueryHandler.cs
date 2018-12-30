@@ -35,7 +35,8 @@ namespace Toss.Server.Models.Account
                 Email = user.Email,
                 IsEmailConfirmed = user.EmailConfirmed,
                 Hashtags = user.Hashtags?.ToList() ?? new List<string>(),
-                IsAdmin = user.Roles.Contains("Admin")
+                IsAdmin = user.Roles.Contains("Admin"),
+                Name = user.UserName
             };
         }
     }

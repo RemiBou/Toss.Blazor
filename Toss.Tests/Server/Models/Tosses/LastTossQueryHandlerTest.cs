@@ -31,7 +31,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 {
                     Content = "lorem #ipsum",
                     CreatedOn = new DateTime(2017, 12, 31).AddDays(-i),
-                    UserName = "usernametest"
+                    UserId = "usernametest"
                 });
             }
 
@@ -51,14 +51,14 @@ namespace Toss.Tests.Server.Models.Tosses
                 {
                     Content = "lorem #ipsum #toto num" + i,
                     CreatedOn = DateTimeOffset.Now,
-                    UserName = "usernametest"
+                    UserId = "usernametest"
                 });
             }
             await tossTemplate.Insert(new TossEntity()
             {
                 Content = "blabla #ipsum #tutu",
                 CreatedOn = DateTimeOffset.Now,
-                UserName = "usernametest"
+                UserId = "usernametest"
             });
 
 
@@ -81,6 +81,22 @@ namespace Toss.Tests.Server.Models.Tosses
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
             Assert.Equal(100, tosses.First().Content.Length);
+        }
+
+
+        [Fact]
+        public async Task last_returns_toss_with_user_name()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "blabla bla bla bla bla #test"
+
+            });
+
+
+            var tosses = await _mediator.Send(
+                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });
+            Assert.Equal(TestFixture.UserName, tosses.First().UserName);
         }
     }
 }

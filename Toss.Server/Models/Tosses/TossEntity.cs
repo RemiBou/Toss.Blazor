@@ -20,13 +20,14 @@ namespace Toss.Server.Data
     public class TossEntity : CosmosDBEntity
     {
         public string Content { get; set; }
-        public string UserName { get; set; }
+        public string UserId { get; set; }
         public DateTimeOffset CreatedOn { get; set; }
+        public string UserName { get; set; }
 
         public TossEntity(string content, string userId, DateTimeOffset dateOfPost)
         {
             Content = content;
-            UserName = userId;
+            UserId = userId;
             CreatedOn = dateOfPost;
         }
 
