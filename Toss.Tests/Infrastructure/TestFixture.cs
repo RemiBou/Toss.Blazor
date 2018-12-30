@@ -42,15 +42,15 @@ namespace Toss.Tests.Infrastructure
                  { "CosmosDBEndpoint", "https://localhost:8081"},
                  { "CosmosDBKey", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="},
                  { "StripeSecretKey", ""},
-                {"test","true" },
-                {"dataBaseName",DataBaseName }
+                 { "test", "true"},
+                 { "dataBaseName", DataBaseName}
             };
 
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(dict)
                 .AddEnvironmentVariables()
                 .Build();
-          
+
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);

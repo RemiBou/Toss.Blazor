@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -16,14 +17,14 @@ namespace Toss.Tests.E2E
         public Uri RootUri => _rootUriInitializer.Value;
 
         public IWebHost Host { get; set; }
-  
+
         private readonly Lazy<Uri> _rootUriInitializer;
 
         public AspNetSiteServerFixture()
         {
             _rootUriInitializer = new Lazy<Uri>(() =>
                 new Uri(StartAndGetRootUri()));
-        }     
+        }
 
         private static string FindClosestDirectoryContaining(
             string filename,
@@ -83,14 +84,30 @@ namespace Toss.Tests.E2E
                           "Toss.sln",
                           Path.GetDirectoryName(typeof(Program).Assembly.Location));
             var sampleSitePath = Path.Combine(solutionDir, typeof(Toss.Server.Program).Assembly.GetName().Name);
-          
+            var config = new Dictionary<string, string>
+            {
+                 { "GoogleClientId", ""},
+                 { "GoogleClientSecret", ""},
+                 { "MailJetApiKey", ""},
+                 { "MailJetApiSecret", ""},
+                 { "MailJetSender", ""},
+                 { "CosmosDBEndpoint", "https://localhost:8081"},
+                 { "CosmosDBKey", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="},
+                 { "StripeSecretKey", ""},
+                 { "test", "true"},
+                 { "dataBaseName", CosmosDBFixture.DatabaseName}
+            };
+            //we set the config in env variables because those value
+            //can't be in appsettings as it'll override the secrets
+            foreach (var key in config)
+            {
+                Environment.SetEnvironmentVariable(key.Key, key.Value);
+            }
             return Toss.Server.Program.BuildWebHost(new[]
             {
                 "--urls", "http://127.0.0.1:0",
                 "--contentroot", sampleSitePath,
-                "--environment", "development",
-                "--databaseName",CosmosDBFixture.DatabaseName,
-                "--test","true"
+                "--environment", "development"
             });
         }
     }
