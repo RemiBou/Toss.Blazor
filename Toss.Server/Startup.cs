@@ -56,6 +56,7 @@ namespace Toss.Server
                     WasmMediaTypeNames.Application.Wasm,
                 });
             });
+
             DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
             {
                 TypeNameHandling = TypeNameHandling.Objects
@@ -87,7 +88,7 @@ namespace Toss.Server
             if (Configuration.GetValue<string>("test") == null)
             {
                 services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
-                    Configuration["GoogleCaptchaSecret"],                    
+                    Configuration["GoogleCaptchaSecret"],
                     s.GetRequiredService<IHttpClientFactory>(),
                     s.GetRequiredService<IHttpContextAccessor>()));
                 services.AddTransient<IRandom, RandomTrue>();
@@ -119,12 +120,12 @@ namespace Toss.Server
                 options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
             });
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
-            services.AddMediatR(typeof(Startup),typeof(ChangePasswordCommand));
-            services.AddScoped(typeof(IPipelineBehavior<, >), typeof(CaptchaMediatRAdapter<,>));
-               services.AddAntiforgery(options =>
-            {
-                options.HeaderName = "X-CSRF-TOKEN";
-            });
+            services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
+            services.AddAntiforgery(options =>
+         {
+             options.HeaderName = "X-CSRF-TOKEN";
+         });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -145,49 +146,14 @@ namespace Toss.Server
             var options = new RewriteOptions()
                 .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll",
             skipRemainingRules: true);
-            
+
 
             app.UseRewriter(options);
 
 
             app.UseResponseCompression();
-            /*app.Use(async (context, next) =>
-            {
-                
-                if (!context.Request.Path.HasValue ||
-                    (context.Request.Path.Value != "/_framework/blazor.boot.json" && context.Request.Path.Value != "/_framework/blazor.webassembly.js"))
-                {
-                    await next();
-                    return;
-                }
-                var newContent = string.Empty;
-
-                var existingBody = context.Response.Body;
-
-                using (var newBody = new MemoryStream())
-                {
-                    // We set the response body to our stream so we can read after the chain of middlewares have been called.
-                    context.Response.Body = newBody;
-
-                    await next();
-
-                    // Reset the body so nothing from the latter middlewares goes to the output.
-                    context.Response.Body = new MemoryStream();
-
-                    newBody.Seek(0, SeekOrigin.Begin);
-                    context.Response.Body = existingBody;
-                    // newContent will be `Hello`.
-                    newContent = new StreamReader(newBody).ReadToEnd();
-
-                    newContent = newContent.Replace(".dll",".toto");
-
-                    // Send our modified content to the response body.
-                    await context.Response.WriteAsync(newContent);
-                }
-            });*/
             if (env.IsDevelopment())
             {
-
                 app.UseDeveloperExceptionPage();
             }
             else
@@ -212,14 +178,15 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
-
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",
                     template: "/api/{controller}/{action}/{id?}");
             });
+
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
+
             app.UseBlazor<Toss.Client.Program>();
         }
     }

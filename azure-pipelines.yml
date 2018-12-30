@@ -11,9 +11,9 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Install SDK 2.1.500'
+  displayName: 'Install SDK'
   inputs:
-    version: 2.1.500	
+    version: 2.2.100	
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build'
 - task: azure-cosmosdb.emulator-public-preview.run-cosmosdbemulatorcontainer.CosmosDbEmulator@2
