@@ -101,7 +101,9 @@ namespace Toss.Tests.E2E
             //can't be in appsettings as it'll override the secrets
             foreach (var key in config)
             {
-                Environment.SetEnvironmentVariable(key.Key, key.Value);
+                //CI env might set some values like CosmosDB endpoint url
+                if (Environment.GetEnvironmentVariable(key.Key) != null)
+                    Environment.SetEnvironmentVariable(key.Key, key.Value);
             }
             return Toss.Server.Program.BuildWebHost(new[]
             {
