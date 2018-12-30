@@ -104,28 +104,27 @@ namespace Toss.Server
                 services.AddSingleton<IStripeClient, FakeStripeClient>();
             }
             services.AddAuthentication()
-
                 .AddGoogle(o =>
                 {
                     o.ClientId = Configuration["GoogleClientId"];
                     o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
             services.AddMvc().AddJsonOptions(options =>
-            {
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-            });
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
             services.ConfigureApplicationCookie(options =>
-            {
-                options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
-                options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
-            });
+                {
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
+                });
             services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
             services.AddAntiforgery(options =>
-         {
-             options.HeaderName = "X-CSRF-TOKEN";
-         });
+                {
+                    options.HeaderName = "X-CSRF-TOKEN";
+                });
 
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
@@ -144,14 +143,12 @@ namespace Toss.Server
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             var options = new RewriteOptions()
-                .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll",
-            skipRemainingRules: true);
-
+                .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll", skipRemainingRules: true);
 
             app.UseRewriter(options);
 
-
             app.UseResponseCompression();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -160,6 +157,7 @@ namespace Toss.Server
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
             var supportedCultures = new[]
             {
                 new CultureInfo("en"),
