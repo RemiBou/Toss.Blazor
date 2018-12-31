@@ -52,7 +52,7 @@ namespace Toss.Client.Services
             });
         }
 
-        private  async Task SetCaptchaToken<T>(T data)
+        private async Task SetCaptchaToken<T>(T data)
         {
             if (data is NotARobot)
             {
@@ -174,7 +174,8 @@ namespace Toss.Client.Services
             {
                 if (!string.IsNullOrEmpty(successMessage))
                     await JsInterop.Toastr("success", successMessage);
-                uriHelper.NavigateTo(navigateTo);
+                if (!string.IsNullOrEmpty(navigateTo))
+                    uriHelper.NavigateTo(navigateTo);
             });
             return this;
         }

@@ -86,7 +86,7 @@ namespace Toss.Tests.E2E
             var sampleSitePath = Path.Combine(solutionDir, typeof(Toss.Server.Program).Assembly.GetName().Name);
             var config = new Dictionary<string, string>
             {
-                 { "GoogleClientId", ""},
+                 { "GoogleClientId", "AAA"},
                  { "GoogleClientSecret", ""},
                  { "MailJetApiKey", ""},
                  { "MailJetApiSecret", ""},
