@@ -7,19 +7,20 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Toss.Server.Extensions;
 using Toss.Shared;
 using Toss.Shared.Account;
 
 namespace Toss.Server.Models.Account
 {
-    public class EditAccountCommandHandler : IRequestHandler<EditAccountCommand>
+    public class EditAccountCommandHandler : IRequestHandler<EditAccountCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMediator mediator;
 
         public EditAccountCommandHandler(
-            UserManager<ApplicationUser> userManager, 
+            UserManager<ApplicationUser> userManager,
             IHttpContextAccessor httpContextAccessor,
             IMediator mediator)
         {
@@ -28,7 +29,7 @@ namespace Toss.Server.Models.Account
             this.mediator = mediator;
         }
 
-        public async Task<Unit> Handle(EditAccountCommand request, CancellationToken cancellationToken)
+        public async Task<CommandResult> Handle(EditAccountCommand request, CancellationToken cancellationToken)
         {
             var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
             if (user == null)
@@ -42,21 +43,24 @@ namespace Toss.Server.Models.Account
                 var setEmailResult = await _userManager.SetEmailAsync(user, request.Email);
                 if (!setEmailResult.Succeeded)
                 {
-                    throw new ApplicationException($"Unexpected error occurred setting email for user with ID '{user.Id}'.");
+                    return new CommandResult(setEmailResult.ToValidationErrorDictonary());
                 }
+
             }
-            if(request.Name != user.UserName)
+            if (request.Name != user.UserName)
             {
                 var setUserName = await _userManager.SetUserNameAsync(user, request.Name);
+
                 if (!setUserName.Succeeded)
-                {                    
-                    throw new ApplicationException($"Unexpected error occurred setting name for user with ID '{user.Id}'.");
+                {
+
+                    return new CommandResult(setUserName.ToValidationErrorDictonary());
                 }
                 user.UserName = request.Name;
                 await mediator.Publish(new AccountUserNameUpdated(user));
-                
+
             }
-            return Unit.Value;
+            return CommandResult.Success();
         }
     }
 }

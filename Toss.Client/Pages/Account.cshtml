@@ -10,11 +10,15 @@
         <label for="Email">Email</label>
         <input for="Email" class="form-control" bind="@_account.Email" />
         <ValidationError FieldName="Email" Errors="@_errors" />
+        <ValidationError FieldName="InvalidEmail" Errors="@_errors" />
+        <ValidationError FieldName="DuplicateEmail" Errors="@_errors" />
     </div>
     <div class="form-group">
         <label for="Name">User name</label>
         <input for="Name" class="form-control" bind="@_account.Name" />
         <ValidationError FieldName="Name" Errors="@_errors" />
+        <ValidationError FieldName="DuplicateUserName" Errors="@_errors" />
+        <ValidationError FieldName="InvalidUserName" Errors="@_errors" />
     </div>
     <button type="submit" class="btn btn-default">Save</button>
 </form>

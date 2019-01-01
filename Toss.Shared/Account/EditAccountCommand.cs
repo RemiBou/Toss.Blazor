@@ -4,7 +4,7 @@ using Toss.Shared.Account;
 
 namespace Toss.Shared
 {
-    public class EditAccountCommand : IRequest
+    public class EditAccountCommand : IRequest<CommandResult>
     {
         [Required]
         [EmailAddress]
