@@ -48,6 +48,7 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Console.WriteLine(string.Join(",", Configuration.AsEnumerable().Select(c => c.Key)));
             services.AddResponseCompression(options =>
             {
                 options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
