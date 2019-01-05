@@ -1,7 +1,4 @@
-﻿using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Shared;
@@ -10,7 +7,6 @@ namespace Toss.Server.Services
 {
 
     public class CaptchaMediatRAdapter<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : NotARobot, IRequest<TResponse>
     {
         private ICaptchaValidator captchaValidator;
 
@@ -22,7 +18,11 @@ namespace Toss.Server.Services
 
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
         {
-            await this.captchaValidator.Check(((NotARobot)request).Token);
+            if (request is NotARobot notARobot)
+            {
+                await this.captchaValidator.Check(notARobot.Token);
+            }
+           
             return await next();
         }
     }
