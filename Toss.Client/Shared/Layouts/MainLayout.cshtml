@@ -1,7 +1,24 @@
-﻿<TopMenu />
+﻿@inject IExceptionNotificationService exceptionNotificationService
+@implements IDisposable;
+<TopMenu />
 @Body
 
 @functions {
+
 [Parameter]
 RenderFragment Body { get; set; }
+protected override async Task OnInitAsync()
+{
+    this.exceptionNotificationService.OnException += HandleExceptions;
+    base.OnInit();
+}
+private void HandleExceptions(object sender, string s)
+{
+    JsInterop.Toastr("error", s).ContinueWith((a) => { });
+}
+public void Dispose()
+{
+
+    this.exceptionNotificationService.OnException -= HandleExceptions;
+}
 }

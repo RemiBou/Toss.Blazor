@@ -111,7 +111,6 @@ XMLHttpRequest.prototype.open = function (method, url, async) {
     if (url.endsWith(".dll")) {
         url = url.replace("dll", "blazor");
     }
-    console.log("xhr get", this, url);
     return this.open_before(method, url, async);
 };
 runCaptcha = function (actionName) {

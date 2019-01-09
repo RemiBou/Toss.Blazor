@@ -36,7 +36,10 @@ namespace Toss.Client
                 typeof(IModelValidator),
                 typeof(ModelValidator),
                 ServiceLifetime.Singleton));
-
+            services.Add(new ServiceDescriptor(
+                typeof(IExceptionNotificationService),
+                typeof(ExceptionNotificationService),
+                ServiceLifetime.Singleton));
 
         }
 
