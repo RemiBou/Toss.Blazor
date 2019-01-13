@@ -87,7 +87,7 @@ namespace Toss.Tests.E2E
             var config = new Dictionary<string, string>
             {
                  { "GoogleClientId", "AAA"},
-                 { "GoogleClientSecret", ""},
+                 { "GoogleClientSecret", "AAA"},
                  { "MailJetApiKey", ""},
                  { "MailJetApiSecret", ""},
                  { "MailJetSender", ""},
