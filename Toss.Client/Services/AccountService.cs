@@ -25,8 +25,7 @@ namespace Toss.Client.Services
         /// </summary>
         /// <returns></returns>
         public async Task<AccountViewModel> CurrentAccount()
-        {
-            throw new Exception("test");
+        {            
             AccountViewModel account = null;
             await http.Create("/api/account/details")
               .OnOK<AccountViewModel>((a) => account = a)
