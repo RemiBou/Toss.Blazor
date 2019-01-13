@@ -103,7 +103,16 @@ namespace Toss.Tests.E2E
             {
                 //CI env might set some values like CosmosDB endpoint url
                 if (Environment.GetEnvironmentVariable(key.Key) == null)
+                {
+                    Console.WriteLine("Setting : " + key.Key);
                     Environment.SetEnvironmentVariable(key.Key, key.Value);
+                }
+                else
+                {
+                    Console.WriteLine("Already set : " + key.Key);
+
+
+                }
             }
             return Toss.Server.Program.BuildWebHost(new[]
             {
