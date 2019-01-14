@@ -18,9 +18,9 @@ namespace Toss.Server.Models.Tosses
 
     internal class SponsoredTossDisplayCountReducer : INotificationHandler<SponsoredTossDisplayed>
     {
-        private ICosmosDBTemplate<SponsoredTossEntity> cosmosDBTemplate;
+        private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
 
-        public SponsoredTossDisplayCountReducer(ICosmosDBTemplate<SponsoredTossEntity> cosmosDBTemplate)
+        public SponsoredTossDisplayCountReducer(ICosmosDBTemplate<TossEntity> cosmosDBTemplate)
         {
             this.cosmosDBTemplate = cosmosDBTemplate;
         }
@@ -31,6 +31,7 @@ namespace Toss.Server.Models.Tosses
                 .Where(t => t.Id == notification.TossId)
                 .Take(1)
                 .AsEnumerable()
+                .Cast<SponsoredTossEntity>()
                 .FirstOrDefault();
             //we displayed a now removed
             if (toss == null)

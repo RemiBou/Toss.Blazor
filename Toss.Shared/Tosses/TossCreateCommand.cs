@@ -1,16 +1,20 @@
 ﻿using MediatR;
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using Toss.Shared.Account;
 
 namespace Toss.Shared.Tosses
 {
     public class TossCreateCommand : IRequest
     {
+        public const string TagRegexString = @"(?<=[\s>]|^)#(\w*[A-Za-z_]+\w*)";
+
+        public static Regex TagRegex = new Regex(TagRegexString,RegexOptions.Compiled);
         [Required]
         [MaxLength(32000)]
         [MinLength(20)]
-        [RegularExpression("(?s)(.)*(?<=#)" + AddHashtagCommand.HashTagRegex+"(.)*", ErrorMessage ="Your toss must contain at least one hashtag (#)")]
+        [RegularExpression("(?s)(.)*(?<=#)" + AddHashtagCommand.HashTagRegex + "(.)*", ErrorMessage = "Your toss must contain at least one hashtag (#)")]
         public string Content { get; set; }
 
         [Range(50,1000)]

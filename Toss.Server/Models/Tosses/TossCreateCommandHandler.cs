@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
@@ -46,6 +47,8 @@ namespace Toss.Server.Controllers
                     DateTimeOffset.Now,
                     command.SponsoredDisplayedCount.Value);
             toss.UserName = user.Identity.Name;
+            var matchCollection = TossCreateCommand.TagRegex.Matches(toss.Content);
+            toss.Tags = matchCollection.Select(m => m.Groups[1].Value).ToList();
             toss.Id = await _dbTemplate.Insert(toss);
             if (command.SponsoredDisplayedCount.HasValue)
             {
@@ -58,7 +61,7 @@ namespace Toss.Server.Controllers
                 }
 
             }
-            await mediator.Publish(new TossCreated(toss.Id));
+            await mediator.Publish(new TossCreated(toss));
             return Unit.Value;
         }
     }

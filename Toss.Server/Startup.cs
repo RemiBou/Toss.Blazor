@@ -93,6 +93,7 @@ namespace Toss.Server
                     s.GetRequiredService<IHttpContextAccessor>()));
                 services.AddTransient<IRandom, RandomTrue>();
                 services.AddTransient<IEmailSender, EmailSender>();
+                services.AddSingleton<INow, Now>();
                 services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
             }
             else
@@ -102,6 +103,7 @@ namespace Toss.Server
                 //We had it as singleton so we can get the content later during the asset phase
                 services.AddSingleton<IEmailSender, FakeEmailSender>();
                 services.AddSingleton<IStripeClient, FakeStripeClient>();
+                services.AddSingleton<INow, FakeNow>();
             }
             services.AddAuthentication()
                 .AddGoogle(o =>

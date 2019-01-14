@@ -201,5 +201,21 @@ namespace Toss.Tests.Server.Models.Tosses
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
             Assert.Contains("toss no 2", res.Content);
         }
+
+        [Fact]
+        public async Task create_initalize_tags()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test #toto "
+            });
+
+
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.Equal(2, toss.Tags.Count);
+            Assert.Contains("test", toss.Tags);
+            Assert.Contains("toto", toss.Tags);
+        }
     }
 }

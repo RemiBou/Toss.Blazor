@@ -3,17 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Toss.Server.Data;
 
 namespace Toss.Server.Models.Tosses
 {
     public class TossCreated : INotification
     {
-        public TossCreated(string tossId)
+        public TossCreated(TossEntity toss)
         {
-            TossId = tossId ?? throw new ArgumentNullException(nameof(tossId));
+            this.Toss = toss;
         }
 
-        public string TossId { get; set; }
-
+        public TossEntity Toss { get; set; }
     }
 }

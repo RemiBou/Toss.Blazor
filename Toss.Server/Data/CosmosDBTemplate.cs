@@ -21,7 +21,7 @@ namespace Toss.Server.Data
         }
         public CosmosDBTemplate(DocumentClient documentClient, CosmosDBTemplateOptions options)
         {
-            collectionId = typeof(T).GetType().Name;
+            collectionId = typeof(T).Name;
             _documentClient = documentClient;
             
             _database = new Lazy<Task<ResourceResponse<Database>>>(() =>

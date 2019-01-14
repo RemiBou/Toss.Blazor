@@ -23,7 +23,7 @@ namespace Toss.Tests.Infrastructure
 
         public async Task InitializeAsync()
         {
-           
+            await this.DisposeAsync();//clean up before and after the tests
             await TestFixture.CreateTestUser();
         }
 
