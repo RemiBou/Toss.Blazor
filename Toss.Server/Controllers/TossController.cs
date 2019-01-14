@@ -46,8 +46,20 @@ namespace Toss.Server.Controllers
             return base.Ok(result);
         }
 
+
         /// <summary>
         /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, AllowAnonymous]
+        public async Task<IActionResult> BestTags()
+        {
+            var result = await _mediator.Send(new BestTagsQuery());
+            return base.Ok(result);
+        }
+
+        /// <summary>
+        /// Returns details about a given toss
         /// </summary>
         /// <returns></returns>
         [HttpGet("{tossId}"), AllowAnonymous]

@@ -1,0 +1,30 @@
+﻿@page "/best-tags"
+@inject IHttpApiClientRequestBuilderFactory httpBuilder
+@if (tags != null)
+{
+    <div class="alert alert-info">
+        Here are displayed the most used tags since the last 30 days. 
+    </div>
+    <div class="form-inline">
+        @foreach (var hashTag in tags)
+        {
+            <div class="form-group">
+                <div class="input-group m-1 btn-group" role="group">
+                    <NavLink href="@("/tag/"+hashTag.Tag)" Match="NavLinkMatch.All" class="btn btn-secondary tag-link">
+                        #@hashTag.Tag <span class="badge badge-primary">@hashTag.CountLastMonth</span>
+                    </NavLink>
+                </div>
+            </div>
+        }
+    </div>
+}
+@functions{
+    private List<BestTagsResult> tags;
+    protected async override Task OnInitAsync()
+    {
+        await httpBuilder.Create("/api/toss/bestTags")
+            .OnOK<List<BestTagsResult>>(r => this.tags = r)
+            .Get();
+        await base.OnInitAsync();
+    }
+}
