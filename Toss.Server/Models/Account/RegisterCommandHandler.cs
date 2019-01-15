@@ -22,13 +22,22 @@ namespace Toss.Server.Models.Account
         private readonly IUrlHelper urlHelper;
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public RegisterCommandHandler(UserManager<ApplicationUser> userManager, ILogger<AccountController> logger, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+        private readonly IMediator _mediator;
+
+        public RegisterCommandHandler(
+            UserManager<ApplicationUser> userManager,
+            ILogger<AccountController> logger,
+            IEmailSender emailSender,
+            IUrlHelper urlHelper,
+            IHttpContextAccessor httpContextAccessor,
+            IMediator mediator)
         {
             _userManager = userManager;
             _logger = logger;
             _emailSender = emailSender;
             this.urlHelper = urlHelper;
             this.httpContextAccessor = httpContextAccessor;
+            _mediator = mediator;
         }
 
         public async Task<CommandResult> Handle(RegisterCommand model, CancellationToken cancellationToken)
@@ -37,14 +46,9 @@ namespace Toss.Server.Models.Account
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                await _mediator.Publish(new UserRegistered(user));
                 _logger.LogInformation("User created a new account with password.");
 
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var callbackUrl = urlHelper.EmailConfirmationLink(user.Id, code, httpContextAccessor.HttpContext.Request.Scheme);
-                await _emailSender.SendEmailConfirmationAsync(model.Email, model.Name, callbackUrl);
-
-                //await _signInManager.SignInAsync(user, isPersistent: false);
-                _logger.LogInformation("User created a new account with password.");
                 return CommandResult.Success();
             }
             return new CommandResult("UserName", string.Join(", ", result.Errors.Select(e => e.Description)));

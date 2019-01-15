@@ -45,6 +45,7 @@ namespace Toss.Server.Models.Account
                 {
                     return new CommandResult(setEmailResult.ToValidationErrorDictonary());
                 }
+                await mediator.Publish(new AccountEmailUpdated(user));
 
             }
             if (request.Name != user.UserName)

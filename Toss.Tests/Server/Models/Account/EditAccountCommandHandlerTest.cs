@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Toss.Server.Services;
 using Toss.Shared;
 using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;
@@ -27,5 +28,19 @@ namespace Toss.Tests.Server.Models.Account
 
             Assert.Equal("tutu", res.First().UserName);
         }
+
+        [Fact]
+        public async Task edit_email_send_email_with_confirmation_link()
+        {
+            await _mediator.Send(new EditAccountCommand()
+            {
+                Name = "remibou",
+                Email = "remibou@yopmail.com"
+            });
+
+            var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
+            Assert.NotNull(emailSender.GetConfirmationLink("remibou@yopmail.com"));
+        }
+
     }
 }
