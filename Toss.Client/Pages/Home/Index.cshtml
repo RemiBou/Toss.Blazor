@@ -12,6 +12,7 @@
         <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
     }
     <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
+    <button type="button" class="btn btn-warning" onclick="@RefreshTossList"><i class="fas fa-sync"></i></button>
 </div>
 <div class="row">
     @if (string.IsNullOrEmpty(CurrentTag))
@@ -29,17 +30,32 @@
     {
         <OneTossDetail ref="tossDetail" OnTossDetailHide="OnTossDetailHide"></OneTossDetail>
         <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-        @foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
+       
+        @if (Tosses != null )
         {
-            <OneToss toss="@toss" ShowDetailDelegate="ShowDetail" />
+            if(Tosses.Any()){
+                foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
+                {
+                    <OneToss toss="@toss" ShowDetailDelegate="ShowDetail" />
+                }
+            }
+            else{
+                <div class="col-md-3 col-sm-6 my-2">
+                    <div class="card text-white bg-warning   h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Nothing to show</h5>
+                            <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
+                        </div>
+                    </div>
+                </div>
+            }           
         }
-        @if (Tosses != null && !Tosses.Any())
-        {
+        else if(Loading){
             <div class="col-md-3 col-sm-6 my-2">
                 <div class="card text-white bg-warning   h-100">
                     <div class="card-body">
-                        <h5 class="card-title">Nothing to show</h5>
-                        <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
+                        <h5 class="card-title">Loading</h5>
+                        <p class="card-text">We are loading the tosses ...</p>
                     </div>
                 </div>
             </div>
@@ -49,7 +65,7 @@
 @functions{
     OneTossDetail tossDetail;
 
-    List<TossLastQueryItem> Tosses = new List<TossLastQueryItem>();
+    List<TossLastQueryItem> Tosses;
 
     [Parameter]
     private string CurrentTag { get; set; } = "";
@@ -60,6 +76,8 @@
     private string DisplayedTag;
 
     private AccountViewModel currentAccount;
+
+    private bool Loading {get;set;} = false;
 
     protected async override Task OnInitAsync()
     {
@@ -91,14 +109,17 @@
 
     protected async Task RefreshTossList()
     {
+        
         DisplayedTag = CurrentTag;
-        Tosses = new List<TossLastQueryItem>();
+        Tosses = null;
         if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
+        Loading = true;
         await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
             .OnOK<List<TossLastQueryItem>>(l =>
             {
                 Tosses = l;
+                Loading = false;
                 StateHasChanged();
             })
             .Get();
