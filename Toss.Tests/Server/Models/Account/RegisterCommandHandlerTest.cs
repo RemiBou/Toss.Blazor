@@ -37,7 +37,7 @@ namespace Toss.Tests.Server.Models.Account
                 Name = "remibou",
                 Email = "remibou@yopmail.com"
             });
-            Assert.True(res.IsSucess, string.Join(",", res.Errors?.SelectMany(e => e.Value)));
+            Assert.True(res.IsSucess, res.Errors != null ? string.Join(",", res.Errors.SelectMany(e => e.Value)) : "");
         }
 
         [Fact]
@@ -49,7 +49,7 @@ namespace Toss.Tests.Server.Models.Account
                 Name = "remibou",
                 Email = "remibou@yopmail.com"
             });
-            Assert.True(res.IsSucess, string.Join(",", res.Errors?.SelectMany(e => e.Value)));
+            Assert.True(res.IsSucess, res.Errors != null ? string.Join(",", res.Errors.SelectMany(e => e.Value)) : "");
             var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
             Assert.NotNull(emailSender.GetConfirmationLink("remibou@yopmail.com"));
         }
