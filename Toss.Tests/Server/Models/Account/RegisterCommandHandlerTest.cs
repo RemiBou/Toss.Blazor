@@ -31,13 +31,13 @@ namespace Toss.Tests.Server.Models.Account
         {
             var validator = (FakeCaptchaValidator)TestFixture.GetInstance<ICaptchaValidator>();
             validator.NextResult = true;
-            await _mediator.Send(new RegisterCommand()
+            var res = await _mediator.Send(new RegisterCommand()
             {
-                Password = "123456azerty!",
+                Password = "123456Azerty!",
                 Name = "remibou",
                 Email = "remibou@yopmail.com"
             });
-
+            Assert.True(res.IsSucess, string.Join(",", res.Errors.SelectMany(e => e.Value)));
         }
 
         [Fact]
@@ -45,7 +45,7 @@ namespace Toss.Tests.Server.Models.Account
         {
             var res = await _mediator.Send(new RegisterCommand()
             {
-                Password = "123456azerty!",
+                Password = "123456Azerty!",
                 Name = "remibou",
                 Email = "remibou@yopmail.com"
             });
