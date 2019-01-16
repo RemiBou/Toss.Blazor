@@ -18,10 +18,10 @@ steps:
   displayName: 'dotnet build'
 - task: azure-cosmosdb.emulator-public-preview.run-cosmosdbemulatorcontainer.CosmosDbEmulator@2
   displayName: 'Run Azure Cosmos DB Emulator container'
-- script: dotnet test Toss.Tests\Toss.Tests.csproj --no-build  -v q --logger trx;LogFileName=test.trx
+- script: dotnet test Toss.Tests\Toss.Tests.csproj --no-build  -v q --logger trx;LogFileName=test.trx --configuration $(buildConfiguration)
   displayName: 'Tests'
   env: { 'CosmosDBEndpoint': "$(CosmosDbEmulator.Endpoint)" }  # list of environment variables to add
-- script: dotnet test Toss.Tests.E2E\Toss.Tests.E2E.csproj  --no-build  -v q --logger trx;LogFileName=e2e.trx
+- script: dotnet test Toss.Tests.E2E\Toss.Tests.E2E.csproj  --no-build  -v q --logger trx;LogFileName=e2e.trx --configuration $(buildConfiguration)
   displayName: 'E2E Tests'
   env: { 'CosmosDBEndpoint': "$(CosmosDbEmulator.Endpoint)",'CosmosDBKey':"C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==" }  # list of environment variables to add
 - task: PublishTestResults@2
@@ -31,3 +31,4 @@ steps:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**.*.trx'
 
+ D:\a\1\s\Toss.Tests\bin\Release\netcoreapp2.1\Toss.Tests.dll
