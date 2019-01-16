@@ -8,8 +8,11 @@ namespace Toss.Server.Extensions
     {
         public static string EmailConfirmationLink(this IUrlHelper urlHelper, string userId, string code, string scheme)
         {
-            var host = urlHelper.ActionContext.HttpContext.Request.Host;
-           
+            ActionContext actionContext = urlHelper.ActionContext;
+            Microsoft.AspNetCore.Http.HttpContext httpContext = actionContext.HttpContext;
+            Microsoft.AspNetCore.Http.HttpRequest request = httpContext.Request;
+            var host = request.Host;
+
             var ub = new UriBuilder(scheme, host.Host)
             {
                 Path = $"account/confirmationEmail/{userId}/{WebUtility.UrlEncode(code)}",
