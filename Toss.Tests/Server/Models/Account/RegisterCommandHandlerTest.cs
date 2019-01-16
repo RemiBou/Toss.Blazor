@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Server.Services;
@@ -42,13 +43,13 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task register_send_email_with_confirmation_link()
         {
-            await _mediator.Send(new RegisterCommand()
+            var res = await _mediator.Send(new RegisterCommand()
             {
                 Password = "123456azerty!",
                 Name = "remibou",
                 Email = "remibou@yopmail.com"
             });
-
+            Assert.True(res.IsSucess, string.Join(",", res.Errors.SelectMany(e => e.Value)));
             var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
             Assert.NotNull(emailSender.GetConfirmationLink("remibou@yopmail.com"));
         }

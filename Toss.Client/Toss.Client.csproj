@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <BlazorRebuildOnFileChange>true</BlazorRebuildOnFileChange>
+    <Watch Include="**\*.cshtml"/>
   </PropertyGroup>
 
   <ItemGroup>

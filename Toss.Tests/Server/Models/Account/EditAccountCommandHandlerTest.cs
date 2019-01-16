@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Toss.Server.Services;
 using Toss.Shared;
 using Toss.Shared.Tosses;
@@ -20,7 +21,7 @@ namespace Toss.Tests.Server.Models.Account
 
             await _mediator.Send(new EditAccountCommand()
             {
-                Email = "toto@yopmail.com",
+                Email = "username@yopmil.com",
                 Name = "tutu"
             });
 
@@ -34,12 +35,12 @@ namespace Toss.Tests.Server.Models.Account
         {
             await _mediator.Send(new EditAccountCommand()
             {
-                Name = "remibou",
-                Email = "remibou@yopmail.com"
+                Name = "username",
+                Email = "toto@yopmail.com"
             });
 
             var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
-            Assert.NotNull(emailSender.GetConfirmationLink("remibou@yopmail.com"));
+            Assert.NotNull(emailSender.GetConfirmationLink("toto@yopmail.com"));
         }
 
     }

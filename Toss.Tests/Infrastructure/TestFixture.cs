@@ -25,9 +25,9 @@ namespace Toss.Tests.Infrastructure
         //only mock we need :)
         private static Mock<IHttpContextAccessor> _httpContextAccessor;
         private static Mock<IActionContextAccessor> _actionContextAccessor;
-
-        private static DefaultHttpContext HttpContext;
         public static ClaimsPrincipal ClaimPrincipal { get; set; }
+        public static Mock<HttpContext> HttpContextMock { get; private set; }
+        public static Mock<HttpRequest> HttpRequestMock { get; private set; }
 
         static TestFixture()
         {
@@ -88,13 +88,15 @@ namespace Toss.Tests.Infrastructure
                                     new Claim(ClaimTypes.NameIdentifier, user.Id)
                          },
                       "Basic"));
-            HttpContext = new DefaultHttpContext()
-            {
-                User = ClaimPrincipal
-            };
+
+            HttpContextMock = new Mock<HttpContext>();
+            HttpContextMock.SetupGet(m => m.User).Returns(ClaimPrincipal);
+            HttpRequestMock = new Mock<HttpRequest>();
+            HttpContextMock.SetupGet(m => m.Request).Returns(HttpRequestMock.Object);
+            HttpRequestMock.SetupGet(r => r.Host).Returns(new HostString("localhost"));
             _httpContextAccessor
               .SetupGet(h => h.HttpContext)
-              .Returns(() => HttpContext);
+              .Returns(() => HttpContextMock.Object);
         }
 
         public static void SetControllerContext(Controller controller)
