@@ -29,4 +29,4 @@ steps:
   condition: in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues', 'Failed')
   inputs:
     testResultsFormat: 'VSTest'
-    testResultsFiles: '**.*.trx'
+    testResultsFiles: '**/*.trx'
