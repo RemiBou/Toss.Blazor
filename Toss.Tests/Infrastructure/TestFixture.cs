@@ -56,7 +56,18 @@ namespace Toss.Tests.Infrastructure
             startup.ConfigureServices(services);
             _httpContextAccessor = new Mock<IHttpContextAccessor>();
             _actionContextAccessor = new Mock<IActionContextAccessor>();
-            _actionContextAccessor.SetupGet(a => a.ActionContext).Returns(new ActionContext());
+            HttpContextMock = new Mock<HttpContext>();
+
+            HttpRequestMock = new Mock<HttpRequest>();
+            HttpContextMock.SetupGet(m => m.Request).Returns(HttpRequestMock.Object);
+            HttpRequestMock.SetupGet(r => r.Host).Returns(new HostString("localhost"));
+            _httpContextAccessor
+              .SetupGet(h => h.HttpContext)
+              .Returns(() => HttpContextMock.Object);
+
+
+            _actionContextAccessor.SetupGet(a => a.ActionContext).Returns(new ActionContext(HttpContextMock.Object, new Microsoft.AspNetCore.Routing.RouteData(), null));
+
             services.AddSingleton(_httpContextAccessor.Object);
             services.AddSingleton(_actionContextAccessor.Object);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
@@ -88,15 +99,8 @@ namespace Toss.Tests.Infrastructure
                                     new Claim(ClaimTypes.NameIdentifier, user.Id)
                          },
                       "Basic"));
-
-            HttpContextMock = new Mock<HttpContext>();
             HttpContextMock.SetupGet(m => m.User).Returns(ClaimPrincipal);
-            HttpRequestMock = new Mock<HttpRequest>();
-            HttpContextMock.SetupGet(m => m.Request).Returns(HttpRequestMock.Object);
-            HttpRequestMock.SetupGet(r => r.Host).Returns(new HostString("localhost"));
-            _httpContextAccessor
-              .SetupGet(h => h.HttpContext)
-              .Returns(() => HttpContextMock.Object);
+
         }
 
         public static void SetControllerContext(Controller controller)
