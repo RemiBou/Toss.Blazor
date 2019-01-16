@@ -5,20 +5,20 @@
 
 @functions {
 
-[Parameter]
-RenderFragment Body { get; set; }
-protected override async Task OnInitAsync()
-{
-    this.exceptionNotificationService.OnException += HandleExceptions;
-    base.OnInit();
-}
-private void HandleExceptions(object sender, string s)
-{
-    JsInterop.Toastr("error", s).ContinueWith((a) => { });
-}
-public void Dispose()
-{
+    [Parameter]
+    RenderFragment Body { get; set; }
+    protected override void OnInit()
+    {
+        this.exceptionNotificationService.OnException += HandleExceptions;
+        base.OnInit();
+    }
+    private void HandleExceptions(object sender, string s)
+    {
+        JsInterop.Toastr("error", s).ContinueWith((a) => { });
+    }
+    public void Dispose()
+    {
 
-    this.exceptionNotificationService.OnException -= HandleExceptions;
-}
+        this.exceptionNotificationService.OnException -= HandleExceptions;
+    }
 }
