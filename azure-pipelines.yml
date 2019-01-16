@@ -30,5 +30,3 @@ steps:
   inputs:
     testResultsFormat: 'VSTest'
     testResultsFiles: '**.*.trx'
-
- D:\a\1\s\Toss.Tests\bin\Release\netcoreapp2.1\Toss.Tests.dll
