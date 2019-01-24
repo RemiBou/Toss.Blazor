@@ -1,0 +1,52 @@
+@page "/about"
+@using Markdig
+@using System.Web
+@inject HttpClient httpClient
+<h1>About Toss</h1>
+<div class="row">
+    @foreach (var toss in AboutItems)
+    {    
+        <div class="col-md-3 col-sm-6 my-2 toss">        
+            <div class="card  h-100" data-toggle="modal" data-target="#modal-@toss.Id" style="cursor:zoom-in">           
+                
+                <div class="card-body p-2">
+                    <p class="card-text" style="max-height:200px;overflow-y: hidden;">
+                       @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(toss.Content)))
+                    </p>                
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" tabindex="-1" role="dialog" id="modal-@toss.Id" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                         @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode( toss.Content)))
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@functions{
+        HashSet<TossLastQueryItem> AboutItems = new HashSet<TossLastQueryItem>();
+        
+        protected override async Task OnInitAsync(){
+            //we get the about content directly from github so it doesn use our bandwidth and is up to date
+            var content = await httpClient.GetStringAsync("https://raw.githubusercontent.com/RemiBou/Toss.Blazor/master/ABOUT.md");    
+            var currentToss = new TossLastQueryItem();
+            currentToss.Id = AboutItems.Count.ToString();
+            AboutItems.Add(currentToss);
+
+            foreach(var line in content.Split(new []{Environment.NewLine}, StringSplitOptions.None)){
+                if(string.IsNullOrWhiteSpace(line)){
+                    currentToss = new TossLastQueryItem();
+                    currentToss.Id = AboutItems.Count.ToString();
+                    AboutItems.Add(currentToss);
+                }
+                currentToss.Content += line+Environment.NewLine;
+            }
+        }
+}

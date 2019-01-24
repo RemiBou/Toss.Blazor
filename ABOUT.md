@@ -1,6 +1,6 @@
-# What is TOSS ?
+# TOSS ?
 TOSS is an experimental project using AspNetCore and Blazor. Here is an overview of the project, many of the thing said here are not implemented yet but it gives you an overview 
-of what I want to achieve here.
+of what we want to achieve here.
 
 # Your Data
 We'll gather personnal data as less as possible . All the data stored / processed are the following :
@@ -13,18 +13,18 @@ We'll gather personnal data as less as possible . All the data stored / processe
 - Hashtasg list : stored as plain-text, kept private
 
 # Contact
-- If you have any question regarding this project or a suggestion please post an issue [here](https://github.com/RemiBou/Toss.Blazor/issues), I'll try to answer as soon as possible.
+If you have any question regarding this project or a suggestion please post an issue [here](https://github.com/RemiBou/Toss.Blazor/issues), I'll try to answer as soon as possible.
 
-# It'll get hacked one day
-Like every system (on computer or else) on earth it fails at implementing absolute security. So be careful about every data you put in this system :
+# Security
+Like every system on earth it fails at implementing absolute security. So be careful about every data you put in this system :
 - Password : use a unique password or better, a password manager. This is stored as a hash, but Math can eventually lie one day.
 - Email : make sure that if someone discovers your email nothing wrong could happen.
 - Hashtag list : We'll try my best to keep it private.
 
 # Business model
-Because this project wil make money with your content, we prefer to be transparent about how we do it, so the business model will be the following : 
+Because this project will make money with your content, we prefer to be transparent about how we do it, so the business model will be the following : 
 - Any user can pay for displaying a Toss on the first slot. It will be displayed on the corresponding tag page
-- Users will buy X views and clicks that will cost Y €
+- Users will buy X views that will cost Y €
 
 # Moderated content
 We'll do our best to moderate the content posted here : every hateful content, fake news, illegal (in Europe at least), useless content will be removed. The posting chart will be created when people ill start to post here. 
@@ -38,7 +38,16 @@ All the social networks have the following pitfalls, this project will try to av
 - Fake internet point : some user might be able to do a lot of thing just for earning fake point (likes, followers ...)
 - Poor content : When people get money or fake point for posting content, they can post poor content to the system (fake news, repost, extremst point of view)
 
-## Transparency
+# How we stand
+Here is my definition to how we stand compared to other social network / online service :
+- Facebook : we don't ask for personnal data, and we are transparent about what we do with it.
+- Twitter : we don't manipulate what is showed first, everything is ordered by date of post.
+- Wikipedia : we are more oriented on one person point of view on something and the first thing shown is the latest
+- Pinterest : we don't manipulate what is showed first, everything is ordered by date of post. it's more about textual content than pictures.
+- Google+ : what ?
+- Medium : more content is shown, no ability to comment, and oriented on medium sized content
+
+# Transparency
 Because the content is from your mind, we should not hide you what we are doing with it, that's why this project is and will stay open source.
 The source code is available [here](https://github.com/RemiBou/Toss.Blazor).
 I'll also be transparent about cost of operation / breach detection etc ...
