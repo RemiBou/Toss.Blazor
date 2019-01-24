@@ -1,5 +1,5 @@
-﻿@using Markdig
-@using System.Web
+﻿@using System.Web
+@inject IMarkdownService markdown
 <div class="col-md-3 col-sm-6 my-2 toss">
     
     <div class="card  h-100 @additionnalClass" data-toggle="modal" onclick="@(async () => await ShowDetail())" style="cursor:zoom-in">
@@ -11,7 +11,7 @@
         }
         <div class="card-body p-2">
             <p class="card-text" style="max-height:200px;overflow-y: hidden;">
-                @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode( toss.Content)))
+                @markdown.ToHtml(toss.Content)
             </p>
             <p class="card-text">
                 <small class="text-muted">

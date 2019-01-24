@@ -37,6 +37,10 @@ namespace Toss.Client
                 typeof(ModelValidator),
                 ServiceLifetime.Singleton));
             services.Add(new ServiceDescriptor(
+                typeof(IMarkdownService),
+                typeof(MarkdownService),
+                ServiceLifetime.Singleton));
+            services.Add(new ServiceDescriptor(
                 typeof(IExceptionNotificationService),
                 typeof(ExceptionNotificationService),
                 ServiceLifetime.Singleton));

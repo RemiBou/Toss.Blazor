@@ -6,14 +6,14 @@ of what we want to achieve here.
 We'll gather personnal data as less as possible . All the data stored / processed are the following :
 - Username : it's public
 - Tosses (posts) : it's public,
-- Password : it's stored but hashed by this code : [here](https://github.com/aspnet/Identity/blob/85f8a49aef68bf9763cd9854ce1dd4a26a7c5d3c/src/Core/PasswordHasher.cs){:target="_blank"}.
+- Password : it's stored but hashed by this code : [here](https://github.com/aspnet/Identity/blob/85f8a49aef68bf9763cd9854ce1dd4a26a7c5d3c/src/Core/PasswordHasher.cs){:target=_blank}.
 - Email : only here for security purpose (password recovery) it's stored as plain text but never showed.
 - IP : for legal purpose we have to store the IP used for sending a toss
 - Navigation : none is stored by the system itself, might be stored by the hosting provider (Microsoft Azure), but they don't use it if we don't ask.
 - Hashtasg list : stored as plain-text, kept private
 
 # Contact
-If you have any question regarding this project or a suggestion please post an issue [here](https://github.com/RemiBou/Toss.Blazor/issues){:target="_blank"}, I'll try to answer as soon as possible.
+If you have any question regarding this project or a suggestion please post an issue [here](https://github.com/RemiBou/Toss.Blazor/issues){:target=_blank}, I'll try to answer as soon as possible.
 
 # Security
 Like every system on earth it fails at implementing absolute security. So be careful about every data you put in this system :
@@ -33,7 +33,7 @@ We'll do our best to moderate the content posted here : every hateful content, f
 All the social networks have the following pitfalls, this project will try to avoid them as much as possible :
 - Troll : commenting on content has always been useless, from a quality of content point of view. if you want to answer to someone, post a new toss with the same hashtags.
 - Harrassment : comment / PM are the first channel for harassmnent
-- User engagement : online services are seeking user engagement at all cost : notification, email, app integration. This engagement causes a lot of problem in our society (very well described by Marc Gravell [here](https://blog.marcgravell.com/2018/12/a-thanksgiving-carol.html){:target="_blank"}).
+- User engagement : online services are seeking user engagement at all cost : notification, email, app integration. This engagement causes a lot of problem in our society (very well described by Marc Gravell [here](https://blog.marcgravell.com/2018/12/a-thanksgiving-carol.html){:target=_blank}).
 - Self promoting : the central notion of Toss is the content, not the user. 
 - Fake internet point : some user might be able to do a lot of thing just for earning fake point (likes, followers ...)
 - Poor content : When people get money or fake point for posting content, they can post poor content to the system (fake news, repost, extremst point of view)

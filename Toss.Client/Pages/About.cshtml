@@ -1,7 +1,7 @@
 @page "/about"
-@using Markdig
 @using System.Web
 @inject HttpClient httpClient
+@inject IMarkdownService markdown
 <h1>About Toss</h1>
 <div class="row">
     @foreach (var toss in AboutItems)
@@ -11,7 +11,7 @@
                 
                 <div class="card-body p-2">
                     <p class="card-text" style="max-height:200px;overflow-y: hidden;">
-                       @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(toss.Content)))
+                       @markdown.ToHtml(toss.Content)
                     </p>                
                 </div>
             </div>
@@ -20,7 +20,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-body">
-                         @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode( toss.Content)))
+                          @markdown.ToHtml(toss.Content)
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -1,8 +1,7 @@
 ﻿@implements IModalCloseCallback
-@using Markdig
 @using System.Web
 @inject IHttpApiClientRequestBuilderFactory httpBuilder
-
+@inject IMarkdownService markdown
 @if (tossDetail != null)
 {
     <div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -10,7 +9,7 @@
             <div class="modal-content">
 
                 <div class="modal-body">
-                    @((MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(tossDetail.Content)))
+                     @markdown.ToHtml(tossDetail.Content)
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
