@@ -1,4 +1,4 @@
-[![Build status](https://ci.appveyor.com/api/projects/status/mek4xbti51pog09j?svg=true)](https://ci.appveyor.com/project/RemiBou/toss-blazor)
+[![Build Status](https://dev.azure.com/remibou/toss/_apis/build/status/RemiBou.Toss.Blazor?branchName=master)](https://dev.azure.com/remibou/toss/_build/latest?definitionId=1?branchName=master)
 
 # Toss.Blazor
 Twitter-like web application using Blazor 0.4.0. You can login, post a new message (a "toss") with hashtag and select your favorite hashtags for finding messages.

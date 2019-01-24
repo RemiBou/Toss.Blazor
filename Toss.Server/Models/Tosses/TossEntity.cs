@@ -24,6 +24,7 @@ namespace Toss.Server.Data
         public DateTimeOffset CreatedOn { get; set; }
         public string UserName { get; set; }
         public List<string> Tags { get; set; }
+        public object UserIp { get; set; }
 
         public TossEntity(string content, string userId, DateTimeOffset dateOfPost)
         {

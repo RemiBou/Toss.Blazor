@@ -49,6 +49,7 @@ namespace Toss.Server.Controllers
             toss.UserName = user.Identity.Name;
             var matchCollection = TossCreateCommand.TagRegex.Matches(toss.Content);
             toss.Tags = matchCollection.Select(m => m.Groups[1].Value).ToList();
+            toss.UserIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
             toss.Id = await _dbTemplate.Insert(toss);
             if (command.SponsoredDisplayedCount.HasValue)
             {

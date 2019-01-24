@@ -217,5 +217,20 @@ namespace Toss.Tests.Server.Models.Tosses
             Assert.Contains("test", toss.Tags);
             Assert.Contains("toto", toss.Tags);
         }
+
+        [Fact]
+        public async Task create_adds_request_ip()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test #toto "
+            });
+
+
+            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            Assert.Equal(TestFixture.HttpContextMock.Object.Connection.RemoteIpAddress.ToString(), toss.UserIp);
+    
+        }
     }
 }
