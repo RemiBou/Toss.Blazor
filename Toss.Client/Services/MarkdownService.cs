@@ -1,20 +1,24 @@
 using System.Web;
 using Markdig;
 using Microsoft.AspNetCore.Blazor;
-public interface IMarkdownService
-{
-    MarkupString ToHtml(string content);
-}
-public class MarkdownService : IMarkdownService
-{
-    private MarkdownPipeline pipeline;
 
-    public MarkdownService()
+namespace Toss.Client.Services
+{
+    public interface IMarkdownService
     {
-        this.pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+        MarkupString ToHtml(string content);
     }
-    public MarkupString ToHtml(string content)
+    public class MarkdownService : IMarkdownService
     {
-        return (MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(content), this.pipeline);
+        private MarkdownPipeline pipeline;
+
+        public MarkdownService()
+        {
+            this.pipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Use<TargetLinkExtension>().Build();
+        }
+        public MarkupString ToHtml(string content)
+        {
+            return (MarkupString)Markdown.ToHtml(HttpUtility.HtmlEncode(content), this.pipeline);
+        }
     }
 }
