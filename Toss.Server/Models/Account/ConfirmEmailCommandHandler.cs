@@ -18,11 +18,10 @@ namespace Toss.Server.Models.Account
 
         public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
-            
             var user = await _userManager.FindByIdAsync(request.UserId);
             if (user == null)
             {
-                return new CommandResult("User","User does not exists");
+                return new CommandResult("User", "User does not exists");
             }
             var result = await _userManager.ConfirmEmailAsync(user, request.Code);
             return result.Succeeded ? CommandResult.Success() : new CommandResult(result.ToValidationErrorDictonary());

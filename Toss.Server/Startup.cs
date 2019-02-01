@@ -18,21 +18,20 @@ using Toss.Shared.Account;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
 using Toss.Server.Models;
-using Microsoft.AspNetCore.Identity.DocumentDB;
 using Toss.Server.Extensions;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 using Microsoft.AspNetCore.Identity;
-using IdentityRole = Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Rewrite;
 using System.IO;
 using Microsoft.AspNetCore.Http;
 using System.Text;
 using System.Net.Http;
+using Raven.Identity;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 
 namespace Toss.Server
 {
@@ -57,23 +56,16 @@ namespace Toss.Server
                 });
             });
 
-            DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
+            IDocumentStore store = new DocumentStore()
             {
-                TypeNameHandling = TypeNameHandling.Objects
-            });
-            services.AddSingleton(documentClient);
-            string DataBaseName = Configuration.GetValue("databaseName", "Toss");
-            services.Configure<CosmosDBTemplateOptions>((c) => c.DataBaseName = DataBaseName);
-            Database db = documentClient.CreateDatabaseQuery()
-                                .Where(d => d.Id == DataBaseName)
-                                .AsEnumerable()
-                                .FirstOrDefault()
-                ?? documentClient.CreateDatabaseAsync(new Database { Id = DataBaseName }).Result;
+                Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
+                Database = "Toss"
+            }.Initialize();
+            services.AddSingleton(store);
 
-            services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(documentClient, db.SelfLink)
-                .AddDefaultTokenProviders();
-
-
+            services
+                .AddRavenDbAsyncSession(store)
+                .AddRavenDbIdentity<ApplicationUser>();
 
             services.AddHttpContextAccessor();
             services.AddHttpClient();
@@ -120,7 +112,6 @@ namespace Toss.Server
                     options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
                     options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
                 });
-            services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
             services.AddAntiforgery(options =>

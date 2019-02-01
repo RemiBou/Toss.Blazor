@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,19 +12,17 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossListAdminQueryHandler : IRequestHandler<TossListAdminQuery, TossListAdminItems>
     {
-        private ICosmosDBTemplate<TossEntity> _tossCosmosDB;
+        private IAsyncDocumentSession _session;
 
-        public TossListAdminQueryHandler(ICosmosDBTemplate<TossEntity> tossCosmosDB)
+        public TossListAdminQueryHandler(IAsyncDocumentSession session)
         {
-            _tossCosmosDB = tossCosmosDB;
+            _session = session;
         }
 
         public async Task<TossListAdminItems> Handle(TossListAdminQuery request, CancellationToken cancellationToken)
         {
-            var count = (await _tossCosmosDB.CreateDocumentQuery<int>("SELECT VALUE COUNT(t) FROM TossEntity t"))
-                .AsEnumerable()
-                .First();
-            var query = (await _tossCosmosDB.CreateDocumentQuery()).AsQueryable();
+            var count = await _session.Query<TossEntity>().ToAsyncEnumerable().Count();
+            var query = _session.Query<TossEntity>().AsQueryable();
             if (request.MaxDate.HasValue)
                 query = query.Where(t => t.CreatedOn < request.MaxDate);
             var items = query
@@ -35,7 +34,6 @@ namespace Toss.Server.Models.Tosses
                      Id = t.Id,
                      UserName = t.UserId
                  })
-                 
                  .ToList();
             return new TossListAdminItems(items, count);
         }

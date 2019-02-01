@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Azure.Documents.Linq;
+
+using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Server.Models.Account;
 
@@ -10,24 +11,22 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossUserNameUpdater : INotificationHandler<AccountUserNameUpdated>
     {
-        private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
+        private IAsyncDocumentSession _session;
 
-        public TossUserNameUpdater(ICosmosDBTemplate<TossEntity> cosmosDBTemplate)
+        public TossUserNameUpdater(IAsyncDocumentSession session)
         {
-            this.cosmosDBTemplate = cosmosDBTemplate;
+            _session = session;
         }
 
         public async Task Handle(AccountUserNameUpdated notification, CancellationToken cancellationToken)
         {
-             var tosses = (await (await cosmosDBTemplate.CreateDocumentQuery())
-                .Where(t => t.UserId == notification.User.Id)
-                .AsDocumentQuery()
-                .GetAllResultsAsync())
-                .ToList();
+            var tosses = await _session.Query<TossEntity>()
+               .Where(t => t.UserId == notification.User.Id)
+               .ToAsyncEnumerable()
+               .ToList();
             foreach (var item in tosses)
             {
                 item.UserName = notification.User.UserName;
-                await cosmosDBTemplate.Update(item);
             }
         }
     }

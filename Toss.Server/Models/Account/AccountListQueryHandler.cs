@@ -11,10 +11,7 @@ namespace Toss.Server.Models.Account
 {
     public class AccountListQueryHandler : IRequestHandler<AccountListQuery, List<AdminAccountListItem>>
     {
-        
         private UserManager<ApplicationUser> userManager;
-
-       
 
         public AccountListQueryHandler(UserManager<ApplicationUser> userManager)
         {
@@ -29,7 +26,7 @@ namespace Toss.Server.Models.Account
                 Email = u.Email,
                 EmailConfirmed = u.EmailConfirmed,
                 Id = u.Id,
-                UserName = u.UserName                
+                UserName = u.UserName
             }).ToList());
         }
     }
