@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class RegisterCommandHandlerTest : BaseCosmosTest
+    public class RegisterCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task cannot_register_if_captcha_fails()

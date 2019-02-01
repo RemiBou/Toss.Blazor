@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Raven.Client.Documents.Conventions;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,8 +43,7 @@ namespace Toss.Tests.Infrastructure
                  { "MailJetApiKey", ""},
                  { "MailJetApiSecret", ""},
                  { "MailJetSender", ""},
-                 { "CosmosDBEndpoint", "https://localhost:8081"},
-                 { "CosmosDBKey", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="},
+                 { "RavenDBEndpoint", "http://127.0.0.1:8081"},
                  { "StripeSecretKey", ""},
                  { "test", "true"},
                  { "dataBaseName", DataBaseName}
@@ -58,7 +58,7 @@ namespace Toss.Tests.Infrastructure
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
 
-            HttpContextAccessor = new Mock<IHttpContextAccessor>();           
+            HttpContextAccessor = new Mock<IHttpContextAccessor>();
             HttpContextMock = new Mock<HttpContext>();
             DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection());
             connectionInfo.RemoteIpAddress = new System.Net.IPAddress(0x2414188f);
@@ -73,7 +73,10 @@ namespace Toss.Tests.Infrastructure
 
             ActionContextAccessor = new Mock<IActionContextAccessor>();
             ActionContextAccessor.SetupGet(a => a.ActionContext).Returns(new ActionContext(HttpContextMock.Object, new Microsoft.AspNetCore.Routing.RouteData(), new ActionDescriptor()));
+            var testDriver = new RavenDBTestDriver();
 
+            testDriver.ConfigureService();
+            services.AddSingleton(testDriver.GetDocumentStore());
             services.AddSingleton(HttpContextAccessor.Object);
             services.AddSingleton(ActionContextAccessor.Object);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));

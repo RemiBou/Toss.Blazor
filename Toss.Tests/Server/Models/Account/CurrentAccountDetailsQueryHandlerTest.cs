@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class CurrentAccountDetailsQueryHandlerTest : BaseCosmosTest
+    public class CurrentAccountDetailsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task Details_return_account_view_model()
@@ -21,13 +21,13 @@ namespace Toss.Tests.Server.Models.Account
         }
         [Fact]
         public async Task Details_return_user_hashtags()
-        { 
+        {
             await _mediator.Send(new AddHashtagCommand("toto"));
             await _mediator.Send(new AddHashtagCommand("titi"));
 
             var res = await _mediator.Send(
                 new CurrentAccountDetailsQuery());
-           
+
             Assert.Equal(new HashSet<string> { "toto", "titi" }, res.Hashtags);
         }
 
@@ -54,8 +54,7 @@ namespace Toss.Tests.Server.Models.Account
         public async Task Handle_when_user_has_role_admin_return_IsAdmin_true()
         {
             var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
-            user.AddRole("Admin");
-            await _userManager.UpdateAsync(user);
+            await _userManager.AddToRoleAsync(user, "Admin");
 
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());
 

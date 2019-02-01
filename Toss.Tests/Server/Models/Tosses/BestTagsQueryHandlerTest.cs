@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class BestTagsQueryHandlerTest : BaseCosmosTest
+    public class BestTagsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task on_new_toss_tags_are_on_best_tags_result()
@@ -34,7 +34,8 @@ namespace Toss.Tests.Server.Models.Tosses
             //#toss1 - 5 willbe added once, #toss6 - 55 twice
             for (int i = 1; i <= 55; i++)
             {
-                if(i <= 5) { 
+                if (i <= 5)
+                {
                     await _mediator.Send(
                        new TossCreateCommand()
                        {

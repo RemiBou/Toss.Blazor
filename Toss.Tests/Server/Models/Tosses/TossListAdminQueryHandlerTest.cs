@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +12,12 @@ using Xunit;
 
 namespace Toss.Tests.Shared.Tosses
 {
-    public class TossListAdminQueryHandlerTest : BaseCosmosTest
+    public class TossListAdminQueryHandlerTest : BaseTest
     {
-        private ICosmosDBTemplate<TossEntity> _tossCosmosDB;
+        private IAsyncDocumentSession _session;
         public TossListAdminQueryHandlerTest()
         {
-            _tossCosmosDB = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
+            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
         }
 
         [Fact]
@@ -24,7 +25,7 @@ namespace Toss.Tests.Shared.Tosses
         {
             for (int i = 0; i < 59; i++)
             {
-                await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now));
+                await _session.StoreAsync(new TossEntity("test", "test", DateTimeOffset.Now));
             }
 
             var res = await _mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(), new System.Threading.CancellationToken());
@@ -37,7 +38,7 @@ namespace Toss.Tests.Shared.Tosses
         {
             for (int i = 0; i < 27; i++)
             {
-                await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
+                await _session.StoreAsync(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
             var res = await _mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
@@ -51,7 +52,7 @@ namespace Toss.Tests.Shared.Tosses
         {
             for (int i = 0; i < 27; i++)
             {
-                await _tossCosmosDB.Insert(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
+                await _session.StoreAsync(new TossEntity("test", "test", DateTimeOffset.Now.AddDays(-i)));
             }
 
             var res = await _mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, DateTimeOffset.Now.AddDays(-14)));
@@ -64,7 +65,7 @@ namespace Toss.Tests.Shared.Tosses
         public async Task Handle_map_fields()
         {
             TossEntity instance = new TossEntity("lorem ipsum", "test", DateTimeOffset.Now);
-            await _tossCosmosDB.Insert(instance);
+            await _session.StoreAsync(instance);
 
             var res = await _mediator.Send(new Toss.Shared.Tosses.TossListAdminQuery(15, null));
 

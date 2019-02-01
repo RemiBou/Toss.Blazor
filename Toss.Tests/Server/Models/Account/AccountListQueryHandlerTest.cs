@@ -5,8 +5,8 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class AccountListQueryHandlerTest :BaseCosmosTest
-    {   
+    public class AccountListQueryHandlerTest : BaseTest
+    {
         [Fact]
         public async Task AccountListQuery_returns_all_users()
         {
@@ -20,7 +20,7 @@ namespace Toss.Tests.Server.Models.Account
         {
             var res = await _mediator.Send(new Toss.Shared.Account.AccountListQuery()
                 );
-            
+
             var first = res.FirstOrDefault();
             Assert.Equal("username", first.UserName);
             Assert.NotEmpty(first.Id);

@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class AddHashtagCommandHandlerTest : BaseCosmosTest
+    public class AddHashtagCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task AddHashTag_if_null_hashtag_returns_error()
         {
-            var res= await _mediator.Send(
+            var res = await _mediator.Send(
                 new AddHashtagCommand(null));
 
             Assert.False(res.IsSucess);
@@ -43,7 +43,7 @@ namespace Toss.Tests.Server.Models.Account
             Assert.Contains("toto", user.Hashtags);
 
             Assert.False(res.IsSucess);
-            Assert.Contains("newTag",res.Errors.Keys);
+            Assert.Contains("newTag", res.Errors.Keys);
 
         }
 

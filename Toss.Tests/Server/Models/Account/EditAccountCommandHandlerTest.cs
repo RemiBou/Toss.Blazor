@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class EditAccountCommandHandlerTest : BaseCosmosTest
+    public class EditAccountCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task when_edit_user_name_change_user_name_on_previously_posted_toss()

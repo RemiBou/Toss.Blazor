@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class ExternalLoginCommandHandlerTest : BaseCosmosTest
+    public class ExternalLoginCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task login_external_acccount()
@@ -29,7 +29,7 @@ namespace Toss.Tests.Server.Models.Account
 
             result = await _userManager.AddLoginAsync(user, info);
 
-            var externalLogin = await (TestFixture.GetInstance<IUserStore<ApplicationUser>>() as IUserLoginStore<ApplicationUser>).FindByLoginAsync("Google", "123456",new CancellationToken());
+            var externalLogin = await (TestFixture.GetInstance<IUserStore<ApplicationUser>>() as IUserLoginStore<ApplicationUser>).FindByLoginAsync("Google", "123456", new CancellationToken());
 
             Assert.NotNull(externalLogin);
         }

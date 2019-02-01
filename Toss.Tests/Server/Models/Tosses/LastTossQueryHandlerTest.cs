@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ using Xunit;
 namespace Toss.Tests.Server.Models.Tosses
 {
 
-    public class LastTossQueryHandlerTest : BaseCosmosTest
+    public class LastTossQueryHandlerTest : BaseTest
     {
-        private ICosmosDBTemplate<TossEntity> tossTemplate;
+        private IAsyncDocumentSession _session;
         public LastTossQueryHandlerTest()
         {
-            tossTemplate = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
+            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
 
         }
 
@@ -27,7 +28,7 @@ namespace Toss.Tests.Server.Models.Tosses
         {
             for (int i = 0; i < 60; i++)
             {
-                await tossTemplate.Insert(new TossEntity()
+                await _session.StoreAsync(new TossEntity()
                 {
                     Content = "lorem #ipsum",
                     CreatedOn = new DateTime(2017, 12, 31).AddDays(-i),
@@ -47,14 +48,14 @@ namespace Toss.Tests.Server.Models.Tosses
 
             for (int i = 0; i < 3; i++)
             {
-                await tossTemplate.Insert(new TossEntity()
+                await _session.StoreAsync(new TossEntity()
                 {
                     Content = "lorem #ipsum #toto num" + i,
                     CreatedOn = DateTimeOffset.Now,
                     UserId = "usernametest"
                 });
             }
-            await tossTemplate.Insert(new TossEntity()
+            await _session.StoreAsync(new TossEntity()
             {
                 Content = "blabla #ipsum #tutu",
                 CreatedOn = DateTimeOffset.Now,

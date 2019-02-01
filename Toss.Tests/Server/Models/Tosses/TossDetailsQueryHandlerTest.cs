@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class TossDetailsQueryHandlerTest : BaseCosmosTest
+    public class TossDetailsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task returns_details_of_single_toss()

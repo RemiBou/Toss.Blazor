@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Shared.Tosses;
@@ -31,7 +31,7 @@ namespace Toss.Server.Models.Tosses
                     UserName = t.UserName,
                     Id = t.Id
                 })
-                .ToAsyncEnumerable().FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
     }
 }
