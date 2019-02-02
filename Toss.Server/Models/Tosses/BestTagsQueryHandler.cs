@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
@@ -37,8 +38,8 @@ namespace Toss.Server.Models.Tosses
                     CountLastMonth = t.Count(),
                     Tag = t.Key
                 })
-                .ToAsyncEnumerable()
-                .ToList();
+                
+                .ToListAsync();
         }
     }
 }

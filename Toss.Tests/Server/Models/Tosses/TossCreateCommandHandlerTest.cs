@@ -151,7 +151,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
-            await TestFixture.ChangeCurrentUser("test2");
+            await TestFixture.CreateNewUserIfNotExists("test2");
 
             await _mediator.Send(new TossCreateCommand()
             {

@@ -10,7 +10,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
+using Raven.Identity;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,6 +34,7 @@ namespace Toss.Tests.Infrastructure
         public static Mock<HttpRequest> HttpRequestMock { get; private set; }
         public static Mock<IHttpContextAccessor> HttpContextAccessor { get; set; }
         public static Mock<IActionContextAccessor> ActionContextAccessor { get; set; }
+        public static RavenDBTestDriver TestDriver { get; }
 
         static TestFixture()
         {
@@ -73,10 +76,13 @@ namespace Toss.Tests.Infrastructure
 
             ActionContextAccessor = new Mock<IActionContextAccessor>();
             ActionContextAccessor.SetupGet(a => a.ActionContext).Returns(new ActionContext(HttpContextMock.Object, new Microsoft.AspNetCore.Routing.RouteData(), new ActionDescriptor()));
-            var testDriver = new RavenDBTestDriver();
+            TestDriver = new RavenDBTestDriver();
 
-            testDriver.ConfigureService();
-            services.AddSingleton(testDriver.GetDocumentStore());
+            TestDriver.ConfigureService();
+            services.AddSingleton<IDocumentStore>(TestDriver.GetDocumentStore());
+            services
+                .AddRavenDbAsyncSession(TestDriver.GetDocumentStore())
+                .AddRavenDbIdentity<ApplicationUser>();
             services.AddSingleton(HttpContextAccessor.Object);
             services.AddSingleton(ActionContextAccessor.Object);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
@@ -88,24 +94,31 @@ namespace Toss.Tests.Infrastructure
 
         public async static Task CreateTestUser()
         {
-            await ChangeCurrentUser(TestFixture.UserName);
+            await CreateNewUserIfNotExists(TestFixture.UserName);
         }
 
-        public static async Task ChangeCurrentUser(string userName)
+        public static async Task CreateNewUserIfNotExists(string userName)
         {
             var userManager = _provider.GetService<UserManager<ApplicationUser>>();
-            ApplicationUser user = new ApplicationUser()
+            var existing = await userManager.FindByNameAsync(userName);
+            if (existing == null)
             {
-                UserName = userName,
-                Email = userName + "@yopmail.com",
-                EmailConfirmed = true
-            };
-            await userManager.CreateAsync(user);
+                ApplicationUser user = new ApplicationUser()
+                {
+                    UserName = userName,
+                    Email = userName + "@yopmail.com",
+                    EmailConfirmed = true
+                };
+                await userManager.CreateAsync(user);
+                TestFixture.TestDriver.WaitIndexing();
+
+                existing = user;
+            }
             ClaimPrincipal = new ClaimsPrincipal(
                       new ClaimsIdentity(new Claim[]
                          {
                                     new Claim(ClaimTypes.Name, userName),
-                                    new Claim(ClaimTypes.NameIdentifier, user.Id)
+                                    new Claim(ClaimTypes.NameIdentifier, existing.Id)
                          },
                       "Basic"));
             HttpContextMock.SetupGet(m => m.User).Returns(ClaimPrincipal);

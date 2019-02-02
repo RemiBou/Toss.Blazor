@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Toss.Server.Models.Tosses
 
         public async Task<TossListAdminItems> Handle(TossListAdminQuery request, CancellationToken cancellationToken)
         {
-            var count = await _session.Query<TossEntity>().ToAsyncEnumerable().Count();
+            var count = await _session.Query<TossEntity>().CountAsync();
             var query = _session.Query<TossEntity>().AsQueryable();
             if (request.MaxDate.HasValue)
                 query = query.Where(t => t.CreatedOn < request.MaxDate);

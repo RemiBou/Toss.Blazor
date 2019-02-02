@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
@@ -29,12 +30,12 @@ namespace Toss.Tests.Server.Models.Tosses
         {
             await _session.StoreAsync(new TossEntity("test content", "user test", DateTimeOffset.Now));
             await _session.StoreAsync(new TossEntity("test content2", "user test", DateTimeOffset.Now));
-            var allInsertedToss = await _session.Query<TossEntity>().ToAsyncEnumerable().ToList();
+            var allInsertedToss = await _session.Query<TossEntity>().ToListAsync();
 
             await _mediator.Send(new DeleteTossCommand(allInsertedToss.First().Id));
 
 
-            var allRemaining = await _session.Query<TossEntity>().ToAsyncEnumerable().ToList();
+            var allRemaining = await _session.Query<TossEntity>().ToListAsync();
             Assert.Single(allRemaining);
             Assert.Null(allRemaining.FirstOrDefault(t => t.Id == allInsertedToss.First().Id));
         }

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,8 +32,8 @@ namespace Toss.Server.Controllers
                      UserName = t.UserName
                  })
                 .Take(50)
-                .ToAsyncEnumerable()
-                .ToList();
+                
+                .ToListAsync();
         }
     }
 }

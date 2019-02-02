@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Server.Models.Account;
@@ -21,9 +21,8 @@ namespace Toss.Server.Models.Tosses
         public async Task Handle(AccountUserNameUpdated notification, CancellationToken cancellationToken)
         {
             var tosses = await _session.Query<TossEntity>()
-               .Where(t => t.UserId == notification.User.Id)
-               .ToAsyncEnumerable()
-               .ToList();
+               .Where(t => t.UserId == notification.User.Id)               
+               .ToListAsync();
             foreach (var item in tosses)
             {
                 item.UserName = notification.User.UserName;

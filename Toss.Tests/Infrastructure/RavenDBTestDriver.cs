@@ -9,7 +9,6 @@ namespace Toss.Tests.Infrastructure
         //This allows us to modify the conventions of the store we get from 'GetDocumentStore'
         protected override void PreInitialize(IDocumentStore documentStore)
         {
-            Console.WriteLine("Pre initialize");
             documentStore.Conventions.MaxNumberOfRequestsPerSession = 200;
         }
 
@@ -27,5 +26,9 @@ namespace Toss.Tests.Infrastructure
             return base.GetDocumentStore();
         }
 
+        public void WaitIndexing()
+        {
+             base.WaitForIndexing(GetDocumentStore());
+        }
     }
 }

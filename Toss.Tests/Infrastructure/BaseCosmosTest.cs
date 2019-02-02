@@ -30,6 +30,7 @@ namespace Toss.Tests.Infrastructure
             var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
             toDo(user);
             await _userManager.UpdateAsync(user);
+            TestFixture.TestDriver.WaitIndexing();
         }
 
         public async Task InitializeAsync()
