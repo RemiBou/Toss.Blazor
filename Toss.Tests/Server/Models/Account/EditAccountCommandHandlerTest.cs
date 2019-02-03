@@ -39,7 +39,7 @@ namespace Toss.Tests.Server.Models.Account
                 Email = "toto@yopmail.com"
             });
 
-            var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
+            var emailSender = serviceProviderInitializer.GetInstance<IEmailSender>() as FakeEmailSender;
             Assert.NotNull(emailSender.GetConfirmationLink("toto@yopmail.com"));
         }
 

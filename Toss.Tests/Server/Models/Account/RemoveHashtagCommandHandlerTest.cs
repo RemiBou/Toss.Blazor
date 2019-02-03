@@ -17,7 +17,7 @@ namespace Toss.Tests.Server.Models.Account
 
             Assert.True(res.IsSucess);
 
-            var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
 
             Assert.Empty(user.Hashtags);
         }

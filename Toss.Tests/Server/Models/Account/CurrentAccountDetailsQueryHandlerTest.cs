@@ -42,7 +42,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Details_when_user_has_no_password_return_HasPassword_to_false()
         {
-            var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             user.PasswordHash = null;
             await _userManager.UpdateAsync(user);
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());
@@ -53,7 +53,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Handle_when_user_has_role_admin_return_IsAdmin_true()
         {
-            var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             await _userManager.AddToRoleAsync(user, "Admin");
 
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());

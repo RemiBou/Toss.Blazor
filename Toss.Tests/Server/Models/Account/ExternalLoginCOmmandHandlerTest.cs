@@ -17,7 +17,7 @@ namespace Toss.Tests.Server.Models.Account
         {
             //Here we test at the UserManager level instead of the command level because signinmanager is hardly mockable in the case of 
             // external login
-            var _userManager = TestFixture.GetInstance<UserManager<ApplicationUser>>();
+         
             var user = new ApplicationUser
             {
                 UserName = "test",
@@ -29,7 +29,7 @@ namespace Toss.Tests.Server.Models.Account
 
             result = await _userManager.AddLoginAsync(user, info);
 
-            var externalLogin = await (TestFixture.GetInstance<IUserStore<ApplicationUser>>() as IUserLoginStore<ApplicationUser>).FindByLoginAsync("Google", "123456", new CancellationToken());
+            var externalLogin = await (serviceProviderInitializer.GetInstance<IUserStore<ApplicationUser>>() as IUserLoginStore<ApplicationUser>).FindByLoginAsync("Google", "123456", new CancellationToken());
 
             Assert.NotNull(externalLogin);
         }

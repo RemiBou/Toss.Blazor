@@ -26,7 +26,7 @@ namespace Toss.Tests.Server.Models.Account
                new AddHashtagCommand("toto"));
 
 
-            var user = await TestFixture.GetInstance<UserManager<ApplicationUser>>().GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             Assert.Contains("toto", user.Hashtags);
         }
 
@@ -39,7 +39,7 @@ namespace Toss.Tests.Server.Models.Account
             res = await _mediator.Send(
                 new AddHashtagCommand("toto"));
 
-            var user = await TestFixture.GetInstance<UserManager<ApplicationUser>>().GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             Assert.Contains("toto", user.Hashtags);
 
             Assert.False(res.IsSucess);

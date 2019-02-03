@@ -18,6 +18,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task AccountListQuery_maps_result()
         {
+
             var res = await _mediator.Send(new Toss.Shared.Account.AccountListQuery()
                 );
 

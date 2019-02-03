@@ -17,7 +17,7 @@ namespace Toss.Tests.Shared.Tosses
         private IAsyncDocumentSession _session;
         public TossListAdminQueryHandlerTest()
         {
-            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
+            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
         }
 
         [Fact]

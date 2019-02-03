@@ -21,7 +21,7 @@ namespace Toss.Tests.Server.Models.Tosses
 
         public DeleteTossCommandHandlerTest()
         {
-            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
+            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
 
         }
 

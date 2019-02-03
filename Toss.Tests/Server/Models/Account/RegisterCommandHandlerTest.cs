@@ -15,7 +15,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task cannot_register_if_captcha_fails()
         {
-            var validator = (FakeCaptchaValidator)TestFixture.GetInstance<ICaptchaValidator>();
+            var validator = (FakeCaptchaValidator)serviceProviderInitializer.GetInstance<ICaptchaValidator>();
             validator.NextResult = false;
             await Assert.ThrowsAsync<InvalidOperationException>(async () => await _mediator.Send(new RegisterCommand()
             {
@@ -29,7 +29,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task can_register_if_captcha_succeeds()
         {
-            var validator = (FakeCaptchaValidator)TestFixture.GetInstance<ICaptchaValidator>();
+            var validator = (FakeCaptchaValidator)serviceProviderInitializer.GetInstance<ICaptchaValidator>();
             validator.NextResult = true;
             var res = await _mediator.Send(new RegisterCommand()
             {
@@ -50,7 +50,7 @@ namespace Toss.Tests.Server.Models.Account
                 Email = "remibou@yopmail.com"
             });
             Assert.True(res.IsSucess, res.Errors != null ? string.Join(",", res.Errors.SelectMany(e => e.Value)) : "");
-            var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
+            var emailSender = serviceProviderInitializer.GetInstance<IEmailSender>() as FakeEmailSender;
             Assert.NotNull(emailSender.GetConfirmationLink("remibou@yopmail.com"));
         }
 

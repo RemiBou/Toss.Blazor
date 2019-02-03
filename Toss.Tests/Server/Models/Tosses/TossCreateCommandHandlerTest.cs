@@ -18,7 +18,7 @@ namespace Toss.Tests.Server.Models.Tosses
         private IAsyncDocumentSession _session;
         public TossCreateCommandHandlerTest()
         {
-            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
+            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
         }
         [Fact]
         public async Task create_setup_username_to_current_user()
@@ -31,8 +31,8 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var toss = _session.Query<TossEntity>().FirstOrDefault();
 
-            Assert.Equal(TestFixture.ClaimPrincipal.UserId(), toss.UserId);
-            Assert.Equal(TestFixture.ClaimPrincipal.Identity.Name, toss.UserName);
+            Assert.Equal(serviceProviderInitializer.ClaimPrincipal.UserId(), toss.UserId);
+            Assert.Equal(serviceProviderInitializer.ClaimPrincipal.Identity.Name, toss.UserName);
 
         }
         [Fact]
@@ -151,7 +151,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
-            await TestFixture.CreateNewUserIfNotExists("test2");
+            await CreateNewUserIfNotExists("test2");
 
             await _mediator.Send(new TossCreateCommand()
             {
@@ -230,7 +230,7 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var toss = _session.Query<TossEntity>().FirstOrDefault();
 
-            Assert.Equal(TestFixture.HttpContextMock.Object.Connection.RemoteIpAddress.ToString(), toss.UserIp);
+            Assert.Equal(serviceProviderInitializer.HttpContextMock.Object.Connection.RemoteIpAddress.ToString(), toss.UserIp);
 
         }
     }

@@ -19,7 +19,7 @@ namespace Toss.Tests.Server.Models.Tosses
         private IAsyncDocumentSession _session;
         public LastTossQueryHandlerTest()
         {
-            _session = TestFixture.GetInstance<IAsyncDocumentSession>();
+            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
 
         }
 
@@ -97,7 +97,7 @@ namespace Toss.Tests.Server.Models.Tosses
 
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });
-            Assert.Equal(TestFixture.UserName, tosses.First().UserName);
+            Assert.Equal(serviceProviderInitializer.UserName, tosses.First().UserName);
         }
     }
 }
