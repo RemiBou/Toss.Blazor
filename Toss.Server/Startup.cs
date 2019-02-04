@@ -62,9 +62,9 @@ namespace Toss.Server
                 Database = "Toss"
             }.Initialize();
             services.AddSingleton(store);
+            services.AddScoped<IAsyncDocumentSession>((s) => s.GetService<IDocumentStore>().OpenAsyncSession());
 
             services
-                .AddRavenDbAsyncSession(store)
                 .AddRavenDbIdentity<ApplicationUser>();
 
             services.AddHttpContextAccessor();
@@ -168,6 +168,13 @@ namespace Toss.Server
             app.UseStaticFiles();
 
             app.UseAuthentication();
+
+            // will always save the current raven session after the mvc middleware
+            app.Use(async (context, next) =>
+             {
+                 await next();
+                 await app.ApplicationServices.GetService<IAsyncDocumentSession>().SaveChangesAsync();
+             });
 
             app.UseMvc(routes =>
             {

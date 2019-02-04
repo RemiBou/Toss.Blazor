@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Raven.Client.Documents.Session;
+using Raven.Client.Documents;
 using System;
 using System.Linq;
 using System.Threading;
@@ -25,7 +26,7 @@ namespace Toss.Server.Models.Tosses
 
         public async Task<TossLastQueryItem> Handle(SponsoredTossQuery request, CancellationToken cancellationToken)
         {
-            var resCollection = _session.Query<TossEntity>()
+            var resCollection = (await _session.Query<TossEntity>()
                 .OfType<SponsoredTossEntity>()
                 .Where(s => s.Tags.Contains(request.Hashtag))
                 .Where(s => s.DisplayedCount > 0)
@@ -36,9 +37,9 @@ namespace Toss.Server.Models.Tosses
                     Id = t.Id,
                     UserName = t.UserId
                 })
-                .AsEnumerable()
-                .ToLookup(t => t.UserName)
-                .ToArray();
+                .ToListAsync())
+                  .ToLookup(t => t.UserName)
+                  .ToArray();
             if (!resCollection.Any())
                 return null;
             var index = random.NewRandom(resCollection.Length - 1);

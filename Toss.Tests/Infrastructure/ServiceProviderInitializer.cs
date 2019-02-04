@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Raven.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Toss.Server;
@@ -47,7 +48,6 @@ namespace Toss.Tests.Infrastructure
                  { "test", "true"},
                  { "dataBaseName", ""}
             };
-
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(dict)
                 .AddEnvironmentVariables()
@@ -56,7 +56,10 @@ namespace Toss.Tests.Infrastructure
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
-
+            services.AddSingleton(documentStore);
+            services
+                .AddRavenDbAsyncSession(documentStore)
+                .AddRavenDbIdentity<ApplicationUser>();
             InitMockHttpServices(services);
             services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
             services.AddScoped(typeof(ILogger<>), typeof(Logger<>));

@@ -93,7 +93,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 Content = "blabla bla bla bla bla #test"
 
             });
-
+            
 
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });

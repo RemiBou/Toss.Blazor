@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Raven.Client.Documents.Session;
 using Raven.TestDriver;
 using System;
 using System.Security.Claims;
@@ -22,16 +23,15 @@ namespace Toss.Tests.Infrastructure
         public BaseTest()
         {
             serviceProviderInitializer = new ServiceProviderInitializer();
-            ConfigureServer(new TestServerOptions());
             serviceProviderInitializer.BuildServiceProvider(this.GetDocumentStore(new GetDocumentStoreOptions()
             {
                 WaitForIndexingTimeout = TimeSpan.FromSeconds(60)
             },
-            database:"Toss"));
+            database: "Toss"));
             _mediator = serviceProviderInitializer.GetInstance<IMediator>();
             _userManager = serviceProviderInitializer.GetInstance<UserManager<ApplicationUser>>();
         }
-        
+
 
 
         protected async Task EditCurrentUser(Action<ApplicationUser> toDo)
@@ -41,6 +41,17 @@ namespace Toss.Tests.Infrastructure
             await _userManager.UpdateAsync(user);
         }
 
+        protected async Task SaveAndWait()
+        {
+            base.WaitForIndexing(GetDocumentStore());
+            await GetSession().SaveChangesAsync();
+        }
+
+        protected IAsyncDocumentSession GetSession()
+        {
+            return serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
+
+        }
 
         public async Task InitializeAsync()
         {

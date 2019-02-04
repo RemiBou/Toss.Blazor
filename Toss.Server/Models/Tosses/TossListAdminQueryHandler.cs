@@ -26,7 +26,7 @@ namespace Toss.Server.Models.Tosses
             var query = _session.Query<TossEntity>().AsQueryable();
             if (request.MaxDate.HasValue)
                 query = query.Where(t => t.CreatedOn < request.MaxDate);
-            var items = query
+            var items = await query
                  .Take(request.ItemCount)
                  .Select(t => new TossListAdminItem()
                  {
@@ -35,7 +35,7 @@ namespace Toss.Server.Models.Tosses
                      Id = t.Id,
                      UserName = t.UserId
                  })
-                 .ToList();
+                 .ToListAsync();
             return new TossListAdminItems(items, count);
         }
     }
