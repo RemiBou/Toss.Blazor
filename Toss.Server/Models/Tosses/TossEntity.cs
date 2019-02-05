@@ -4,20 +4,7 @@ using System.Collections.Generic;
 
 namespace Toss.Server.Data
 {
-    public abstract class CosmosDBEntity
-    {
-        [Newtonsoft.Json.JsonProperty(PropertyName = "id")]
-        public string Id { get; set; }
-        public string Type { get {
-                if (string.IsNullOrEmpty(_type))
-                {
-                    _type = this.GetType().Name;
-                }
-                return _type; } set => _type = value; }
-
-        private string _type;
-    }
-    public class TossEntity : CosmosDBEntity
+    public class TossEntity : RavenDBDocument
     {
         public string Content { get; set; }
         public string UserId { get; set; }

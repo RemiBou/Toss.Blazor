@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Indexes;
 using Raven.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
@@ -56,7 +58,11 @@ namespace Toss.Tests.Infrastructure
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
-            services.AddSingleton(documentStore);
+            services.AddSingleton<IDocumentStore>(s =>
+            {
+                IndexCreation.CreateIndexes(typeof(Startup).Assembly, documentStore);
+                return documentStore;
+            });
             services
                 .AddRavenDbAsyncSession(documentStore)
                 .AddRavenDbIdentity<ApplicationUser>();

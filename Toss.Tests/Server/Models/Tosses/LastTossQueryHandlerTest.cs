@@ -61,8 +61,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 CreatedOn = DateTimeOffset.Now,
                 UserId = "usernametest"
             });
-
-
+            await SaveAndWait();
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
             Assert.Equal(3, tosses.Count());
@@ -93,7 +92,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 Content = "blabla bla bla bla bla #test"
 
             });
-            
+
 
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });

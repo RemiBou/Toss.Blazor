@@ -32,6 +32,7 @@ using System.Net.Http;
 using Raven.Identity;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
+using Raven.Client.Documents.Indexes;
 
 namespace Toss.Server
 {
@@ -56,12 +57,17 @@ namespace Toss.Server
                 });
             });
 
-            IDocumentStore store = new DocumentStore()
+
+            services.AddSingleton<IDocumentStore>(s =>
             {
-                Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
-                Database = "Toss"
-            }.Initialize();
-            services.AddSingleton(store);
+                IDocumentStore store = new DocumentStore()
+                {
+                    Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
+                    Database = "Toss"
+                }.Initialize();
+                IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
+                return store;
+            });
             services.AddScoped<IAsyncDocumentSession>((s) => s.GetService<IDocumentStore>().OpenAsyncSession());
 
             services

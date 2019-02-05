@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Server.Data.Indexes;
 using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
@@ -27,18 +28,15 @@ namespace Toss.Server.Models.Tosses
         {
             var firstDay = _now.Get().AddDays(-30);
             return await _session
-                .Query<TossEntity>()
+                .Query<TagByDayIndex>()
                 .Where(i => i.CreatedOn >= firstDay)
-                .SelectMany(t => t.Tags)
-                .GroupBy(t => t)
-                .OrderByDescending(t => t.Count())
+                .OrderByDescending(t => t.Count)
                 .Take(50)
                 .Select(t => new BestTagsResult()
                 {
-                    CountLastMonth = t.Count(),
-                    Tag = t.Key
+                    CountLastMonth = t.Count,
+                    Tag = t.Tag
                 })
-                
                 .ToListAsync();
         }
     }

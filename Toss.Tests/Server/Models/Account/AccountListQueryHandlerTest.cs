@@ -19,8 +19,7 @@ namespace Toss.Tests.Server.Models.Account
         public async Task AccountListQuery_maps_result()
         {
 
-            var res = await _mediator.Send(new Toss.Shared.Account.AccountListQuery()
-                );
+            var res = await _mediator.Send(new Toss.Shared.Account.AccountListQuery());
 
             var first = res.FirstOrDefault();
             Assert.Equal("username", first.UserName);

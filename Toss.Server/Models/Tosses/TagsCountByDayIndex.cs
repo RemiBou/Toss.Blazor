@@ -4,15 +4,16 @@ using Toss.Server.Data;
 
 namespace Toss.Server.Models.Tosses
 {
-    public class TagByDayIndex : CosmosDBEntity
+    public class TagByDayIndex
     {
-        public TagByDayIndex(string tag, DateTimeOffset createdOn)
+        public TagByDayIndex()
         {
-            Tag = tag;
-            CreatedOn = createdOn;
         }
 
         public string Tag { get; set; }
-        public DateTimeOffset CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public int Count { get; set; }
+
+
     }
 }
