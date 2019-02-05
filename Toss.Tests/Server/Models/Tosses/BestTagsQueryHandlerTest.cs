@@ -21,6 +21,7 @@ namespace Toss.Tests.Server.Models.Tosses
                        Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test"
                    });
 
+            await SaveAndWait();
             var res = await _mediator.Send(new BestTagsQuery());
 
             var single = Assert.Single(res);
@@ -81,7 +82,6 @@ namespace Toss.Tests.Server.Models.Tosses
                    });
             }
             await SaveAndWait();
-
             FakeNow.Current = DateTimeOffset.Now;
             var res = await _mediator.Send(new BestTagsQuery());
 

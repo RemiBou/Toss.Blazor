@@ -28,16 +28,20 @@ namespace Toss.Server.Models.Tosses
         {
             var firstDay = _now.Get().AddDays(-30);
            
-            return await _session
+            return (await _session
                 .Query<TagByDayIndex, Toss_TagPerDay>()
                 .Where(i => i.CreatedOn >= firstDay)
+                .ToListAsync())
+                //this needs has to be handled server side or at least cached
                 .GroupBy(i => i.Tag)
+                .OrderByDescending(g => g.Sum(i => i.Count))
+                .Take(50)
                 .Select(t => new BestTagsResult()
                 {
-                    CountLastMonth = t.Count(),
+                    CountLastMonth = t.Sum(i => i.Count),
                     Tag = t.Key
                 })
-                .ToListAsync();
+                .ToList();
         }
     }
 }
