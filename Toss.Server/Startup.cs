@@ -64,14 +64,26 @@ namespace Toss.Server
                 IDocumentStore store = new DocumentStore()
                 {
                     Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
-                    Database = "Toss"
-                }.Initialize();
-                InitStore(store);
+                    Database = Configuration.GetValue<string>("RavenDBDataBase")
+                };
+                store.Conventions.FindCollectionName = type =>
+                {
+                    if (typeof(TossEntity).IsAssignableFrom(type))
+                    {
+
+                        return "TossEntity";
+                    }
+
+                    return DocumentConventions.DefaultGetCollectionName(type);
+                };
+                store.Initialize();
+                IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
+                store.Initialize();
                 return store;
             });
-            services.AddScoped<IAsyncDocumentSession>((s) => s.GetService<IDocumentStore>().OpenAsyncSession());
 
             services
+                .AddRavenDbAsyncSession()
                 .AddRavenDbIdentity<ApplicationUser>();
 
             services.AddHttpContextAccessor();
@@ -129,23 +141,7 @@ namespace Toss.Server
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
         }
-
-        public static void InitStore(IDocumentStore store)
-        {
-            Console.WriteLine("InitStore");
-            store.Conventions.FindCollectionName = type =>
-                        {
-                            if (typeof(TossEntity).IsAssignableFrom(type))
-                            {
-                                Console.WriteLine("TOSS ENTITY from " + type);
-                                return "TossEntity";
-                            }
-                            Console.WriteLine("NOT TOSS ENTITY from " + type);
-                            return DocumentConventions.DefaultGetCollectionName(type);
-                        };
-            IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
-        }
-
+        
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {

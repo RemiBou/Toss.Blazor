@@ -56,6 +56,7 @@ namespace Toss.Tests.Server.Models.Tosses
                       });
                 }
             }
+            await SaveAndWait();
             var res = await _mediator.Send(new BestTagsQuery());
             Assert.Equal(50, res.Count);
             for (int i = 6; i <= 55; i++)
@@ -79,6 +80,8 @@ namespace Toss.Tests.Server.Models.Tosses
                        Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test"
                    });
             }
+            await SaveAndWait();
+
             FakeNow.Current = DateTimeOffset.Now;
             var res = await _mediator.Send(new BestTagsQuery());
 

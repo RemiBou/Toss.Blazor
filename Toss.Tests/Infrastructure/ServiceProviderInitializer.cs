@@ -48,6 +48,7 @@ namespace Toss.Tests.Infrastructure
                  { "MailJetApiSecret", ""},
                  { "MailJetSender", ""},
                  { "RavenDBEndpoint",documentStore.Urls[0]},
+                 {"RavenDBDataBase",documentStore.Database },
                  { "StripeSecretKey", ""},
                  { "test", "true"},
                  { "dataBaseName", ""}
@@ -60,20 +61,18 @@ namespace Toss.Tests.Infrastructure
             var startup = new Startup(config);
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
-            services.AddSingleton<IDocumentStore>(s =>
-            {
-                Startup.InitStore(documentStore);
-                return documentStore;
-            });
-            services
-                .AddRavenDbAsyncSession(documentStore)
-                .AddRavenDbIdentity<ApplicationUser>();
+
             InitMockHttpServices(services);
-            services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
-            services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
+            InitLogger(services);
 
             _provider = services.BuildServiceProvider();
 
+        }
+
+        private static void InitLogger(ServiceCollection services)
+        {
+            services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
+            services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
         }
 
         private void InitMockHttpServices(ServiceCollection services)

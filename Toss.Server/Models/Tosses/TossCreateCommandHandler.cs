@@ -21,11 +21,13 @@ namespace Toss.Server.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private IStripeClient stripeClient;
         private IMediator mediator;
+        private readonly INow now;
 
         public TossCreateCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager,
-            IMediator mediator)
+            IMediator mediator, INow now)
         {
             this.mediator = mediator;
+            this.now = now;
             _session = session;
             _httpContextAccessor = httpContextAccessor;
             this.stripeClient = stripeClient;
@@ -40,12 +42,12 @@ namespace Toss.Server.Controllers
                 toss = new TossEntity(
                     command.Content,
                     user.UserId(),
-                    DateTimeOffset.Now);
+                    now.Get());
             else
                 toss = new SponsoredTossEntity(
                     command.Content,
                     user.UserId(),
-                    DateTimeOffset.Now,
+                    now.Get(),
                     command.SponsoredDisplayedCount.Value);
             toss.UserName = user.Identity.Name;
             var matchCollection = TossCreateCommand.TagRegex.Matches(toss.Content);

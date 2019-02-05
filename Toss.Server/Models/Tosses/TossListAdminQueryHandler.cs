@@ -33,7 +33,7 @@ namespace Toss.Server.Models.Tosses
                      Content = t.Content,
                      CreatedOn = t.CreatedOn,
                      Id = t.Id,
-                     UserName = t.UserId
+                     UserName = t.UserName
                  })
                  .ToListAsync();
             return new TossListAdminItems(items, count);

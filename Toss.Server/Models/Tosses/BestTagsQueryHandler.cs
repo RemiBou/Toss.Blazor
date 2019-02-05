@@ -27,15 +27,15 @@ namespace Toss.Server.Models.Tosses
         public async Task<List<BestTagsResult>> Handle(BestTagsQuery request, CancellationToken cancellationToken)
         {
             var firstDay = _now.Get().AddDays(-30);
+           
             return await _session
-                .Query<TagByDayIndex>()
+                .Query<TagByDayIndex, Toss_TagPerDay>()
                 .Where(i => i.CreatedOn >= firstDay)
-                .OrderByDescending(t => t.Count)
-                .Take(50)
+                .GroupBy(i => i.Tag)
                 .Select(t => new BestTagsResult()
                 {
-                    CountLastMonth = t.Count,
-                    Tag = t.Tag
+                    CountLastMonth = t.Count(),
+                    Tag = t.Key
                 })
                 .ToListAsync();
         }

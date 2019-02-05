@@ -8,12 +8,14 @@ namespace Toss.Server.Data.Indexes
     {
         public Toss_TagPerDay()
         {
+            
             Map = tosses => from toss in tosses
                             from tag in toss.Tags
                             select new TagByDayIndex()
                             {
                                 Tag = tag,
-                                CreatedOn = toss.CreatedOn.Date
+                                CreatedOn = toss.CreatedOn.Date,
+                                Count = 1
                             };
             Reduce = results => from result in results
                                 group result by new { result.Tag, result.CreatedOn }
@@ -22,7 +24,7 @@ namespace Toss.Server.Data.Indexes
                                 {
                                     Tag = g.Key.Tag,
                                     CreatedOn = g.Key.CreatedOn,
-                                    Count = g.Count()
+                                    Count = g.Sum(i => i.Count)
                                 };
         }
     }

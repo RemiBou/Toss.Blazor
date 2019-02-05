@@ -133,14 +133,16 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
+            await SaveAndWait();
 
             for (int i = 0; i < 10; i++)
             {
                 var res = await _mediator.Send(new SponsoredTossQuery("toto"));
-
+               
                 Assert.NotNull(res);
                 Assert.Equal("lorem ipsum erzer zer zer ze rze rezr zer #toto", res.Content);
             }
+            await SaveAndWait();
 
             var resNull = await _mediator.Send(new SponsoredTossQuery("toto"));
 

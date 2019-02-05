@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Toss.Server.Models;
 using Toss.Server.Models.Account;
 using Toss.Shared;
 using Toss.Shared.Account;
@@ -54,8 +55,8 @@ namespace Toss.Tests.Server.Models.Account
         public async Task Handle_when_user_has_role_admin_return_IsAdmin_true()
         {
             var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
-            await _userManager.AddToRoleAsync(user, "Admin");
-
+            await _userManager.AddToRoleAsync(user, ApplicationUser.AdminRole);
+            await SaveAndWait();
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());
 
             Assert.True(res.IsAdmin);

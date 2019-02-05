@@ -18,13 +18,13 @@ namespace Toss.Tests.Server.Models.Account
         public async Task when_edit_user_name_change_user_name_on_previously_posted_toss()
         {
             await _mediator.Send(new TossCreateCommand("bla bla bla bla bla #test"));
-
+            await SaveAndWait();
             await _mediator.Send(new EditAccountCommand()
             {
                 Email = "username@yopmil.com",
                 Name = "tutu"
             });
-
+            await SaveAndWait();
             var res = await _mediator.Send(new TossLastQuery("test"));
 
             Assert.Equal("tutu", res.First().UserName);

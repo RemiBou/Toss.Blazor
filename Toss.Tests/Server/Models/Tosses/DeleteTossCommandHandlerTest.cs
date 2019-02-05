@@ -30,9 +30,13 @@ namespace Toss.Tests.Server.Models.Tosses
         {
             await _session.StoreAsync(new TossEntity("test content", "user test", DateTimeOffset.Now));
             await _session.StoreAsync(new TossEntity("test content2", "user test", DateTimeOffset.Now));
+            await SaveAndWait();
+
             var allInsertedToss = await _session.Query<TossEntity>().ToListAsync();
 
             await _mediator.Send(new DeleteTossCommand(allInsertedToss.First().Id));
+            await SaveAndWait();
+
 
 
             var allRemaining = await _session.Query<TossEntity>().ToListAsync();

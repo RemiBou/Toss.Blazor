@@ -7,6 +7,7 @@ using Raven.TestDriver;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Toss.Server;
 using Toss.Server.Models;
 using Xunit;
 
@@ -35,7 +36,7 @@ namespace Toss.Tests.Infrastructure
             _userManager = serviceProviderInitializer.GetInstance<UserManager<ApplicationUser>>();
         }
 
-
+    
 
         protected async Task EditCurrentUser(Action<ApplicationUser> toDo)
         {
@@ -48,7 +49,7 @@ namespace Toss.Tests.Infrastructure
         {
 
             await GetSession().SaveChangesAsync();
-            base.WaitForIndexing(GetDocumentStore());
+            base.WaitForIndexing(documentStore);
         }
 
         protected IAsyncDocumentSession GetSession()
