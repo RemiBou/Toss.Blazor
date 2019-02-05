@@ -46,8 +46,9 @@ namespace Toss.Tests.Infrastructure
 
         protected async Task SaveAndWait()
         {
-            base.WaitForIndexing(GetDocumentStore());
+
             await GetSession().SaveChangesAsync();
+            base.WaitForIndexing(GetDocumentStore());
         }
 
         protected IAsyncDocumentSession GetSession()

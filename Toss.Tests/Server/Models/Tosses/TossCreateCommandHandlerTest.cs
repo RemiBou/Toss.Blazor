@@ -83,7 +83,6 @@ namespace Toss.Tests.Server.Models.Tosses
             await SaveAndWait();
 
             var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
-
             Assert.NotNull(toss);
             var sponsored = Assert.IsAssignableFrom<SponsoredTossEntity>(toss);
             Assert.Equal(1000, sponsored.DisplayedCount);
@@ -167,7 +166,6 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
-
             await SaveAndWait();
 
             RandomFake.NextResults.Enqueue(0);//first user selection
@@ -176,9 +174,11 @@ namespace Toss.Tests.Server.Models.Tosses
             RandomFake.NextResults.Enqueue(0);//second toss selection
 
             var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("user 1", res.Content);
 
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("user 2", res.Content);
         }
 
@@ -208,10 +208,12 @@ namespace Toss.Tests.Server.Models.Tosses
             await SaveAndWait();
 
             var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("toss no 1", res.Content);
 
 
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("toss no 2", res.Content);
         }
 

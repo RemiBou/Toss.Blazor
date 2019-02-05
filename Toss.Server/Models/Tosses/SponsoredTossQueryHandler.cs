@@ -26,8 +26,7 @@ namespace Toss.Server.Models.Tosses
 
         public async Task<TossLastQueryItem> Handle(SponsoredTossQuery request, CancellationToken cancellationToken)
         {
-            var resCollection = (await _session.Query<TossEntity>()
-                .OfType<SponsoredTossEntity>()
+            var resCollection = (await _session.Query<SponsoredTossEntity>()
                 .Where(s => s.Tags.Contains(request.Hashtag))
                 .Where(s => s.DisplayedCount > 0)
                 .Select(t => new TossLastQueryItem()

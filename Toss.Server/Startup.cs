@@ -33,6 +33,7 @@ using Raven.Identity;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Indexes;
+using Raven.Client.Documents.Conventions;
 
 namespace Toss.Server
 {
@@ -58,14 +59,14 @@ namespace Toss.Server
             });
 
 
-            services.AddSingleton<IDocumentStore>(s =>
+            services.AddSingleton(s =>
             {
                 IDocumentStore store = new DocumentStore()
                 {
                     Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
                     Database = "Toss"
                 }.Initialize();
-                IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
+                InitStore(store);
                 return store;
             });
             services.AddScoped<IAsyncDocumentSession>((s) => s.GetService<IDocumentStore>().OpenAsyncSession());
@@ -128,6 +129,23 @@ namespace Toss.Server
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
         }
+
+        public static void InitStore(IDocumentStore store)
+        {
+            Console.WriteLine("InitStore");
+            store.Conventions.FindCollectionName = type =>
+                        {
+                            if (typeof(TossEntity).IsAssignableFrom(type))
+                            {
+                                Console.WriteLine("TOSS ENTITY from " + type);
+                                return "TossEntity";
+                            }
+                            Console.WriteLine("NOT TOSS ENTITY from " + type);
+                            return DocumentConventions.DefaultGetCollectionName(type);
+                        };
+            IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
+        }
+
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {
