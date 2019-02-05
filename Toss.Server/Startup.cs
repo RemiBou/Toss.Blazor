@@ -78,12 +78,12 @@ namespace Toss.Server
                 };
                 store.Initialize();
                 IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
-                store.Initialize();
                 return store;
             });
 
+            services.AddScoped<IAsyncDocumentSession>(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
+
             services
-                .AddRavenDbAsyncSession()
                 .AddRavenDbIdentity<ApplicationUser>();
 
             services.AddHttpContextAccessor();
@@ -190,11 +190,11 @@ namespace Toss.Server
             app.UseAuthentication();
 
             // will always save the current raven session after the mvc middleware
-            app.Use(async (context, next) =>
+            /*app.Use(async (context, next) =>
              {
                  await next();
-                 await app.ApplicationServices.GetService<IAsyncDocumentSession>().SaveChangesAsync();
-             });
+                 await app.ApplicationServices.GetRequiredService<IAsyncDocumentSession>().SaveChangesAsync();
+             });*/
 
             app.UseMvc(routes =>
             {

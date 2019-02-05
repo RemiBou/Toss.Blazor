@@ -2,8 +2,6 @@
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using Toss.Server.Services;
-using Toss.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,9 +18,8 @@ namespace Toss.Tests.E2E
         public E2ETest(
             BrowserFixture browserFixture,
             AspNetSiteServerFixture serverFixture,
-            CosmosDBFixture cosmosDBFixture,
             ITestOutputHelper output)
-            : base(browserFixture, serverFixture,cosmosDBFixture, output)
+            : base(browserFixture, serverFixture, output)
         {
             Navigate("/", noReload: true);
             WaitUntilLoaded();
