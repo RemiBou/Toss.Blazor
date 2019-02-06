@@ -34,6 +34,7 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Conventions;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Toss.Server
 {
@@ -122,7 +123,12 @@ namespace Toss.Server
                     o.ClientId = Configuration["GoogleClientId"];
                     o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc(
+                options =>
+                {
+                    options.Filters.Add<SampleAsyncActionFilter>();
+                }
+                ).AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 });
@@ -189,12 +195,7 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
-            // will always save the current raven session after the mvc middleware
-            /*app.Use(async (context, next) =>
-             {
-                 await next();
-                 await app.ApplicationServices.GetRequiredService<IAsyncDocumentSession>().SaveChangesAsync();
-             });*/
+         
 
             app.UseMvc(routes =>
             {
@@ -206,6 +207,26 @@ namespace Toss.Server
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
 
             app.UseBlazor<Toss.Client.Program>();
+        }
+    }
+
+    public class SampleAsyncActionFilter : IAsyncActionFilter
+    {
+        private IAsyncDocumentSession session;
+
+        public SampleAsyncActionFilter(IAsyncDocumentSession session)
+        {
+            this.session = session;
+        }
+
+        public async Task OnActionExecutionAsync(
+            ActionExecutingContext context,
+            ActionExecutionDelegate next)
+        {
+            // do something before the action executes
+            var resultContext = await next();
+            // do something after the action executes; resultContext.Result will be set
+            await this.session.SaveChangesAsync();
         }
     }
 }
