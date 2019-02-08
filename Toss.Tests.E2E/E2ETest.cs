@@ -10,7 +10,7 @@ namespace Toss.Tests.E2E
     public class E2ETest : ServerTestBase
     {
         private readonly WebDriverWait _webDriveWaitDefault;
-        private const int DefaultWaitSecondsForPageChange = 20;
+        private const int DefaultWaitSecondsForPageChange = 30;
         private const string SubscribeEmail = "toss-unittests@yopmail.com";
         private const string SubscribePassword = "tossUnittests123456!!";
         private const string SubscribeLogin = "tossunittests";
