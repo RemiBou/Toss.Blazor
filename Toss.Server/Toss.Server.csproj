@@ -19,7 +19,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.Server" Version="3.0.0-preview-19075-0444"/>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview-19075-0444"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0"/>
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="3.0.0-preview-19075-0444"/>
   </ItemGroup>
 
   <ItemGroup>

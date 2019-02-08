@@ -70,11 +70,7 @@ namespace Toss.Tests.E2E
             Host = CreateWebHost();
             RunInBackgroundThread(Host.Start);
             EmailSender = Host.Services.GetService(typeof(IEmailSender)) as FakeEmailSender;
-            return Toss.Server.Program
-                .WebHostBuilder
-                .ServerFeatures
-                .Get<IServerAddressesFeature>()
-                .Addresses.Single();
+            return "http://localhost:8080";
         }
 
         public new void Dispose()
@@ -116,7 +112,7 @@ namespace Toss.Tests.E2E
             }
             return Toss.Server.Program.BuildWebHost(new[]
             {
-                "--urls", "http://127.0.0.1:0",
+                "--urls", "http://127.0.0.1:8080",
                 "--contentroot", sampleSitePath,
                 "--environment", "development"
             }).Build();

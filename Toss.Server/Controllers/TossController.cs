@@ -40,9 +40,9 @@ namespace Toss.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet, AllowAnonymous]
-        public async Task<IActionResult> Last([FromQuery] TossLastQuery hashTag)
+        public async Task<IActionResult> Last([FromQuery] TossLastQuery query)
         {
-            var result = await _mediator.Send(hashTag);
+            var result = await _mediator.Send(query);
             return base.Ok(result);
         }
 

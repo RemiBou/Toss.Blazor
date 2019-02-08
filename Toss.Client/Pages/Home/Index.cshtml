@@ -115,7 +115,7 @@
         if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
         Loading = true;
-        await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
+        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag)
             .OnOK<List<TossLastQueryItem>>(l =>
             {
                 Tosses = l;
