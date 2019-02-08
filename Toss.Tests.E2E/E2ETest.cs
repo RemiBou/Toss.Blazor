@@ -105,18 +105,6 @@ namespace Toss.Tests.E2E
                     Output.WriteLine(entry.Level + " - " + entry.Message);
                 }
                 Output.WriteLine("/End Browser logs");
-                Output.WriteLine("Client logs: ");
-                foreach (var entry in Browser.Manage().Logs.GetLog(LogType.Client))
-                {
-                    Output.WriteLine(entry.Level + " - " + entry.Message);
-                }
-                Output.WriteLine("/End Client logs");
-                Output.WriteLine("Server logs: ");
-                foreach (var entry in Browser.Manage().Logs.GetLog(LogType.Server))
-                {
-                    Output.WriteLine(entry.Level + " - " + entry.Message);
-                }
-                Output.WriteLine("/End Server logs");
                 (Browser as ITakesScreenshot).GetScreenshot().SaveAsFile("./screenshot.png");
                 throw;
             }
