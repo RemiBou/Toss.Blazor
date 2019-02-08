@@ -6,25 +6,32 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace Toss.Server
 {
     public class Program
     {
+        /*
+        Needed by E2E tests
+         */
+        public static IWebHostBuilder WebHostBuilder { get; private set; }
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildWebHost(args).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseConfiguration(new ConfigurationBuilder()
-                    .AddCommandLine(args)
-                    .AddEnvironmentVariables()
-                    .AddUserSecrets<Startup>()
-                    .Build())
-                .UseStartup<Startup>()
-                .Build();
+        public static IHostBuilder BuildWebHost(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseConfiguration(new ConfigurationBuilder()
+                        .AddCommandLine(args)
+                        .AddEnvironmentVariables()
+                        .AddUserSecrets<Startup>()
+                        .Build())
+                    .UseStartup<Startup>();
+                });
     }
 }

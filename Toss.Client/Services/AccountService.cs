@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.Services;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace Toss.Client.Services
         /// </summary>
         /// <returns></returns>
         public async Task<AccountViewModel> CurrentAccount()
-        {            
+        {
             AccountViewModel account = null;
             await http.Create("/api/account/details")
               .OnOK<AccountViewModel>((a) => account = a)

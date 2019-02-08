@@ -1,40 +1,33 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using System.Net.Mime;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Blazor.Server;
-using System.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Toss.Server.Data;
 using MediatR;
 using Toss.Server.Services;
 using Toss.Shared.Account;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
 using Toss.Server.Models;
 using Toss.Server.Extensions;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using Microsoft.AspNetCore.Identity;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Rewrite;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using System.Text;
 using System.Net.Http;
 using Raven.Identity;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Conventions;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Toss.Server
 {
@@ -50,14 +43,7 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression(options =>
-            {
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
-                {
-                    MediaTypeNames.Application.Octet,
-                    WasmMediaTypeNames.Application.Wasm,
-                });
-            });
+            services.AddResponseCompression();
 
 
             services.AddSingleton(s =>
@@ -131,11 +117,11 @@ namespace Toss.Server
                 ).AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                });
+                }).AddNewtonsoftJson();
             services.ConfigureApplicationCookie(options =>
                 {
-                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
-                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
                 });
             services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
@@ -147,13 +133,13 @@ namespace Toss.Server
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
         }
-        
-        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+
+        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(int statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {
                 if (context.Request.Path.StartsWithSegments("/api"))
                 {
-                    context.Response.StatusCode = (int)statusCode;
+                    context.Response.StatusCode = statusCode;
                     return Task.CompletedTask;
                 }
                 return existingRedirector(context);
@@ -195,7 +181,7 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
-         
+
 
             app.UseMvc(routes =>
             {
@@ -205,7 +191,7 @@ namespace Toss.Server
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
-
+            app.UseBlazorDebugging();
             app.UseBlazor<Toss.Client.Program>();
         }
     }

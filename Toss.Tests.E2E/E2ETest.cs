@@ -102,7 +102,7 @@ namespace Toss.Tests.E2E
                 Output.WriteLine("Browser logs: ");
                 foreach (var entry in Browser.Manage().Logs.GetLog(LogType.Browser))
                 {
-                    Output.WriteLine(entry.Level + " - " + entry.Message);
+                    Output.WriteLine(entry.Timestamp + " - " + entry.Level + " - " + entry.Message);
                 }
                 Output.WriteLine("/End Browser logs");
                 (Browser as ITakesScreenshot).GetScreenshot().SaveAsFile("./screenshot.png");

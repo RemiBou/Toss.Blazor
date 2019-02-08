@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Hosting;
 using Raven.Client.Documents;
 using Raven.TestDriver;
 using Toss.Client;
@@ -18,7 +19,7 @@ namespace Toss.Tests.E2E
         public FakeEmailSender EmailSender { get; private set; }
         public Uri RootUri => _rootUriInitializer.Value;
 
-        public IWebHost Host { get; set; }
+        public IHost Host { get; set; }
 
         private readonly Lazy<Uri> _rootUriInitializer;
         private IDocumentStore documentStore;
@@ -69,7 +70,9 @@ namespace Toss.Tests.E2E
             Host = CreateWebHost();
             RunInBackgroundThread(Host.Start);
             EmailSender = Host.Services.GetService(typeof(IEmailSender)) as FakeEmailSender;
-            return Host.ServerFeatures
+            return Toss.Server.Program
+                .WebHostBuilder
+                .ServerFeatures
                 .Get<IServerAddressesFeature>()
                 .Addresses.Single();
         }
@@ -82,7 +85,7 @@ namespace Toss.Tests.E2E
             Host?.StopAsync();
         }
 
-        protected IWebHost CreateWebHost()
+        protected IHost CreateWebHost()
         {
             var solutionDir = FindClosestDirectoryContaining(
                           "Toss.sln",
@@ -116,7 +119,7 @@ namespace Toss.Tests.E2E
                 "--urls", "http://127.0.0.1:0",
                 "--contentroot", sampleSitePath,
                 "--environment", "development"
-            });
+            }).Build();
         }
     }
 }
