@@ -3,6 +3,7 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -40,19 +41,18 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task create_setup_date_of_post_to_today()
         {
-            var now = DateTimeOffset.Now.AddMinutes(-1);
+            FakeNow.Current = new DateTimeOffset(2018, 1, 1, 1, 1, 1, 1, TimeSpan.Zero);
             await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
-            var now2 = DateTimeOffset.Now.AddMinutes(1);
 
 
             await SaveAndWait();
 
             var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
 
-            Assert.True(toss.CreatedOn >= now && toss.CreatedOn <= now2);
+            Assert.True(toss.CreatedOn == FakeNow.Current);
 
         }
 
@@ -138,7 +138,7 @@ namespace Toss.Tests.Server.Models.Tosses
             for (int i = 0; i < 10; i++)
             {
                 var res = await _mediator.Send(new SponsoredTossQuery("toto"));
-               
+
                 Assert.NotNull(res);
                 Assert.Equal("lorem ipsum erzer zer zer ze rze rezr zer #toto", res.Content);
             }
