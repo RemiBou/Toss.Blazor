@@ -18,9 +18,9 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class ChangePasswordCommandHandlerTest : BaseCosmosTest
+    public class ChangePasswordCommandHandlerTest : BaseTest
     {
-        
+
 
         [Fact]
         public async Task Handle_when_user_has_no_password_returns_error()

@@ -9,8 +9,8 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.15.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Browser" Version="0.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.7.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="0.8.0-preview-19104-04" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.8.0-preview-19104-04" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />

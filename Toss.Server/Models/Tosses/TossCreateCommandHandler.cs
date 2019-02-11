@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Raven.Client.Documents.Session;
 using System;
 using System.Linq;
 using System.Threading;
@@ -15,17 +16,19 @@ namespace Toss.Server.Controllers
 {
     public class TossCreateCommandHandler : IRequestHandler<TossCreateCommand>
     {
-        private readonly ICosmosDBTemplate<TossEntity> _dbTemplate;
+        private readonly IAsyncDocumentSession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> userManager;
         private IStripeClient stripeClient;
         private IMediator mediator;
+        private readonly INow now;
 
-        public TossCreateCommandHandler(ICosmosDBTemplate<TossEntity> cosmosTemplate, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager,
-            IMediator mediator)
+        public TossCreateCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager,
+            IMediator mediator, INow now)
         {
             this.mediator = mediator;
-            _dbTemplate = cosmosTemplate;
+            this.now = now;
+            _session = session;
             _httpContextAccessor = httpContextAccessor;
             this.stripeClient = stripeClient;
             this.userManager = userManager;
@@ -39,25 +42,25 @@ namespace Toss.Server.Controllers
                 toss = new TossEntity(
                     command.Content,
                     user.UserId(),
-                    DateTimeOffset.Now);
+                    now.Get());
             else
                 toss = new SponsoredTossEntity(
                     command.Content,
                     user.UserId(),
-                    DateTimeOffset.Now,
+                    now.Get(),
                     command.SponsoredDisplayedCount.Value);
             toss.UserName = user.Identity.Name;
             var matchCollection = TossCreateCommand.TagRegex.Matches(toss.Content);
             toss.Tags = matchCollection.Select(m => m.Groups[1].Value).ToList();
             toss.UserIp = _httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            toss.Id = await _dbTemplate.Insert(toss);
+            await _session.StoreAsync(toss);
             if (command.SponsoredDisplayedCount.HasValue)
             {
                 ApplicationUser applicationUser = (await userManager.GetUserAsync(user));
                 var paymentResult = await stripeClient.Charge(command.StripeChargeToken, command.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay, "Payment for sponsored Toss #" + toss.Id, applicationUser.Email);
                 if (!paymentResult)
                 {
-                    await _dbTemplate.Delete(toss.Id);
+                    _session.Delete(toss.Id);
                     throw new InvalidOperationException("Payment error on sponsored Toss ");
                 }
 

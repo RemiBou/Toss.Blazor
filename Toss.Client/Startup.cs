@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Blazor.Builder;
+﻿using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using System;
@@ -47,7 +47,7 @@ namespace Toss.Client
 
         }
 
-        public void Configure(IBlazorApplicationBuilder app)
+        public void Configure(IComponentsApplicationBuilder app)
         {
 
 

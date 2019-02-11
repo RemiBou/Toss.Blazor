@@ -16,14 +16,10 @@ steps:
     version: 2.2.100	
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build'
-- task: azure-cosmosdb.emulator-public-preview.run-cosmosdbemulatorcontainer.CosmosDbEmulator@2
-  displayName: 'Run Azure Cosmos DB Emulator container'
 - script: dotnet test ./Toss.Tests/Toss.Tests.csproj  --configuration $(buildConfiguration) --no-build  -v q --logger trx;LogFileName=test.trx
   displayName: 'Tests'
-  env: { 'CosmosDBEndpoint': "$(CosmosDbEmulator.Endpoint)" }  # list of environment variables to add
 - script: dotnet test ./Toss.Tests.E2E/Toss.Tests.E2E.csproj  --configuration $(buildConfiguration)  --no-build  -v q --logger trx;LogFileName=e2e.trx
   displayName: 'E2E Tests'
-  env: { 'CosmosDBEndpoint': "$(CosmosDbEmulator.Endpoint)",'CosmosDBKey':"C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==" }  # list of environment variables to add
 - task: PublishTestResults@2
   displayName: 'Publish test results'
   condition: in(variables['Agent.JobStatus'], 'Succeeded', 'SucceededWithIssues', 'Failed')

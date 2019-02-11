@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Blazor;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
 using System.Threading.Tasks;
@@ -13,7 +13,7 @@ namespace Toss.Client.Services
 
         public static async Task<string> Captcha(string actionName)
         {
-            return await JSRuntime.Current.InvokeAsync<string>("runCaptcha",actionName);
+            return await JSRuntime.Current.InvokeAsync<string>("runCaptcha", actionName);
         }
         public static async Task Toastr(string toastType, string message)
         {
@@ -52,9 +52,9 @@ namespace Toss.Client.Services
         public static async Task<string> GetFileData(ElementRef fileInputRef)
         {
             return (await JSRuntime.Current.InvokeAsync<string>("getFileData", fileInputRef));
-           
+
         }
-        
+
         public static async Task<string> GetCookie()
         {
             return await JSRuntime.Current.InvokeAsync<string>("getDocumentCookie");
@@ -62,7 +62,7 @@ namespace Toss.Client.Services
 
         public static async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
         {
-            await JSRuntime.Current.InvokeAsync<string>("stripeCheckout",new DotNetObjectRef(stripeCallBack), amountInCts);
+            await JSRuntime.Current.InvokeAsync<string>("stripeCheckout", new DotNetObjectRef(stripeCallBack), amountInCts);
         }
     }
 }

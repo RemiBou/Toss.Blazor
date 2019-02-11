@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 
 namespace Toss.Server.Models.Tosses
@@ -18,27 +19,20 @@ namespace Toss.Server.Models.Tosses
 
     internal class SponsoredTossDisplayCountReducer : INotificationHandler<SponsoredTossDisplayed>
     {
-        private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
+        private IAsyncDocumentSession _session;
 
-        public SponsoredTossDisplayCountReducer(ICosmosDBTemplate<TossEntity> cosmosDBTemplate)
+        public SponsoredTossDisplayCountReducer(IAsyncDocumentSession session)
         {
-            this.cosmosDBTemplate = cosmosDBTemplate;
+            _session = session;
         }
 
         public async Task Handle(SponsoredTossDisplayed notification, CancellationToken cancellationToken)
         {
-            var toss = (await cosmosDBTemplate.CreateDocumentQuery())
-                .Where(t => t.Id == notification.TossId)
-                .Take(1)
-                .AsEnumerable()
-                .Cast<SponsoredTossEntity>()
-                .FirstOrDefault();
+            var toss = await _session.LoadAsync<TossEntity>(notification.TossId) as SponsoredTossEntity;
             //we displayed a now removed
             if (toss == null)
                 return;
             toss.DecreaseDisplayCount();
-           await  cosmosDBTemplate.Update(toss);
-
         }
     }
 }

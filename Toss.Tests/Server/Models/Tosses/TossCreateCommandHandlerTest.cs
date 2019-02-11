@@ -1,6 +1,9 @@
 ﻿using MediatR;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -12,11 +15,12 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class TossCreateCommandHandlerTest : BaseCosmosTest
-    {   private ICosmosDBTemplate<TossEntity> tossTemplate;
+    public class TossCreateCommandHandlerTest : BaseTest
+    {
+        private IAsyncDocumentSession _session;
         public TossCreateCommandHandlerTest()
         {
-            tossTemplate = TestFixture.GetInstance<ICosmosDBTemplate<TossEntity>>();
+            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
         }
         [Fact]
         public async Task create_setup_username_to_current_user()
@@ -27,25 +31,28 @@ namespace Toss.Tests.Server.Models.Tosses
                     Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
                 });
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+            await SaveAndWait();
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
 
-            Assert.Equal(TestFixture.ClaimPrincipal.UserId(), toss.UserId);
-            Assert.Equal(TestFixture.ClaimPrincipal.Identity.Name, toss.UserName);
+            Assert.Equal(serviceProviderInitializer.ClaimPrincipal.UserId(), toss.UserId);
+            Assert.Equal(serviceProviderInitializer.ClaimPrincipal.Identity.Name, toss.UserName);
 
         }
         [Fact]
         public async Task create_setup_date_of_post_to_today()
         {
-            var now = DateTimeOffset.Now.AddMinutes(-1);
+            FakeNow.Current = new DateTimeOffset(2018, 1, 1, 1, 1, 1, 1, TimeSpan.Zero);
             await _mediator.Send(new TossCreateCommand()
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
-            var now2 = DateTimeOffset.Now.AddMinutes(1);
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
 
-            Assert.True(toss.CreatedOn >= now && toss.CreatedOn <= now2); 
+            await SaveAndWait();
+
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
+
+            Assert.True(toss.CreatedOn == FakeNow.Current);
 
         }
 
@@ -56,10 +63,10 @@ namespace Toss.Tests.Server.Models.Tosses
             {
                 Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum"
             });
-            
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
 
+            await SaveAndWait();
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
             Assert.NotNull(toss);
             Assert.Equal("lorem ipsum lorem ipsum lorem ipsum lorem ipsum", toss.Content);
         }
@@ -73,8 +80,9 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 1000
             });
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+            await SaveAndWait();
 
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
             Assert.NotNull(toss);
             var sponsored = Assert.IsAssignableFrom<SponsoredTossEntity>(toss);
             Assert.Equal(1000, sponsored.DisplayedCount);
@@ -90,8 +98,8 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 1000,
                 StripeChargeToken = "AAA"
             });
-            
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
             //_mockStripe.Verify(m => m.Charge("AAA", command.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay, It.Is<string>(s => s.Contains(toss.Id)), _m.ApplicationUser.Email));
         }
 
@@ -99,14 +107,14 @@ namespace Toss.Tests.Server.Models.Tosses
         public async Task create_when_payment_fails_delete_toss_throw_error()
         {
             FakeStripeClient.NextCallFails = true;
-            await Assert.ThrowsAsync<InvalidOperationException>(async () => 
+            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
                 await _mediator.Send(new TossCreateCommand()
                 {
                     Content = "lorem ipsum erzer zer zer ze rze rezr zer",
                     SponsoredDisplayedCount = 1000,
                     StripeChargeToken = "AAA"
                 }));
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
 
             Assert.Null(toss);
         }
@@ -125,14 +133,16 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
+            await SaveAndWait();
 
             for (int i = 0; i < 10; i++)
             {
                 var res = await _mediator.Send(new SponsoredTossQuery("toto"));
-                
+
                 Assert.NotNull(res);
                 Assert.Equal("lorem ipsum erzer zer zer ze rze rezr zer #toto", res.Content);
             }
+            await SaveAndWait();
 
             var resNull = await _mediator.Send(new SponsoredTossQuery("toto"));
 
@@ -150,7 +160,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
-            await TestFixture.ChangeCurrentUser("test2");
+            await CreateNewUserIfNotExists("test2");
 
             await _mediator.Send(new TossCreateCommand()
             {
@@ -158,7 +168,7 @@ namespace Toss.Tests.Server.Models.Tosses
                 SponsoredDisplayedCount = 10,
                 StripeChargeToken = "AAA"
             });
-
+            await SaveAndWait();
 
             RandomFake.NextResults.Enqueue(0);//first user selection
             RandomFake.NextResults.Enqueue(0);//first toss selection
@@ -166,9 +176,11 @@ namespace Toss.Tests.Server.Models.Tosses
             RandomFake.NextResults.Enqueue(0);//second toss selection
 
             var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("user 1", res.Content);
 
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("user 2", res.Content);
         }
 
@@ -194,11 +206,16 @@ namespace Toss.Tests.Server.Models.Tosses
             RandomFake.NextResults.Enqueue(0);//second user selection
             RandomFake.NextResults.Enqueue(1);//second toss selection
 
+
+            await SaveAndWait();
+
             var res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("toss no 1", res.Content);
-            
+
 
             res = await _mediator.Send(new SponsoredTossQuery("toto"));
+            Assert.NotNull(res);
             Assert.Contains("toss no 2", res.Content);
         }
 
@@ -211,8 +228,9 @@ namespace Toss.Tests.Server.Models.Tosses
             });
 
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
-
+            await SaveAndWait();
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
+            Assert.NotNull(toss.Tags);
             Assert.Equal(2, toss.Tags.Count);
             Assert.Contains("test", toss.Tags);
             Assert.Contains("toto", toss.Tags);
@@ -227,10 +245,11 @@ namespace Toss.Tests.Server.Models.Tosses
             });
 
 
-            var toss = await (await tossTemplate.CreateDocumentQuery()).GetFirstOrDefault();
+            await SaveAndWait();
+            var toss = await _session.Query<TossEntity>().FirstOrDefaultAsync();
 
-            Assert.Equal(TestFixture.HttpContextMock.Object.Connection.RemoteIpAddress.ToString(), toss.UserIp);
-    
+            Assert.Equal(serviceProviderInitializer.HttpContextMock.Object.Connection.RemoteIpAddress.ToString(), toss.UserIp);
+
         }
     }
 }

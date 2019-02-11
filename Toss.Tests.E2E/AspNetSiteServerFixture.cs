@@ -5,20 +5,24 @@ using System.Linq;
 using System.Threading;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.Extensions.Hosting;
+using Raven.Client.Documents;
+using Raven.TestDriver;
 using Toss.Client;
 using Toss.Server.Services;
-using Toss.Tests.Infrastructure;
+
 
 namespace Toss.Tests.E2E
 {
-    public class AspNetSiteServerFixture : IDisposable
+    public class AspNetSiteServerFixture : RavenTestDriver, IDisposable
     {
         public FakeEmailSender EmailSender { get; private set; }
         public Uri RootUri => _rootUriInitializer.Value;
 
-        public IWebHost Host { get; set; }
+        public IHost Host { get; set; }
 
         private readonly Lazy<Uri> _rootUriInitializer;
+        private IDocumentStore documentStore;
 
         public AspNetSiteServerFixture()
         {
@@ -66,24 +70,24 @@ namespace Toss.Tests.E2E
             Host = CreateWebHost();
             RunInBackgroundThread(Host.Start);
             EmailSender = Host.Services.GetService(typeof(IEmailSender)) as FakeEmailSender;
-            return Host.ServerFeatures
-                .Get<IServerAddressesFeature>()
-                .Addresses.Single();
+            return "http://localhost:8080";
         }
 
-        public void Dispose()
+        public new void Dispose()
         {
+            base.Dispose();
             // This can be null if creating the webhost throws, we don't want to throw here and hide
             // the original exception.
             Host?.StopAsync();
         }
 
-        protected IWebHost CreateWebHost()
+        protected IHost CreateWebHost()
         {
             var solutionDir = FindClosestDirectoryContaining(
                           "Toss.sln",
                           Path.GetDirectoryName(typeof(Program).Assembly.Location));
             var sampleSitePath = Path.Combine(solutionDir, typeof(Toss.Server.Program).Assembly.GetName().Name);
+            documentStore = GetDocumentStore();
             var config = new Dictionary<string, string>
             {
                  { "GoogleClientId", "AAA"},
@@ -91,11 +95,10 @@ namespace Toss.Tests.E2E
                  { "MailJetApiKey", ""},
                  { "MailJetApiSecret", ""},
                  { "MailJetSender", ""},
-                 { "CosmosDBEndpoint", "https://localhost:8081"},
-                 { "CosmosDBKey", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="},
+                 { "RavenDBEndpoint",documentStore.Urls[0]},
+                 {"RavenDBDataBase",documentStore.Database },
                  { "StripeSecretKey", ""},
-                 { "test", "true"},
-                 { "dataBaseName", CosmosDBFixture.DatabaseName}
+                 { "test", "true"}
             };
             //we set the config in env variables because those value
             //can't be in appsettings as it'll override the secrets
@@ -109,10 +112,10 @@ namespace Toss.Tests.E2E
             }
             return Toss.Server.Program.BuildWebHost(new[]
             {
-                "--urls", "http://127.0.0.1:0",
+                "--urls", "http://127.0.0.1:8080",
                 "--contentroot", sampleSitePath,
                 "--environment", "development"
-            });
+            }).Build();
         }
     }
 }

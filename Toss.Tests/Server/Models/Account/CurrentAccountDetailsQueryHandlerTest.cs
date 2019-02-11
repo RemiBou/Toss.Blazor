@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Toss.Server.Models;
 using Toss.Server.Models.Account;
 using Toss.Shared;
 using Toss.Shared.Account;
@@ -10,7 +11,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class CurrentAccountDetailsQueryHandlerTest : BaseCosmosTest
+    public class CurrentAccountDetailsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task Details_return_account_view_model()
@@ -21,13 +22,13 @@ namespace Toss.Tests.Server.Models.Account
         }
         [Fact]
         public async Task Details_return_user_hashtags()
-        { 
+        {
             await _mediator.Send(new AddHashtagCommand("toto"));
             await _mediator.Send(new AddHashtagCommand("titi"));
 
             var res = await _mediator.Send(
                 new CurrentAccountDetailsQuery());
-           
+
             Assert.Equal(new HashSet<string> { "toto", "titi" }, res.Hashtags);
         }
 
@@ -42,7 +43,7 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Details_when_user_has_no_password_return_HasPassword_to_false()
         {
-            var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             user.PasswordHash = null;
             await _userManager.UpdateAsync(user);
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());
@@ -53,10 +54,9 @@ namespace Toss.Tests.Server.Models.Account
         [Fact]
         public async Task Handle_when_user_has_role_admin_return_IsAdmin_true()
         {
-            var user = await _userManager.GetUserAsync(TestFixture.ClaimPrincipal);
-            user.AddRole("Admin");
-            await _userManager.UpdateAsync(user);
-
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
+            await _userManager.AddToRoleAsync(user, ApplicationUser.AdminRole);
+            await SaveAndWait();
             var res = await _mediator.Send(new CurrentAccountDetailsQuery());
 
             Assert.True(res.IsAdmin);

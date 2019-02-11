@@ -29,11 +29,13 @@ namespace Toss.Tests.E2E
             var binaryLocation = Environment.GetEnvironmentVariable("ChromeWebDriver");
             if (string.IsNullOrEmpty(binaryLocation))
             {
-                binaryLocation = ".";
+                Browser = new ChromeDriver(opts);
+            }
+            else
+            {
+                Browser = new ChromeDriver(binaryLocation, opts, TimeSpan.FromMinutes(3));
             }
 
-            var driver = new ChromeDriver(binaryLocation,opts,TimeSpan.FromMinutes(3));
-            Browser = driver;
         }
 
         public void Dispose()

@@ -23,7 +23,7 @@ namespace Toss.Server.Services
                 await this.captchaValidator.Check(notARobot.Token);
             }
            
-            return await next();
+             return await next();
         }
     }
 }

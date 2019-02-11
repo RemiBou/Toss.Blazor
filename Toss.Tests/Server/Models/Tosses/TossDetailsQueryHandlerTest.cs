@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class TossDetailsQueryHandlerTest : BaseCosmosTest
+    public class TossDetailsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task returns_details_of_single_toss()
@@ -19,8 +19,8 @@ namespace Toss.Tests.Server.Models.Tosses
                 Content = "lalalaalalalam z emlazek amzk mlekmzalkazmel zaml azme #test"
             };
             await _mediator.Send(request);
+            await SaveAndWait();
             var lastToss = await _mediator.Send(new TossLastQuery("test"));
-
             var res = await _mediator.Send(new TossDetailQuery(lastToss.First().Id));
 
             Assert.Equal(request.Content, res.Content);

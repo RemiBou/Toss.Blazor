@@ -4,7 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Azure.Documents.Linq;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Shared.Tosses;
 
@@ -12,16 +13,16 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossDetailsQueryHandler : IRequestHandler<TossDetailQuery, TossDetail>
     {
-        private readonly ICosmosDBTemplate<TossEntity> _dbTemplate;
+        private readonly IAsyncDocumentSession _session;
 
-        public TossDetailsQueryHandler(ICosmosDBTemplate<TossEntity> dbTemplate)
+        public TossDetailsQueryHandler(IAsyncDocumentSession session)
         {
-            _dbTemplate = dbTemplate;
+            _session = session;
         }
 
         public async Task<TossDetail> Handle(TossDetailQuery request, CancellationToken cancellationToken)
         {
-            var res =await (await _dbTemplate.CreateDocumentQuery<TossEntity>())
+            return await _session.Query<TossEntity>()
                 .Where(t => t.Id == request.TossId)
                 .Select(t => new TossDetail()
                 {
@@ -30,9 +31,7 @@ namespace Toss.Server.Models.Tosses
                     UserName = t.UserName,
                     Id = t.Id
                 })
-                .AsDocumentQuery()
-                .GetAllResultsAsync();
-            return res.FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
     }
 }

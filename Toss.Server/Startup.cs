@@ -1,38 +1,33 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using System.Net.Mime;
-using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.Blazor.Server;
-using System.Net;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Toss.Server.Data;
 using MediatR;
 using Toss.Server.Services;
 using Toss.Shared.Account;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
 using Toss.Server.Models;
-using Microsoft.AspNetCore.Identity.DocumentDB;
 using Toss.Server.Extensions;
-using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using Microsoft.AspNetCore.Identity;
-using IdentityRole = Microsoft.AspNetCore.Identity.DocumentDB.IdentityRole;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Rewrite;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using System.Text;
 using System.Net.Http;
+using Raven.Identity;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
+using Raven.Client.Documents.Indexes;
+using Raven.Client.Documents.Conventions;
 
 namespace Toss.Server
 {
@@ -48,32 +43,35 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression(options =>
+            services.AddResponseCompression();
+
+
+            services.AddSingleton(s =>
             {
-                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[]
+                IDocumentStore store = new DocumentStore()
                 {
-                    MediaTypeNames.Application.Octet,
-                    WasmMediaTypeNames.Application.Wasm,
-                });
+                    Urls = new[] { Configuration.GetValue<string>("RavenDBEndpoint") },
+                    Database = Configuration.GetValue<string>("RavenDBDataBase")
+                };
+                store.Conventions.FindCollectionName = type =>
+                {
+                    if (typeof(TossEntity).IsAssignableFrom(type))
+                    {
+
+                        return "TossEntity";
+                    }
+
+                    return DocumentConventions.DefaultGetCollectionName(type);
+                };
+                store.Initialize();
+                IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
+                return store;
             });
 
-            DocumentClient documentClient = new DocumentClient(new Uri(Configuration["CosmosDBEndpoint"]), Configuration["CosmosDBKey"], new JsonSerializerSettings()
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            });
-            services.AddSingleton(documentClient);
-            string DataBaseName = Configuration.GetValue("databaseName", "Toss");
-            services.Configure<CosmosDBTemplateOptions>((c) => c.DataBaseName = DataBaseName);
-            Database db = documentClient.CreateDatabaseQuery()
-                                .Where(d => d.Id == DataBaseName)
-                                .AsEnumerable()
-                                .FirstOrDefault()
-                ?? documentClient.CreateDatabaseAsync(new Database { Id = DataBaseName }).Result;
+            services.AddScoped<IAsyncDocumentSession>(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
 
-            services.AddIdentityWithDocumentDBStores<ApplicationUser, IdentityRole>(documentClient, db.SelfLink)
-                .AddDefaultTokenProviders();
-
-
+            services
+                .AddRavenDbIdentity<ApplicationUser>();
 
             services.AddHttpContextAccessor();
             services.AddHttpClient();
@@ -111,16 +109,20 @@ namespace Toss.Server
                     o.ClientId = Configuration["GoogleClientId"];
                     o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
-            services.AddMvc().AddJsonOptions(options =>
+            services.AddMvc(
+                options =>
+                {
+                    options.Filters.Add<SampleAsyncActionFilter>();
+                }
+                ).AddJsonOptions(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-                });
+                }).AddNewtonsoftJson();
             services.ConfigureApplicationCookie(options =>
                 {
-                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(HttpStatusCode.Forbidden, options.Events.OnRedirectToAccessDenied);
-                    options.Events.OnRedirectToLogin = ReplaceRedirector(HttpStatusCode.Unauthorized, options.Events.OnRedirectToLogin);
+                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
+                    options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
                 });
-            services.AddScoped(typeof(ICosmosDBTemplate<>), typeof(CosmosDBTemplate<>));
             services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
             services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
             services.AddAntiforgery(options =>
@@ -131,12 +133,13 @@ namespace Toss.Server
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
         }
-        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+
+        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(int statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {
                 if (context.Request.Path.StartsWithSegments("/api"))
                 {
-                    context.Response.StatusCode = (int)statusCode;
+                    context.Response.StatusCode = statusCode;
                     return Task.CompletedTask;
                 }
                 return existingRedirector(context);
@@ -178,6 +181,8 @@ namespace Toss.Server
 
             app.UseAuthentication();
 
+
+
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
@@ -186,8 +191,28 @@ namespace Toss.Server
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
-
+            app.UseBlazorDebugging();
             app.UseBlazor<Toss.Client.Program>();
+        }
+    }
+
+    public class SampleAsyncActionFilter : IAsyncActionFilter
+    {
+        private IAsyncDocumentSession session;
+
+        public SampleAsyncActionFilter(IAsyncDocumentSession session)
+        {
+            this.session = session;
+        }
+
+        public async Task OnActionExecutionAsync(
+            ActionExecutingContext context,
+            ActionExecutionDelegate next)
+        {
+            // do something before the action executes
+            var resultContext = await next();
+            // do something after the action executes; resultContext.Result will be set
+            await this.session.SaveChangesAsync();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Raven.Client.Documents.Session;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,16 @@ namespace Toss.Server.Models.Tosses
 {
     public class DeleteTossCommandHandler : IRequestHandler<DeleteTossCommand>
     {
-        private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
+        private IAsyncDocumentSession _session;
 
-        public DeleteTossCommandHandler(ICosmosDBTemplate<TossEntity> cosmosDBTemplate)
+        public DeleteTossCommandHandler(IAsyncDocumentSession session)
         {
-            this.cosmosDBTemplate = cosmosDBTemplate;
+            this._session = session;
         }
 
         public async Task<Unit> Handle(DeleteTossCommand request, CancellationToken cancellationToken)
         {
-            await cosmosDBTemplate.Delete(request.TossId);
+            _session.Delete(request.TossId);
             return Unit.Value;
         }
     }

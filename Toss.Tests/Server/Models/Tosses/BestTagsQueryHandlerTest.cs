@@ -10,7 +10,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class BestTagsQueryHandlerTest : BaseCosmosTest
+    public class BestTagsQueryHandlerTest : BaseTest
     {
         [Fact]
         public async Task on_new_toss_tags_are_on_best_tags_result()
@@ -21,6 +21,7 @@ namespace Toss.Tests.Server.Models.Tosses
                        Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test"
                    });
 
+            await SaveAndWait();
             var res = await _mediator.Send(new BestTagsQuery());
 
             var single = Assert.Single(res);
@@ -34,7 +35,8 @@ namespace Toss.Tests.Server.Models.Tosses
             //#toss1 - 5 willbe added once, #toss6 - 55 twice
             for (int i = 1; i <= 55; i++)
             {
-                if(i <= 5) { 
+                if (i <= 5)
+                {
                     await _mediator.Send(
                        new TossCreateCommand()
                        {
@@ -55,6 +57,7 @@ namespace Toss.Tests.Server.Models.Tosses
                       });
                 }
             }
+            await SaveAndWait();
             var res = await _mediator.Send(new BestTagsQuery());
             Assert.Equal(50, res.Count);
             for (int i = 6; i <= 55; i++)
@@ -78,6 +81,7 @@ namespace Toss.Tests.Server.Models.Tosses
                        Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum #test"
                    });
             }
+            await SaveAndWait();
             FakeNow.Current = DateTimeOffset.Now;
             var res = await _mediator.Send(new BestTagsQuery());
 

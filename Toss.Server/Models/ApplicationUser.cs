@@ -1,6 +1,6 @@
 ﻿
-using Microsoft.AspNetCore.Identity.DocumentDB;
 using Newtonsoft.Json;
+using Raven.Identity;
 using System;
 using System.Collections.Generic;
 
@@ -9,6 +9,8 @@ namespace Toss.Server.Models
     // Add profile data for application users by adding properties to the ApplicationUser class
     public class ApplicationUser : IdentityUser
     {
+        public const string AdminRole = "admin";
+
         public HashSet<string> Hashtags { get; set; }
 
         public string HashtagsJson

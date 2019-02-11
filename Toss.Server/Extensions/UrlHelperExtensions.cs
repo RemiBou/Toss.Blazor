@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Web;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Toss.Server.Extensions
@@ -15,7 +16,7 @@ namespace Toss.Server.Extensions
 
             var ub = new UriBuilder(scheme, host.Host)
             {
-                Path = $"account/confirmationEmail/{userId}/{WebUtility.UrlEncode(code)}",
+                Path = $"account/confirmationEmail/{WebUtility.UrlEncode(userId)}/{WebUtility.UrlEncode(code)}",
                 Port = host.Port.GetValueOrDefault(80)
             };
             return ub.ToString();
@@ -26,7 +27,7 @@ namespace Toss.Server.Extensions
             var host = urlHelper.ActionContext.HttpContext.Request.Host;
             var ub = new UriBuilder(scheme, host.Host)
             {
-                Path = $"account/resetPassword/{userId}/{WebUtility.UrlEncode(code)}",
+                Path = $"account/resetPassword/{WebUtility.UrlEncode(userId)}/{WebUtility.UrlEncode(code)}",
                 Port = host.Port.GetValueOrDefault(80)
             };
             return ub.ToString();

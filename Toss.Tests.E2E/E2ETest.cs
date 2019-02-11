@@ -2,8 +2,6 @@
 using System.Linq;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using Toss.Server.Services;
-using Toss.Tests.Infrastructure;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -12,7 +10,7 @@ namespace Toss.Tests.E2E
     public class E2ETest : ServerTestBase
     {
         private readonly WebDriverWait _webDriveWaitDefault;
-        private const int DefaultWaitSecondsForPageChange = 20;
+        private const int DefaultWaitSecondsForPageChange = 10;
         private const string SubscribeEmail = "toss-unittests@yopmail.com";
         private const string SubscribePassword = "tossUnittests123456!!";
         private const string SubscribeLogin = "tossunittests";
@@ -20,9 +18,8 @@ namespace Toss.Tests.E2E
         public E2ETest(
             BrowserFixture browserFixture,
             AspNetSiteServerFixture serverFixture,
-            CosmosDBFixture cosmosDBFixture,
             ITestOutputHelper output)
-            : base(browserFixture, serverFixture,cosmosDBFixture, output)
+            : base(browserFixture, serverFixture, output)
         {
             Navigate("/", noReload: true);
             WaitUntilLoaded();
@@ -37,66 +34,80 @@ namespace Toss.Tests.E2E
         [Fact]
         public void FullE2eTest()
         {
+            try
+            {
+                Browser.Manage().Window.FullScreen();
+                Navigate("/login");
+                DisableRecaptcha();
+                Assert.Equal("TOSS", Browser.Title);
+                //load and redirect to /login
+                _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")) != null);
 
-            Browser.Manage().Window.FullScreen();
-            Navigate("/login");
-            DisableRecaptcha();
-            Assert.Equal("TOSS", Browser.Title);
-            //load and redirect to /login
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")) != null);
+                //subscribe
+                Browser.FindElement(By.Id("NewEmail")).SendKeys(SubscribeEmail);
+                Browser.FindElement(By.Id("NewName")).SendKeys(SubscribeLogin);
+                Browser.FindElement(By.Id("NewPassword")).SendKeys(SubscribePassword);
+                Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys(SubscribePassword);
+                Browser.FindElement(By.Id("BtnRegister")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
 
-            //subscribe
-            Browser.FindElement(By.Id("NewEmail")).SendKeys(SubscribeEmail);
-            Browser.FindElement(By.Id("NewName")).SendKeys(SubscribeLogin);
-            Browser.FindElement(By.Id("NewPassword")).SendKeys(SubscribePassword);
-            Browser.FindElement(By.Id("NewConfirmPassword")).SendKeys(SubscribePassword);
-            Browser.FindElement(By.Id("BtnRegister")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
+                //validate subscription
+                var confirmationLink = _serverFixture.EmailSender.GetConfirmationLink(SubscribeEmail);
+                Browser.Navigate().GoToUrl(confirmationLink);
+                DisableRecaptcha();
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
 
-            //validate subscription
-            var confirmationLink = _serverFixture.EmailSender.GetConfirmationLink(SubscribeEmail);
-            Browser.Navigate().GoToUrl(confirmationLink);
-            DisableRecaptcha();
-            _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
+                //log in
+                Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeLogin);
+                Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
+                Browser.FindElement(By.Id("BtnLogin")).Click();
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
-            //log in
-            Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeLogin);
-            Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
-            Browser.FindElement(By.Id("BtnLogin")).Click();
-            _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
+                //publish toss
+                Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
+                string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
+                Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
+                Browser.FindElement(By.Id("BtnNewToss")).Click();
+                _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
 
-            //publish toss
-            Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
-            string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
-            Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
-            Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
+                //add new toss x 2
+                Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
+                Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
+                Browser.FindElement(By.Id("BtnNewToss")).Click();
+                _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
 
-            //add new toss x 2
-            Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
-            Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
-            Browser.FindElement(By.Id("BtnNewToss")).Click();
-            _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
+                //add new hashtag
+                Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
+                Browser.FindElement(By.Id("BtnAddHashTag")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
 
-            //add new hashtag
-            Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
-            Browser.FindElement(By.Id("BtnAddHashTag")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
+                //filter on hashtag
+                Browser.FindElement(By.CssSelector(".tag-link")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
 
-            //filter on hashtag
-            Browser.FindElement(By.CssSelector(".tag-link")).Click();
-            _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
+                //sign out
 
-            //sign out
-
-            Browser.FindElement(By.Id("LinkLogout")).Click();
-            _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
-            //reset password
-            //click reset link
-            //do reset password
-            //connect
+                Browser.FindElement(By.Id("LinkLogout")).Click();
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
+                //reset password
+                //click reset link
+                //do reset password
+                //connect
+            }
+            catch (WebDriverTimeoutException e)
+            {
+                Output.WriteLine("Exception: " + e.Message);
+                Output.WriteLine("Browser logs: ");
+                foreach (var entry in Browser.Manage().Logs.GetLog(LogType.Browser))
+                {
+                    Output.WriteLine(entry.Timestamp + " - " + entry.Level + " - " + entry.Message);
+                }
+                Output.WriteLine("/End Browser logs");
+                (Browser as ITakesScreenshot).GetScreenshot().SaveAsFile("./screenshot.png");
+                throw;
+            }
         }
 
         private static void DisableRecaptcha()

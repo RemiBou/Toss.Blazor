@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Raven.Client.Documents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,26 +12,23 @@ namespace Toss.Server.Models.Account
 {
     public class AccountListQueryHandler : IRequestHandler<AccountListQuery, List<AdminAccountListItem>>
     {
-        
         private UserManager<ApplicationUser> userManager;
-
-       
 
         public AccountListQueryHandler(UserManager<ApplicationUser> userManager)
         {
             this.userManager = userManager;
         }
 
-        public Task<List<AdminAccountListItem>> Handle(AccountListQuery request, CancellationToken cancellationToken)
+        public async Task<List<AdminAccountListItem>> Handle(AccountListQuery request, CancellationToken cancellationToken)
         {
-            var users = userManager.Users.ToList();
-            return Task.FromResult(users.Select(u => new AdminAccountListItem()
-            {
-                Email = u.Email,
-                EmailConfirmed = u.EmailConfirmed,
-                Id = u.Id,
-                UserName = u.UserName                
-            }).ToList());
+            return await userManager.Users
+                    .Select(u => new AdminAccountListItem()
+                    {
+                        Email = u.Email,
+                        EmailConfirmed = u.EmailConfirmed,
+                        Id = u.Id,
+                        UserName = u.UserName
+                    }).ToListAsync();
         }
     }
 }

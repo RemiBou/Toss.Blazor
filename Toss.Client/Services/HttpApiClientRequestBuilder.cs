@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Blazor.Browser.Services;
-using Microsoft.AspNetCore.Blazor.Services;
+﻿using Microsoft.AspNetCore.Components;
+
+using Microsoft.AspNetCore.Components.Services;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;

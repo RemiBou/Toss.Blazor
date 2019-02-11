@@ -12,19 +12,19 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class EditAccountCommandHandlerTest : BaseCosmosTest
+    public class EditAccountCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task when_edit_user_name_change_user_name_on_previously_posted_toss()
         {
             await _mediator.Send(new TossCreateCommand("bla bla bla bla bla #test"));
-
+            await SaveAndWait();
             await _mediator.Send(new EditAccountCommand()
             {
                 Email = "username@yopmil.com",
                 Name = "tutu"
             });
-
+            await SaveAndWait();
             var res = await _mediator.Send(new TossLastQuery("test"));
 
             Assert.Equal("tutu", res.First().UserName);
@@ -39,7 +39,7 @@ namespace Toss.Tests.Server.Models.Account
                 Email = "toto@yopmail.com"
             });
 
-            var emailSender = TestFixture.GetInstance<IEmailSender>() as FakeEmailSender;
+            var emailSender = serviceProviderInitializer.GetInstance<IEmailSender>() as FakeEmailSender;
             Assert.NotNull(emailSender.GetConfirmationLink("toto@yopmail.com"));
         }
 

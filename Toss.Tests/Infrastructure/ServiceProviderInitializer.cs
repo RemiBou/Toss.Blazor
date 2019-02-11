@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -10,29 +8,36 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Conventions;
+using Raven.Client.Documents.Indexes;
+using Raven.Identity;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Toss.Server;
+using Toss.Server.Data;
 using Toss.Server.Models;
 
 namespace Toss.Tests.Infrastructure
 {
-    public class TestFixture
+    public class ServiceProviderInitializer
     {
-        public const string DataBaseName = "Tests";
-        public const string UserName = "username";
-        private static ServiceProvider _provider;
+        private ServiceProvider _provider;
 
-        public static ClaimsPrincipal ClaimPrincipal { get; set; }
-        public static Mock<HttpContext> HttpContextMock { get; private set; }
-        public static Mock<HttpRequest> HttpRequestMock { get; private set; }
-        public static Mock<IHttpContextAccessor> HttpContextAccessor { get; set; }
-        public static Mock<IActionContextAccessor> ActionContextAccessor { get; set; }
+        public ClaimsPrincipal ClaimPrincipal { get; set; }
+        public Mock<HttpContext> HttpContextMock { get; private set; }
+        public Mock<HttpRequest> HttpRequestMock { get; private set; }
+        public Mock<IHttpContextAccessor> HttpContextAccessor { get; set; }
+        public Mock<IActionContextAccessor> ActionContextAccessor { get; set; }
+        public string UserName
+        {
+            get
+            {
+                return ClaimPrincipal.Identity.Name;
+            }
+        }
 
-        static TestFixture()
+        public void BuildServiceProvider(Raven.Client.Documents.IDocumentStore documentStore)
         {
 
             var dict = new Dictionary<string, string>
@@ -42,13 +47,12 @@ namespace Toss.Tests.Infrastructure
                  { "MailJetApiKey", ""},
                  { "MailJetApiSecret", ""},
                  { "MailJetSender", ""},
-                 { "CosmosDBEndpoint", "https://localhost:8081"},
-                 { "CosmosDBKey", "C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw=="},
+                 { "RavenDBEndpoint",documentStore.Urls[0]},
+                 {"RavenDBDataBase",documentStore.Database },
                  { "StripeSecretKey", ""},
                  { "test", "true"},
-                 { "dataBaseName", DataBaseName}
+                 { "dataBaseName", ""}
             };
-
             var config = new ConfigurationBuilder()
                 .AddInMemoryCollection(dict)
                 .AddEnvironmentVariables()
@@ -58,7 +62,22 @@ namespace Toss.Tests.Infrastructure
             var services = new ServiceCollection();
             startup.ConfigureServices(services);
 
-            HttpContextAccessor = new Mock<IHttpContextAccessor>();           
+            InitMockHttpServices(services);
+            InitLogger(services);
+
+            _provider = services.BuildServiceProvider();
+
+        }
+
+        private static void InitLogger(ServiceCollection services)
+        {
+            services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
+            services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
+        }
+
+        private void InitMockHttpServices(ServiceCollection services)
+        {
+            HttpContextAccessor = new Mock<IHttpContextAccessor>();
             HttpContextMock = new Mock<HttpContext>();
             DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection());
             connectionInfo.RemoteIpAddress = new System.Net.IPAddress(0x2414188f);
@@ -76,40 +95,11 @@ namespace Toss.Tests.Infrastructure
 
             services.AddSingleton(HttpContextAccessor.Object);
             services.AddSingleton(ActionContextAccessor.Object);
-            services.AddScoped(typeof(ILoggerFactory), typeof(LoggerFactory));
-            services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
-
-            _provider = services.BuildServiceProvider();
-
         }
 
-        public async static Task CreateTestUser()
-        {
-            await ChangeCurrentUser(TestFixture.UserName);
-        }
 
-        public static async Task ChangeCurrentUser(string userName)
-        {
-            var userManager = _provider.GetService<UserManager<ApplicationUser>>();
-            ApplicationUser user = new ApplicationUser()
-            {
-                UserName = userName,
-                Email = userName + "@yopmail.com",
-                EmailConfirmed = true
-            };
-            await userManager.CreateAsync(user);
-            ClaimPrincipal = new ClaimsPrincipal(
-                      new ClaimsIdentity(new Claim[]
-                         {
-                                    new Claim(ClaimTypes.Name, userName),
-                                    new Claim(ClaimTypes.NameIdentifier, user.Id)
-                         },
-                      "Basic"));
-            HttpContextMock.SetupGet(m => m.User).Returns(ClaimPrincipal);
 
-        }
-
-        public static void SetControllerContext(Controller controller)
+        public void SetControllerContext(Controller controller)
         {
             controller.ControllerContext = new ControllerContext
             {
@@ -117,7 +107,7 @@ namespace Toss.Tests.Infrastructure
             };
         }
 
-        public static void SetControllerContext(ControllerBase controller)
+        public void SetControllerContext(ControllerBase controller)
         {
             controller.ControllerContext = new ControllerContext
             {
@@ -125,7 +115,7 @@ namespace Toss.Tests.Infrastructure
             };
         }
 
-        public static T GetInstance<T>()
+        public T GetInstance<T>()
         {
             T result = _provider.GetRequiredService<T>();
             ControllerBase controllerBase = result as ControllerBase;
@@ -140,6 +130,18 @@ namespace Toss.Tests.Infrastructure
             }
             return result;
 
+        }
+
+        public void ChangeCurrentUser(ApplicationUser user)
+        {
+            ClaimPrincipal = new ClaimsPrincipal(
+                      new ClaimsIdentity(new Claim[]
+                         {
+                                    new Claim(ClaimTypes.Name, user.UserName),
+                                    new Claim(ClaimTypes.NameIdentifier, user.Id)
+                         },
+                      "Basic"));
+            HttpContextMock.SetupGet(m => m.User).Returns(ClaimPrincipal);
         }
     }
 }

@@ -93,7 +93,7 @@
             await tossDetail.ShowDetail(TossId);
     }
 
-    public override void SetParameters(ParameterCollection parameters)
+    public override async Task SetParametersAsync(ParameterCollection parameters)
     {
 
         if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
@@ -104,7 +104,7 @@
         {
             TossId = null;
         }
-        base.SetParameters(parameters);
+        await base.SetParametersAsync(parameters);
     }
 
     protected async Task RefreshTossList()
@@ -115,7 +115,7 @@
         if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
         Loading = true;
-        await ClientFactory.Create("/api/toss/last?hashtag=" + CurrentTag)
+        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag)
             .OnOK<List<TossLastQueryItem>>(l =>
             {
                 Tosses = l;

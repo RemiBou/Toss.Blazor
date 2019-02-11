@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Raven.Client.Documents.Session;
+using Raven.Client.Documents;
 using System;
 using System.Linq;
 using System.Threading;
@@ -11,22 +13,21 @@ namespace Toss.Server.Models.Tosses
 {
     public class SponsoredTossQueryHandler : IRequestHandler<SponsoredTossQuery, TossLastQueryItem>
     {
-        private ICosmosDBTemplate<TossEntity> cosmosDBTemplate;
+        private IAsyncDocumentSession _session;
         private IMediator mediator;
         private IRandom random;
 
-        public SponsoredTossQueryHandler(ICosmosDBTemplate<TossEntity> cosmosDBTemplate, IMediator mediator, IRandom random)
+        public SponsoredTossQueryHandler(IAsyncDocumentSession session, IMediator mediator, IRandom random)
         {
-            this.cosmosDBTemplate = cosmosDBTemplate;
+            this._session = session;
             this.mediator = mediator;
             this.random = random;
         }
 
         public async Task<TossLastQueryItem> Handle(SponsoredTossQuery request, CancellationToken cancellationToken)
         {
-            var resCollection = (await cosmosDBTemplate.CreateDocumentQuery<SponsoredTossEntity>())
-                .Where(s => s.Type == nameof(SponsoredTossEntity))
-                .Where(s => s.Content.Contains("#" + request.Hashtag))
+            var resCollection = (await _session.Query<SponsoredTossEntity>()
+                .Where(s => s.Tags.Contains(request.Hashtag))
                 .Where(s => s.DisplayedCount > 0)
                 .Select(t => new TossLastQueryItem()
                 {
@@ -35,10 +36,9 @@ namespace Toss.Server.Models.Tosses
                     Id = t.Id,
                     UserName = t.UserId
                 })
-                
-                .AsEnumerable()
-                .ToLookup(t => t.UserName)
-                .ToArray();
+                .ToListAsync())
+                  .ToLookup(t => t.UserName)
+                  .ToArray();
             if (!resCollection.Any())
                 return null;
             var index = random.NewRandom(resCollection.Length - 1);

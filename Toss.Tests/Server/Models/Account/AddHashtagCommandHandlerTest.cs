@@ -8,12 +8,12 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Account
 {
-    public class AddHashtagCommandHandlerTest : BaseCosmosTest
+    public class AddHashtagCommandHandlerTest : BaseTest
     {
         [Fact]
         public async Task AddHashTag_if_null_hashtag_returns_error()
         {
-            var res= await _mediator.Send(
+            var res = await _mediator.Send(
                 new AddHashtagCommand(null));
 
             Assert.False(res.IsSucess);
@@ -26,7 +26,7 @@ namespace Toss.Tests.Server.Models.Account
                new AddHashtagCommand("toto"));
 
 
-            var user = await TestFixture.GetInstance<UserManager<ApplicationUser>>().GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             Assert.Contains("toto", user.Hashtags);
         }
 
@@ -39,11 +39,11 @@ namespace Toss.Tests.Server.Models.Account
             res = await _mediator.Send(
                 new AddHashtagCommand("toto"));
 
-            var user = await TestFixture.GetInstance<UserManager<ApplicationUser>>().GetUserAsync(TestFixture.ClaimPrincipal);
+            var user = await _userManager.GetUserAsync(serviceProviderInitializer.ClaimPrincipal);
             Assert.Contains("toto", user.Hashtags);
 
             Assert.False(res.IsSucess);
-            Assert.Contains("newTag",res.Errors.Keys);
+            Assert.Contains("newTag", res.Errors.Keys);
 
         }
 
