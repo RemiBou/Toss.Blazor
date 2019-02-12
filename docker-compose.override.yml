@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  toss.server:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"

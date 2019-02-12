@@ -31,7 +31,7 @@ namespace Toss.Server.Controllers
         }
 
 
-        [HttpGet, AllowAnonymous, ValidateAntiForgeryToken]
+        [HttpGet, AllowAnonymous]
         public async Task<IActionResult> LoginProviders()
         {
             return Ok(await _mediator.Send(new LoginProvidersQuery()));

@@ -28,8 +28,8 @@ namespace Toss.Server
                 {
                     webBuilder.UseConfiguration(new ConfigurationBuilder()
                         .AddCommandLine(args)
-                        .AddEnvironmentVariables()
                         .AddUserSecrets<Startup>()
+                        .AddEnvironmentVariables()
                         .Build())
                     .UseStartup<Startup>();
                 });

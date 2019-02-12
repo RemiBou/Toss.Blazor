@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -80,7 +79,7 @@ namespace Toss.Server
             {
                 var actionContext = factory.GetService<IActionContextAccessor>()
                                             .ActionContext;
-                return new UrlHelper(actionContext);
+                return factory.GetService<IUrlHelperFactory>().GetUrlHelper(actionContext);
             });
             // Add application services.
             if (Configuration.GetValue<string>("test") == null)
@@ -112,7 +111,7 @@ namespace Toss.Server
             services.AddMvc(
                 options =>
                 {
-                    options.Filters.Add<SampleAsyncActionFilter>();
+                    options.Filters.Add<RavenDBSaveAsyncActionFilter>();
                 }
                 ).AddJsonOptions(options =>
                 {
@@ -193,26 +192,6 @@ namespace Toss.Server
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
             app.UseBlazorDebugging();
             app.UseBlazor<Toss.Client.Program>();
-        }
-    }
-
-    public class SampleAsyncActionFilter : IAsyncActionFilter
-    {
-        private IAsyncDocumentSession session;
-
-        public SampleAsyncActionFilter(IAsyncDocumentSession session)
-        {
-            this.session = session;
-        }
-
-        public async Task OnActionExecutionAsync(
-            ActionExecutingContext context,
-            ActionExecutionDelegate next)
-        {
-            // do something before the action executes
-            var resultContext = await next();
-            // do something after the action executes; resultContext.Result will be set
-            await this.session.SaveChangesAsync();
         }
     }
 }
