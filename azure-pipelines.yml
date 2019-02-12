@@ -15,7 +15,7 @@ steps:
   inputs:
     version: '3.0.100-preview-010184'
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build'
+  displayName: 'dotnet build Toss.sln'
 - script: dotnet test ./Toss.Tests/Toss.Tests.csproj  --configuration $(buildConfiguration) --no-build  -v q --logger trx;LogFileName=test.trx
   displayName: 'Tests'
 - script: dotnet test ./Toss.Tests.E2E/Toss.Tests.E2E.csproj  --configuration $(buildConfiguration)  --no-build  -v q --logger trx;LogFileName=e2e.trx
