@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
   toss.server:
-    image: ${DOCKER_REGISTRY-}tossserver
+    image: tossserver
     volumes:
       - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
     build:
@@ -14,11 +14,10 @@ services:
       - 80:80
   ravendb:
     image: "ravendb/ravendb"
+    volumes: 
+      - ./Hosting/RavenDB:/root/ravendb
     environment:
-      RAVEN_ARGS: "--Setup.Mode=None"
-      RAVEN_Security_UnsecuredAccessAllowed: "PrivateNetwork"
-      RAVEN_License_Eula_Accepted: "true"
-      RAVEN_ServerUrl: "http://ravendb:8080"
+      RAVEN_ARGS: "--Setup.Mode=None -c /root/ravendb/settings.json"     
     ports:
       - 8080:8080
     expose:

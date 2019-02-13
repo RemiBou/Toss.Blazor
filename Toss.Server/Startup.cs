@@ -27,6 +27,11 @@ using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.Client.Documents.Indexes;
 using Raven.Client.Documents.Conventions;
+using Raven.Client.Documents.Operations;
+using Raven.Client.Exceptions.Database;
+using Raven.Client.ServerWide.Operations;
+using Raven.Client.ServerWide;
+using Raven.Client.Exceptions;
 
 namespace Toss.Server
 {
@@ -83,14 +88,32 @@ namespace Toss.Server
                     return DocumentConventions.DefaultGetCollectionName(type);
                 };
                 store.Initialize();
+                //taken from https://ravendb.net/docs/article-page/4.1/csharp/client-api/operations/server-wide/create-database
+                try
+                {
+                    store.Maintenance.ForDatabase(store.Database).Send(new GetStatisticsOperation());
+                }
+                catch (DatabaseDoesNotExistException)
+                {
+                    try
+                    {
+                        store.Maintenance.Server.Send(new CreateDatabaseOperation(new DatabaseRecord(store.Database)));
+                    }
+                    catch (ConcurrencyException)
+                    {
+                        // The database was already created before calling CreateDatabaseOperation
+                    }
+                }
                 IndexCreation.CreateIndexes(typeof(Startup).Assembly, store);
                 return store;
             });
 
-            services.AddScoped<IAsyncDocumentSession>(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
+            services.AddScoped(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
 
             services
                 .AddRavenDbIdentity<ApplicationUser>();
+
+            
         }
 
         private static void AddFakeDependencies(IServiceCollection services)

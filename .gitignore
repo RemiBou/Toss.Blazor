@@ -327,3 +327,4 @@ ASALocalRun/
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
 /Toss.E2ETest/client-secrets.json
+license.json

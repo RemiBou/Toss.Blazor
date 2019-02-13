@@ -18,7 +18,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ABOUT.md = ABOUT.md
 		azure-pipelines.yml = azure-pipelines.yml
 		global.json = global.json
+		Hosting\RavenDB\license.json = Hosting\RavenDB\license.json
 		README.md = README.md
+		Hosting\RavenDB\settings.json = Hosting\RavenDB\settings.json
 	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{568DCF0A-A8F9-4889-8E2D-01869197DA78}"
