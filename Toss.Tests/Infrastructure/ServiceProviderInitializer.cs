@@ -82,6 +82,9 @@ namespace Toss.Tests.Infrastructure
             DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection());
             connectionInfo.RemoteIpAddress = new System.Net.IPAddress(0x2414188f);
             HttpContextMock.SetupGet(c => c.Connection).Returns(connectionInfo);
+            HttpContextMock.SetupGet(c => c.Items).Returns(new Dictionary<object, object>());
+
+            HttpContextMock.SetupGet(c => c.Features).Returns(new FeatureCollection());
             HttpContextAccessor
                .SetupGet(h => h.HttpContext)
                .Returns(() => HttpContextMock.Object);

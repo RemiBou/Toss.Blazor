@@ -42,9 +42,29 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddResponseCompression();
+            AddRavenDBServices(services);
+            // Add application services.
+            if (Configuration.GetValue<string>("test") == null)
+            {
+                AddTrueDependencies(services);
+            }
+            else
+            {
+                AddFakeDependencies(services);
+            }
+            AddWebDependencies(services);
+            AddMediatRDependencies(services);
 
+        }
 
+        private static void AddMediatRDependencies(IServiceCollection services)
+        {
+            services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
+        }
+
+        private void AddRavenDBServices(IServiceCollection services)
+        {
             services.AddSingleton(s =>
             {
                 IDocumentStore store = new DocumentStore()
@@ -71,43 +91,49 @@ namespace Toss.Server
 
             services
                 .AddRavenDbIdentity<ApplicationUser>();
+        }
 
+        private static void AddFakeDependencies(IServiceCollection services)
+        {
+            services.AddSingleton<ICaptchaValidator, FakeCaptchaValidator>();
+            services.AddSingleton<IRandom, RandomFake>();
+            //We had it as singleton so we can get the content later during the asset phase
+            services.AddSingleton<IEmailSender, FakeEmailSender>();
+            services.AddSingleton<IStripeClient, FakeStripeClient>();
+            services.AddSingleton<INow, FakeNow>();
+        }
+
+        private void AddTrueDependencies(IServiceCollection services)
+        {
+            services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
+                                Configuration["GoogleCaptchaSecret"],
+                                s.GetRequiredService<IHttpClientFactory>(),
+                                s.GetRequiredService<IHttpContextAccessor>()));
+            services.AddTransient<IRandom, RandomTrue>();
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.AddSingleton<INow, Now>();
+            services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
+        }
+
+        private void AddWebDependencies(IServiceCollection services)
+        {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
+            services.AddResponseCompression();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
-            services.AddScoped<IUrlHelper>(factory =>
+            services.AddScoped(factory =>
             {
                 var actionContext = factory.GetService<IActionContextAccessor>()
                                             .ActionContext;
                 return factory.GetService<IUrlHelperFactory>().GetUrlHelper(actionContext);
             });
-            // Add application services.
-            if (Configuration.GetValue<string>("test") == null)
-            {
-                services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
-                    Configuration["GoogleCaptchaSecret"],
-                    s.GetRequiredService<IHttpClientFactory>(),
-                    s.GetRequiredService<IHttpContextAccessor>()));
-                services.AddTransient<IRandom, RandomTrue>();
-                services.AddTransient<IEmailSender, EmailSender>();
-                services.AddSingleton<INow, Now>();
-                services.AddSingleton<IStripeClient, StripeClient>(s => new StripeClient(Configuration.GetValue<string>("StripeSecretKey")));
-            }
-            else
-            {
-                services.AddSingleton<ICaptchaValidator, FakeCaptchaValidator>();
-                services.AddSingleton<IRandom, RandomFake>();
-                //We had it as singleton so we can get the content later during the asset phase
-                services.AddSingleton<IEmailSender, FakeEmailSender>();
-                services.AddSingleton<IStripeClient, FakeStripeClient>();
-                services.AddSingleton<INow, FakeNow>();
-            }
             services.AddAuthentication()
-                .AddGoogle(o =>
-                {
-                    o.ClientId = Configuration["GoogleClientId"];
-                    o.ClientSecret = Configuration["GoogleClientSecret"];
-                });
+                            .AddGoogle(o =>
+                            {
+                                o.ClientId = Configuration["GoogleClientId"];
+                                o.ClientSecret = Configuration["GoogleClientSecret"];
+                            });
             services.AddMvc(
                 options =>
                 {
@@ -118,19 +144,14 @@ namespace Toss.Server
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 }).AddNewtonsoftJson();
             services.ConfigureApplicationCookie(options =>
-                {
-                    options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
-                    options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
-                });
-            services.AddMediatR(typeof(Startup), typeof(ChangePasswordCommand));
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(CaptchaMediatRAdapter<,>));
+            {
+                options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
+                options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
+            });
             services.AddAntiforgery(options =>
-                {
-                    options.HeaderName = "X-CSRF-TOKEN";
-                });
-
-            services.AddLocalization(options => options.ResourcesPath = "Resources");
-
+            {
+                options.HeaderName = "X-CSRF-TOKEN";
+            });
         }
 
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(int statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
