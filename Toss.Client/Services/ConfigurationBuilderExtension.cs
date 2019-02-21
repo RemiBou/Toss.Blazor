@@ -36,8 +36,6 @@ namespace Toss.Client.Services
                 {
                     { "Environment", environment }
                 });
-                Console.WriteLine(string.Join(",", assembly.GetManifestResourceNames()));
-                Console.WriteLine(string.Join(",", ressourceNames));
                 foreach (var resource in ressourceNames)
                 {
 
