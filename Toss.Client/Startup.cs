@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
 using System;
@@ -44,18 +45,23 @@ namespace Toss.Client
                 typeof(IExceptionNotificationService),
                 typeof(ExceptionNotificationService),
                 ServiceLifetime.Singleton));
-
+            services.AddEnvironmentConfiguration<Startup>(() => 
+                new EnvironmentChooser("Development")
+                    .Add("localhost", "Development")
+                    .Add("tossproject.com", "Production", false));
+            
         }
 
         public void Configure(IComponentsApplicationBuilder app)
         {
 
 
-
+            
             JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages")
                 .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
                 ;
             app.AddComponent<App>("app");
+            app.InitEnvironmentConfiguration();
         }
     }
 }
