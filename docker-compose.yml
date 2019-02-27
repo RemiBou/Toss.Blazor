@@ -7,7 +7,7 @@ services:
       - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
     build:
       context: .
-      dockerfile: Toss.Server/Dockerfile
+      dockerfile: Dockerfile
     environment:
       RavenDBEndpoint: "http://ravendb:8080"
     ports:
