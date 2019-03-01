@@ -47,6 +47,7 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Console.WriteLine("Can find secret : " + System.IO.File.Exists("/run/docker/tossserver"));
             AddRavenDBServices(services);
             // Add application services.
             if (Configuration.GetValue<string>("test") == null)
@@ -113,7 +114,7 @@ namespace Toss.Server
             services
                 .AddRavenDbIdentity<ApplicationUser>();
 
-            
+
         }
 
         private static void AddFakeDependencies(IServiceCollection services)

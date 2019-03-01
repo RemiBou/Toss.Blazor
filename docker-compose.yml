@@ -1,10 +1,10 @@
-version: '3'
-
-services:
-  toss.server:
-    image: tossserver
-    volumes:
-      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
+version: '3.5'
+secrets:
+  tossserver:
+    file: /Users/remibourgarel/.microsoft/usersecrets/ae68635e-649c-4f23-a39b-24a5ea3987f4/secrets.json
+services:    
+  web:
+    image: localhost:5000/toss
     build:
       context: .
       dockerfile: Dockerfile
@@ -12,8 +12,10 @@ services:
       RavenDBEndpoint: "http://ravendb:8080"
     ports:
       - 80:80
+    secrets:
+      - tossserver
   ravendb:
-    image: "ravendb/ravendb"
+    image: ravendb/ravendb
     volumes: 
       - ./Hosting/RavenDB:/root/ravendb
     environment:
