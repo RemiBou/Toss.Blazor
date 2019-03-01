@@ -12,3 +12,4 @@ docker service create --name registry --publish published=5000,target=5000 regis
 docker-compose build # build the images in the compose, swamr does not support it
 docker-compose push # publish the images to the local registry
 docker stack deploy -c docker-compose.yml tossstack
+docker exec -it "id of running container" bash

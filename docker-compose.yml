@@ -1,7 +1,9 @@
 version: '3.5'
 secrets:
-  tossserver:
+  tossserver2:
     file: /Users/remibourgarel/.microsoft/usersecrets/ae68635e-649c-4f23-a39b-24a5ea3987f4/secrets.json
+  raven_license:
+    file: Hosting/RavenDB/license.json
 services:    
   web:
     image: localhost:5000/toss
@@ -13,7 +15,8 @@ services:
     ports:
       - 80:80
     secrets:
-      - tossserver
+      - source: tossserver2
+        target: tossserver
   ravendb:
     image: ravendb/ravendb
     volumes: 
@@ -22,5 +25,6 @@ services:
       RAVEN_ARGS: "--Setup.Mode=None -c /root/ravendb/settings.json"     
     ports:
       - 8080:8080
-    expose:
-      - 8080
+    secrets:
+      - source: raven_license
+        target: /root/ravendb/license.json
