@@ -17,7 +17,7 @@ namespace Toss.Tests.Server.Models.Tosses
 
     public class DeleteTossCommandHandlerTest : BaseTest
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
 
         public DeleteTossCommandHandlerTest()
         {

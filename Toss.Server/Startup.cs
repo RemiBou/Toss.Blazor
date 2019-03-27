@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder; 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Localization;
@@ -162,7 +162,7 @@ namespace Toss.Server
                 {
                     options.Filters.Add<RavenDBSaveAsyncActionFilter>();
                 }
-                ).AddJsonOptions(options =>
+                ).AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ContractResolver = new DefaultContractResolver();
                 }).AddNewtonsoftJson();
@@ -188,7 +188,7 @@ namespace Toss.Server
                 return existingRedirector(context);
             };
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             var options = new RewriteOptions()
                 .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll", skipRemainingRules: true);
@@ -197,7 +197,7 @@ namespace Toss.Server
 
             app.UseResponseCompression();
 
-            if (env.IsDevelopment())
+            if (env.EnvironmentName.Equals("Development"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -234,7 +234,6 @@ namespace Toss.Server
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
-            app.UseBlazorDebugging();
             app.UseBlazor<Toss.Client.Program>();
         }
     }

@@ -14,7 +14,7 @@ namespace Toss.Server.Controllers
     [ApiController, Route("api/[controller]/")]
     public class I18nController : ControllerBase
     {
-        private IStringLocalizer<Client> stringLocalizer;
+        private readonly IStringLocalizer<Client> stringLocalizer;
 
         public I18nController(IStringLocalizer<Client> stringLocalizer)
         {

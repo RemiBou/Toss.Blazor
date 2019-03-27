@@ -13,7 +13,7 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossListAdminQueryHandler : IRequestHandler<TossListAdminQuery, TossListAdminItems>
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
 
         public TossListAdminQueryHandler(IAsyncDocumentSession session)
         {

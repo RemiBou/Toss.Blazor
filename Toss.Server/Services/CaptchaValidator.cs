@@ -11,7 +11,7 @@ namespace Toss.Server.Services
 {
     public class CaptchaValidator : ICaptchaValidator
     {
-        private string _secret;
+        private readonly string _secret;
         private readonly IHttpClientFactory httpClientFactory;
         private readonly IHttpContextAccessor httpContextAccessor;
 

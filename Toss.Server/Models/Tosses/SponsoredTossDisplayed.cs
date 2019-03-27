@@ -19,7 +19,7 @@ namespace Toss.Server.Models.Tosses
 
     internal class SponsoredTossDisplayCountReducer : INotificationHandler<SponsoredTossDisplayed>
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
 
         public SponsoredTossDisplayCountReducer(IAsyncDocumentSession session)
         {

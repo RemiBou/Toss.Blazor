@@ -17,7 +17,7 @@ namespace Toss.Tests.Server.Models.Tosses
 {
     public class TossCreateCommandHandlerTest : BaseTest
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
         public TossCreateCommandHandlerTest()
         {
             _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();

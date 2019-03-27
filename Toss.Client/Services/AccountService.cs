@@ -11,10 +11,10 @@ namespace Toss.Client.Services
 {
     public class AccountService : IAccountService
     {
-        private IHttpApiClientRequestBuilderFactory http;
+        private readonly IHttpApiClientRequestBuilderFactory http;
         public event EventHandler OnLogoutDone;
         public event EventHandler OnLoginDone;
-        private IUriHelper uriHelper;
+        private readonly IUriHelper uriHelper;
         public AccountService(IHttpApiClientRequestBuilderFactory http, IUriHelper uriHelper)
         {
             this.http = http;

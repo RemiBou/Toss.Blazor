@@ -12,7 +12,7 @@ namespace Toss.Server.Models.Account
 {
     public class AccountListQueryHandler : IRequestHandler<AccountListQuery, List<AdminAccountListItem>>
     {
-        private UserManager<ApplicationUser> userManager;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public AccountListQueryHandler(UserManager<ApplicationUser> userManager)
         {

@@ -6,7 +6,7 @@ namespace Toss.Server
 {
     public class RavenDBSaveAsyncActionFilter : IAsyncActionFilter
     {
-        private IAsyncDocumentSession session;
+        private readonly IAsyncDocumentSession session;
 
         public RavenDBSaveAsyncActionFilter(IAsyncDocumentSession session)
         {

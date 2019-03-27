@@ -11,7 +11,7 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossUserNameUpdater : INotificationHandler<AccountUserNameUpdated>
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
 
         public TossUserNameUpdater(IAsyncDocumentSession session)
         {

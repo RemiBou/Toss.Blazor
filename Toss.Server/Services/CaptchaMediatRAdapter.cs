@@ -8,7 +8,7 @@ namespace Toss.Server.Services
 
     public class CaptchaMediatRAdapter<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
-        private ICaptchaValidator captchaValidator;
+        private readonly ICaptchaValidator captchaValidator;
 
         public CaptchaMediatRAdapter(ICaptchaValidator captchaValidator)
         {

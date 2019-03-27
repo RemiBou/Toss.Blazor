@@ -19,7 +19,7 @@ namespace Toss.Server.Services
     /// </summary>
     public class RandomTrue : IRandom
     {
-        private Random random = new Random();
+        private readonly Random random = new Random();
         public int NewRandom(int maxValue)
         {
             return random.Next(maxValue);

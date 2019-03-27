@@ -19,8 +19,8 @@ namespace Toss.Server.Controllers
         private readonly IAsyncDocumentSession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<ApplicationUser> userManager;
-        private IStripeClient stripeClient;
-        private IMediator mediator;
+        private readonly IStripeClient stripeClient;
+        private readonly IMediator mediator;
         private readonly INow now;
 
         public TossCreateCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, IStripeClient stripeClient, UserManager<ApplicationUser> userManager,

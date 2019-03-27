@@ -72,7 +72,7 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task best_tags_only_count_last_30_days()
         {
-            for (int i = 0; i <= 32; i++)
+            for (int i = 1; i <= 32; i++)
             {
                 FakeNow.Current = DateTimeOffset.Now.AddDays(-i);
                 await _mediator.Send(

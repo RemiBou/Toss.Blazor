@@ -10,7 +10,7 @@ namespace Toss.Client.Services
     }
     public class MarkdownService : IMarkdownService
     {
-        private MarkdownPipeline pipeline;
+        private readonly MarkdownPipeline pipeline;
 
         public MarkdownService()
         {

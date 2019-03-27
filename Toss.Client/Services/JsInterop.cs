@@ -8,61 +8,67 @@ namespace Toss.Client.Services
     /// <summary>
     /// Utility class for calling JS function declared in index.html
     /// </summary>
-    public static class JsInterop
+    public class JsInterop : IJsInterop
     {
+        private readonly IJSRuntime jsRuntime;
 
-        public static async Task<string> Captcha(string actionName)
+        public JsInterop(IJSRuntime jsRuntime)
         {
-            return await JSRuntime.Current.InvokeAsync<string>("runCaptcha", actionName);
-        }
-        public static async Task Toastr(string toastType, string message)
-        {
-            await JSRuntime.Current.InvokeAsync<bool>("toastrShow", toastType, message);
+            this.jsRuntime = jsRuntime;
         }
 
-        public static async Task<string[]> Languages()
+        public async Task<string> Captcha(string actionName)
         {
-            return await JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages");
+            return await jsRuntime.InvokeAsync<string>("runCaptcha", actionName);
         }
-        public static async Task<int> AjaxLoaderShow(ElementRef elementRef)
+        public async Task Toastr(string toastType, string message)
         {
-            return await JSRuntime.Current.InvokeAsync<int>("ajaxLoaderShow", elementRef);
+            await jsRuntime.InvokeAsync<bool>("toastrShow", toastType, message);
         }
-        public static async Task AjaxLoaderHide(int id)
+
+        public async Task<string[]> Languages()
         {
-            await JSRuntime.Current.InvokeAsync<bool>("ajaxLoaderHide", id);
+            return await jsRuntime.InvokeAsync<string[]>("navigatorLanguages");
         }
-        public static async Task ShowModal(ElementRef elementRef)
+        public async Task<int> AjaxLoaderShow(ElementRef elementRef)
         {
-            await JSRuntime.Current.InvokeAsync<bool>("showModal", elementRef);
+            return await jsRuntime.InvokeAsync<int>("ajaxLoaderShow", elementRef);
         }
-        public static async Task ShowModal(ElementRef elementRef, IModalCloseCallback closeCallback)
+        public async Task AjaxLoaderHide(int id)
         {
-            await JSRuntime.Current.InvokeAsync<bool>("showModal", elementRef, new DotNetObjectRef(closeCallback));
+            await jsRuntime.InvokeAsync<bool>("ajaxLoaderHide", id);
         }
-        public static async Task HideModal(ElementRef elementRef)
+        public async Task ShowModal(ElementRef elementRef)
         {
-            await JSRuntime.Current.InvokeAsync<bool>("hideModal", elementRef);
+            await jsRuntime.InvokeAsync<bool>("showModal", elementRef);
+        }
+        public async Task ShowModal(ElementRef elementRef, IModalCloseCallback closeCallback)
+        {
+            await jsRuntime.InvokeAsync<bool>("showModal", elementRef, new DotNetObjectRef(closeCallback));
+        }
+        public async Task HideModal(ElementRef elementRef)
+        {
+            await jsRuntime.InvokeAsync<bool>("hideModal", elementRef);
         }
         private class StringHolder
         {
             public string Content { get; set; }
         }
 
-        public static async Task<string> GetFileData(ElementRef fileInputRef)
+        public async Task<string> GetFileData(ElementRef fileInputRef)
         {
-            return (await JSRuntime.Current.InvokeAsync<string>("getFileData", fileInputRef));
+            return (await jsRuntime.InvokeAsync<string>("getFileData", fileInputRef));
 
         }
 
-        public static async Task<string> GetCookie()
+        public async Task<string> GetCookie()
         {
-            return await JSRuntime.Current.InvokeAsync<string>("getDocumentCookie");
+            return await jsRuntime.InvokeAsync<string>("getDocumentCookie");
         }
 
-        public static async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
+        public async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
         {
-            await JSRuntime.Current.InvokeAsync<string>("stripeCheckout", new DotNetObjectRef(stripeCallBack), amountInCts);
+            await jsRuntime.InvokeAsync<string>("stripeCheckout", new DotNetObjectRef(stripeCallBack), amountInCts);
         }
     }
 }

@@ -12,21 +12,24 @@ namespace Toss.Client.Services
 {
     public class HttpApiClientRequestBuilder : IHttpApiClientRequestBuilder
     {
-        private string _uri;
+        private readonly string _uri;
         private readonly IUriHelper uriHelper;
-        private HttpClient _httpClient;
-        private ElementRef _elementRef;
+        private readonly HttpClient _httpClient;
+        private readonly ElementRef _elementRef;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
-        private IBrowserCookieService browserCookieService;
+        private readonly IBrowserCookieService browserCookieService;
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, IBrowserCookieService browserCookieService, ElementRef elementRef = default(ElementRef))
+        public IJsInterop JsInterop { get; }
+
+        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, IBrowserCookieService browserCookieService, IJsInterop jsInterop, ElementRef elementRef = default)
         {
             _uri = uri;
             this.uriHelper = uriHelper;
             _httpClient = httpClient;
             _elementRef = elementRef;
             this.browserCookieService = browserCookieService;
+            JsInterop = jsInterop;
         }
 
         public async Task Post(byte[] data)

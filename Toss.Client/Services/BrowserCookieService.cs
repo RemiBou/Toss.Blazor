@@ -10,6 +10,13 @@ namespace Toss.Client.Services
     /// </summary>
     public class BrowserCookieService : IBrowserCookieService
     {
+        private readonly IJsInterop JsInterop;
+
+        public BrowserCookieService(IJsInterop jsInterop)
+        {
+            JsInterop = jsInterop;
+        }
+
         /// <summary>
         /// returns the cookie value or null if not set
         /// </summary>

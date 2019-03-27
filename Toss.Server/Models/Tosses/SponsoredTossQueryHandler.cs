@@ -13,9 +13,9 @@ namespace Toss.Server.Models.Tosses
 {
     public class SponsoredTossQueryHandler : IRequestHandler<SponsoredTossQuery, TossLastQueryItem>
     {
-        private IAsyncDocumentSession _session;
-        private IMediator mediator;
-        private IRandom random;
+        private readonly IAsyncDocumentSession _session;
+        private readonly IMediator mediator;
+        private readonly IRandom random;
 
         public SponsoredTossQueryHandler(IAsyncDocumentSession session, IMediator mediator, IRandom random)
         {

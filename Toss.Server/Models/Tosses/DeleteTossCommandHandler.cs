@@ -13,7 +13,7 @@ namespace Toss.Server.Models.Tosses
 {
     public class DeleteTossCommandHandler : IRequestHandler<DeleteTossCommand>
     {
-        private IAsyncDocumentSession _session;
+        private readonly IAsyncDocumentSession _session;
 
         public DeleteTossCommandHandler(IAsyncDocumentSession session)
         {

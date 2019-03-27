@@ -10,8 +10,8 @@ namespace Toss.Server.Services
     /// </summary>
     public class FakeEmailSender : IEmailSender
     {
-        private List<Tuple<string, string, string>> confirationLinks = new List<Tuple<string, string, string>>();
-        private List<Tuple<string, string, string>> resetPasswordLinks = new List<Tuple<string, string, string>>();
+        private readonly List<Tuple<string, string, string>> confirationLinks = new List<Tuple<string, string, string>>();
+        private readonly List<Tuple<string, string, string>> resetPasswordLinks = new List<Tuple<string, string, string>>();
 
         public Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
         {

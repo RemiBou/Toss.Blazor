@@ -17,6 +17,7 @@ namespace Toss.Client
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddSingleton<IJsInterop, JsInterop>();
             services.Add(new ServiceDescriptor(
                     typeof(IHttpApiClientRequestBuilderFactory),
                     typeof(HttpApiClientRequestBuilderFactory),
@@ -57,7 +58,7 @@ namespace Toss.Client
 
 
             
-            JSRuntime.Current.InvokeAsync<string[]>("navigatorLanguages")
+            app.Services.GetRequiredService<IJSRuntime>().InvokeAsync<string[]>("navigatorLanguages")
                 .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
                 ;
             app.AddComponent<App>("app");

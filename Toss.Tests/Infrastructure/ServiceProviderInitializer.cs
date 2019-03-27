@@ -79,8 +79,10 @@ namespace Toss.Tests.Infrastructure
         {
             HttpContextAccessor = new Mock<IHttpContextAccessor>();
             HttpContextMock = new Mock<HttpContext>();
-            DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection());
-            connectionInfo.RemoteIpAddress = new System.Net.IPAddress(0x2414188f);
+            DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection())
+            {
+                RemoteIpAddress = new System.Net.IPAddress(0x2414188f)
+            };
             HttpContextMock.SetupGet(c => c.Connection).Returns(connectionInfo);
             HttpContextMock.SetupGet(c => c.Items).Returns(new Dictionary<object, object>());
 
@@ -102,14 +104,6 @@ namespace Toss.Tests.Infrastructure
 
 
 
-        public void SetControllerContext(Controller controller)
-        {
-            controller.ControllerContext = new ControllerContext
-            {
-                HttpContext = HttpContextAccessor.Object.HttpContext
-            };
-        }
-
         public void SetControllerContext(ControllerBase controller)
         {
             controller.ControllerContext = new ControllerContext
@@ -121,15 +115,9 @@ namespace Toss.Tests.Infrastructure
         public T GetInstance<T>()
         {
             T result = _provider.GetRequiredService<T>();
-            ControllerBase controllerBase = result as ControllerBase;
-            if (controllerBase != null)
+            if (result is ControllerBase controllerBase)
             {
                 SetControllerContext(controllerBase);
-            }
-            Controller controller = result as Controller;
-            if (controller != null)
-            {
-                SetControllerContext(controller);
             }
             return result;
 

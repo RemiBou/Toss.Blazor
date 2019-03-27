@@ -2,6 +2,7 @@
 @using System.Web
 @inject IHttpApiClientRequestBuilderFactory httpBuilder
 @inject IMarkdownService markdown
+@inject IJsInterop JsInterop
 @if (tossDetail != null)
 {
     <div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">

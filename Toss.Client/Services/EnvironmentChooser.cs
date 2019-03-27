@@ -14,8 +14,8 @@ namespace Toss.Client.Services
     public class EnvironmentChooser
     {
         private const string QueryStringKey = "Environment";
-        private string defaultEnvironment;
-        private Dictionary<string, Tuple<string, bool>> _hostMapping = new Dictionary<string, Tuple<string,bool>>();
+        private readonly string defaultEnvironment;
+        private readonly Dictionary<string, Tuple<string, bool>> _hostMapping = new Dictionary<string, Tuple<string,bool>>();
 
         /// <summary>
         /// Build a chooser

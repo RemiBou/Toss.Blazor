@@ -9,7 +9,7 @@ namespace Toss.Client.Services
 {
     public class ExceptionNotificationService : TextWriter, IExceptionNotificationService
     {
-        private TextWriter _decorated;
+        private readonly TextWriter _decorated;
 
         public override Encoding Encoding => Encoding.UTF8;
 
