@@ -113,7 +113,7 @@ namespace Toss.Server
             services
                 .AddRavenDbIdentity<ApplicationUser>();
 
-            
+
         }
 
         private static void AddFakeDependencies(IServiceCollection services)

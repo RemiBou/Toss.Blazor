@@ -29,6 +29,7 @@ namespace Toss.Server
                     webBuilder.UseConfiguration(new ConfigurationBuilder()
                         .AddCommandLine(args)
                         .AddUserSecrets<Startup>()
+                        .AddJsonFile("/run/secrets/tossserver")
                         .AddEnvironmentVariables()
                         .Build())
                     .UseStartup<Startup>();

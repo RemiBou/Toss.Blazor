@@ -1,6 +1,6 @@
 {
-  "Security.UnsecuredAccessAllowed": "PrivateNetwork",
-  "ServerUrl": "http://ravendb:8080",
+  "Security.UnsecuredAccessAllowed": "PublicNetwork",
+  "ServerUrl": "http://0.0.0.0:8080",
   "License.Eula.Accepted": "true",
   "License.Path": "/root/ravendb/license.json"
 }
