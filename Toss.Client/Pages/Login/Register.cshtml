@@ -1,17 +1,18 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IJsInterop JsInterop
+@using Microsoft.AspNetCore.Components.Forms
 <div class="card">
     <div class="card-header">Create a Toss account</div>
     <div class="card-body p-2">
-        <ValidatedForm OnSubmit="CreateAccount" Model="registerCommand">
+        <EditForm OnValidSubmit="CreateAccount" Model="@registerCommand">
+            <DataAnnotationsValidator />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control" />
-                    <ClientValidationError FieldName="Email" Model="registerCommand" />
-                    <ValidationError FieldName="Email" Errors="@_errors" />
+                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control"  class="@context.FieldClass(() => registerCommand.Email)"  />
+                     <ValidationMessage For="@(() => registerCommand.Email)" />
                 </div>
 
             </div>
@@ -19,42 +20,49 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <input id="NewName" bind="@registerCommand.Name" class="form-control" />
-                    <ValidationError FieldName="Name" Errors="@_errors" />
+                    <input id="NewName" bind="@registerCommand.Name" class="form-control"  class="@context.FieldClass(() => registerCommand.Name)"  />
+                     <ValidationMessage For="@(() => registerCommand.Name)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control" />
-                    <ValidationError FieldName="Password" Errors="@_errors" />
+                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control"  class="@context.FieldClass(() => registerCommand.Password)" />
+                     <ValidationMessage For="@(() => registerCommand.Password)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control" />
-                    <ValidationError FieldName="ConfirmPassword" Errors="@_errors" />
+                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control"  class="@context.FieldClass(() => registerCommand.ConfirmPassword)" />
+                    <ValidationMessage For="@(() => registerCommand.ConfirmPassword)" />
                 </div>
             </div>
             <div class="form-group text-center mb-0">
                 <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-default">Register</button>
-                <ValidationError FieldName="Other" Errors="@_errors" />
-            </div>
-        </ValidatedForm>
+             
+            </div>  
+             <ValidationSummary />
+        </EditForm>
     </div>
 </div>
 @functions{
     ElementRef createButton;
     RegisterCommand registerCommand = new RegisterCommand();
     Dictionary<string, List<string>> _errors;
-    async Task CreateAccount(UIEventArgs ev)
+    async Task CreateAccount(EditContext context)
     {
         _errors = null;
         await ClientFactory.Create("/api/account/register", createButton)
-            .OnBadRequest<Dictionary<string, List<string>>>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string, List<string>>>(errors => {
+                _errors = errors;
+                var errorStore = new ValidationMessageStore(context);
+                foreach(var err in errors){
+                    errorStore.AddRange(context.Field(err.Key), err.Value);
+                }
+            })
             .OnOK(async () =>
             {
                 await JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to " + registerCommand.Email);
