@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:3.0-sdk AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS build
 # Install .NET Core SDK for illinking to work
 RUN curl https://dotnetcli.blob.core.windows.net/dotnet/Sdk/2.2.103/dotnet-sdk-2.2.103-linux-x64.tar.gz > dotnet.tar.gz
 RUN tar -xvf dotnet.tar.gz -C /usr/share/dotnet 
