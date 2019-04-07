@@ -1,9 +1,12 @@
 version: '3.5'
 secrets:
   tossserver2:
-    file: /Users/remibourgarel/.microsoft/usersecrets/ae68635e-649c-4f23-a39b-24a5ea3987f4/secrets.json
+    # secret location on mac
+    # file: ~/.microsoft/usersecrets/<userSecretsId>/secrets.json
+    # secret location on windows
+    file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
   raven_license:
-    file: Hosting/RavenDB/license.json
+    file: C:/Users/remi/Source/Repos/Toss/Hosting/RavenDB/license.json
 services:    
   web:
     image: localhost:5000/toss
@@ -26,5 +29,4 @@ services:
     ports:
       - 8080:8080
     secrets:
-      - source: raven_license
-        target: /root/ravendb/license.json
+      - raven_license

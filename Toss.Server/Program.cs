@@ -29,7 +29,7 @@ namespace Toss.Server
                     webBuilder.UseConfiguration(new ConfigurationBuilder()
                         .AddCommandLine(args)
                         .AddUserSecrets<Startup>()
-                        .AddJsonFile("/run/secrets/tossserver")
+                        .AddJsonFile("/run/secrets/tossserver", true)//will be sued for mounting secrets on docker
                         .AddEnvironmentVariables()
                         .Build())
                     .UseStartup<Startup>();
