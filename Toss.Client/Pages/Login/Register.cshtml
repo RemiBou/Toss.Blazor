@@ -51,17 +51,15 @@
 @functions{
     ElementRef createButton;
     RegisterCommand registerCommand = new RegisterCommand();
-    Dictionary<string, List<string>> _errors;
     async Task CreateAccount(EditContext context)
     {
-        _errors = null;
         await ClientFactory.Create("/api/account/register", createButton)
             .OnBadRequest<Dictionary<string, List<string>>>(errors => {
-                _errors = errors;
                 var errorStore = new ValidationMessageStore(context);
                 foreach(var err in errors){
                     errorStore.AddRange(context.Field(err.Key), err.Value);
                 }
+                context.NotifyValidationStateChanged();
             })
             .OnOK(async () =>
             {

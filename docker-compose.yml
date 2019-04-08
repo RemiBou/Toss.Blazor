@@ -2,9 +2,9 @@ version: '3.5'
 secrets:
   tossserver2:
     # secret location on mac
-    # file: ~/.microsoft/usersecrets/<userSecretsId>/secrets.json
+     file: ~/.microsoft/usersecrets/<userSecretsId>/secrets.json
     # secret location on windows
-    file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
+    # file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
   raven_license:
     file: ./Hosting/RavenDB/license.json
 services:    
