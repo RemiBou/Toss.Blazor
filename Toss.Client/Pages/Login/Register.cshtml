@@ -4,15 +4,16 @@
 <div class="card">
     <div class="card-header">Create a Toss account</div>
     <div class="card-body p-2">
-        <EditForm OnValidSubmit="CreateAccount" Model="@registerCommand">
+        <EditForm  OnValidSubmit="CreateAccount" Model="@registerCommand" ref="registerForm">
             <DataAnnotationsValidator />
+            <ServerSideValidator ref="serverSideValidator"/>
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control"  class="@context.FieldClass(() => registerCommand.Email)"  />
-                     <ValidationMessage For="@(() => registerCommand.Email)" />
+                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control @context.FieldClass(() => registerCommand.Email)"  />
+                    <ValidationMessage For="@(() => registerCommand.Email)"/>
                 </div>
 
             </div>
@@ -20,7 +21,7 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <input id="NewName" bind="@registerCommand.Name" class="form-control"  class="@context.FieldClass(() => registerCommand.Name)"  />
+                    <input id="NewName" bind="@registerCommand.Name" class="form-control @context.FieldClass(() => registerCommand.Name)"  />
                      <ValidationMessage For="@(() => registerCommand.Name)" />
                 </div>
             </div>
@@ -28,7 +29,7 @@
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control"  class="@context.FieldClass(() => registerCommand.Password)" />
+                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control @context.FieldClass(() => registerCommand.Password)" />
                      <ValidationMessage For="@(() => registerCommand.Password)" />
                 </div>
             </div>
@@ -36,30 +37,29 @@
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control"  class="@context.FieldClass(() => registerCommand.ConfirmPassword)" />
+                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control @context.FieldClass(() => registerCommand.ConfirmPassword)" />
                     <ValidationMessage For="@(() => registerCommand.ConfirmPassword)" />
                 </div>
             </div>
             <div class="form-group text-center mb-0">
-                <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-default">Register</button>
+                <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-primary">Register</button>
              
             </div>  
-             <ValidationSummary />
+
         </EditForm>
     </div>
 </div>
 @functions{
     ElementRef createButton;
+    EditForm registerForm;
     RegisterCommand registerCommand = new RegisterCommand();
+    ServerSideValidator serverSideValidator;
     async Task CreateAccount(EditContext context)
     {
         await ClientFactory.Create("/api/account/register", createButton)
             .OnBadRequest<Dictionary<string, List<string>>>(errors => {
-                var errorStore = new ValidationMessageStore(context);
-                foreach(var err in errors){
-                    errorStore.AddRange(context.Field(err.Key), err.Value);
-                }
-                context.NotifyValidationStateChanged();
+
+                serverSideValidator.DisplayErrors(errors);
             })
             .OnOK(async () =>
             {
