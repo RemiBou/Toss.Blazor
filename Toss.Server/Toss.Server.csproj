@@ -14,9 +14,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="0.9.0-preview3-19154-02" />
     <PackageReference Include="Microsoft.AspNetCore.Components.Server" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.4.2" />
-    <PackageReference Include="RavenDB.Client" Version="4.1.3" />
-    <PackageReference Include="RavenDB.Identity" Version="4.4.1" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.0-rc-42002" />
+    <PackageReference Include="RavenDB.Identity" Version="6.0.3" />
     <PackageReference Include="Scrutor" Version="3.0.2" />
     <PackageReference Include="Stripe.net" Version="21.4.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0-preview3.19153.1" />

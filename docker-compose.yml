@@ -5,8 +5,8 @@ secrets:
      file: ~/.microsoft/usersecrets/<userSecretsId>/secrets.json
     # secret location on windows
     # file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
-  raven_license:
-    file: ./Hosting/RavenDB/license.json
+  #raven_license:
+  #  file: ./Hosting/RavenDB/license.json
 services:    
   web:
     image: localhost:5000/toss
@@ -28,5 +28,5 @@ services:
       RAVEN_ARGS: "--Setup.Mode=None -c /root/ravendb/settings.json"     
     ports:
       - 8080:8080
-    secrets:
-      - raven_license
+   # secrets:
+   #   - raven_license
