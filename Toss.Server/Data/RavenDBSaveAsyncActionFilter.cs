@@ -19,8 +19,10 @@ namespace Toss.Server
         {
             // do something before the action executes
             var resultContext = await next();
-            // do something after the action executes; resultContext.Result will be set
-            await this.session.SaveChangesAsync();
+            if (resultContext.Exception == null && !resultContext.Canceled)
+            {
+                await this.session.SaveChangesAsync();
+            }
         }
     }
 }
