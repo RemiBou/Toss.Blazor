@@ -1,10 +1,10 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
-@inject IJsInterop JsInterop
+@inject IMessageService messageService
 @using Microsoft.AspNetCore.Components.Forms
 <div class="card">
     <div class="card-header">Create a Toss account</div>
     <div class="card-body p-2">
-        <EditForm  OnValidSubmit="CreateAccount" Model="@registerCommand" ref="registerForm">
+        <EditForm  OnValidSubmit="CreateAccount" Model="@command">
             <DataAnnotationsValidator />
             <ServerSideValidator ref="serverSideValidator"/>
             <div asp-validation-summary="All" class="text-danger"></div>
@@ -12,8 +12,8 @@
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control @context.FieldClass(() => registerCommand.Email)"  />
-                    <ValidationMessage For="@(() => registerCommand.Email)"/>
+                    <input id="NewEmail" bind="@command.Email" class="form-control @context.FieldClass(() => command.Email)"  />
+                    <ValidationMessage For="@(() => command.Email)"/>
                 </div>
 
             </div>
@@ -21,28 +21,28 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <input id="NewName" bind="@registerCommand.Name" class="form-control @context.FieldClass(() => registerCommand.Name)"  />
-                     <ValidationMessage For="@(() => registerCommand.Name)" />
+                    <input id="NewName" bind="@command.Name" class="form-control @context.FieldClass(() => command.Name)"  />
+                     <ValidationMessage For="@(() => command.Name)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control @context.FieldClass(() => registerCommand.Password)" />
-                     <ValidationMessage For="@(() => registerCommand.Password)" />
+                    <input id="NewPassword" bind="@command.Password" type="password" class="form-control @context.FieldClass(() => command.Password)" />
+                     <ValidationMessage For="@(() => command.Password)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control @context.FieldClass(() => registerCommand.ConfirmPassword)" />
-                    <ValidationMessage For="@(() => registerCommand.ConfirmPassword)" />
+                    <input id="NewConfirmPassword" bind="@command.ConfirmPassword" type="password" class="form-control @context.FieldClass(() => command.ConfirmPassword)" />
+                    <ValidationMessage For="@(() => command.ConfirmPassword)" />
                 </div>
             </div>
             <div class="form-group text-center mb-0">
-                <button type="submit" ref="createButton" id="BtnRegister" class="btn btn-primary">Register</button>
+                <button type="submit"  id="BtnRegister" class="btn btn-primary">Register</button>
              
             </div>  
 
@@ -50,23 +50,22 @@
     </div>
 </div>
 @functions{
-    ElementRef createButton;
-    EditForm registerForm;
-    RegisterCommand registerCommand = new RegisterCommand();
+    
+    RegisterCommand command = new RegisterCommand();
     ServerSideValidator serverSideValidator;
     async Task CreateAccount(EditContext context)
     {
-        await ClientFactory.Create("/api/account/register", createButton)
+        await ClientFactory.Create("/api/account/register")
             .OnBadRequest<Dictionary<string, List<string>>>(errors => {
 
                 serverSideValidator.DisplayErrors(errors);
             })
-            .OnOK(async () =>
+            .OnOK( () =>
             {
-                await JsInterop.Toastr("success", "Successfully registered, please confirm your account by clicking on the link in the email sent to " + registerCommand.Email);
-                registerCommand = new RegisterCommand();
+                messageService.Info( "Successfully registered, please confirm your account by clicking on the link in the email sent to " + command.Email);
+                command = new RegisterCommand();
                 StateHasChanged();
             })
-            .Post(registerCommand);
+            .Post(command);
     }
 }

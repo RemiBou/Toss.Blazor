@@ -24,7 +24,7 @@ namespace Toss.Client.Services
         event EventHandler OnLogoutDone;
         event EventHandler OnLoginDone;
 
-        Task<Dictionary<string, List<string>>> Login(LoginCommand loginCommand, ElementRef loginButton);
+        Task<Dictionary<string, List<string>>> Login(LoginCommand loginCommand);
 
     }
 }

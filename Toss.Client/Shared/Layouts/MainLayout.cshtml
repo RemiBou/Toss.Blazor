@@ -1,6 +1,7 @@
 ﻿@inject IExceptionNotificationService exceptionNotificationService
 @implements IDisposable
-@inject IJsInterop JsInterop
+@inject IMessageService messageService;
+<Message />
 <TopMenu />
 @Body
 
@@ -15,7 +16,7 @@
     }
     private void HandleExceptions(object sender, string s)
     {
-        JsInterop.Toastr("error", s).ContinueWith((a) => { });
+        messageService.Error(s);
     }
     public void Dispose()
     {

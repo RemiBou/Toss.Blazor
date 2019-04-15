@@ -5,28 +5,30 @@
 
 <AccountMenu></AccountMenu>
 
-<EditForm Model="_account" OnValidSubmit="@PostAccount">
+<EditForm Model="command" OnValidSubmit="@PostAccount">
     <DataAnnotationsValidator />
     <ServerSideValidator ref="serverSideValidator" />
     <div class="form-group">
         <label for="Email">Email</label>
-        <InputText Class="form-control" bind-Value="@_account.Email" />
-        <ValidationMessage For="@(() => _account.Email)" />
+        <InputText Class="form-control" bind-Value="@command.Email" />
+        <ValidationMessage For="@(() => command.Email)" />
     </div>
     <div class="form-group">
         <label for="Name">User name</label>
-        <InputText Class="form-control" bind-Value="@_account.Name" />
-        <ValidationMessage For="@(() => _account.Name)" />
+        <InputText Class="form-control" bind-Value="@command.Name" />
+        <ValidationMessage For="@(() => command.Name)" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
 </EditForm>
 
 @functions {
     ServerSideValidator serverSideValidator;
-    AccountViewModel _account = new AccountViewModel();
+    EditAccountCommand command = new EditAccountCommand();
     protected override async Task OnInitAsync()
     {
-        _account = await AccountService.CurrentAccount();
+        var account =   await AccountService.CurrentAccount();
+        command.Email = account.Email;
+        command.Name = account.Name;
         StateHasChanged();
     }
     async Task PostAccount()
@@ -34,7 +36,7 @@
         await ClientFactory.Create("/api/account/edit")
             .OnBadRequest<Dictionary<string,List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Informations saved successfully")
-            .Post(_account);
+            .Post(command);
         StateHasChanged();
     }
 }

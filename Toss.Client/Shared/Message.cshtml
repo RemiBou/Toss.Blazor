@@ -1,0 +1,60 @@
+﻿@inject IMessageService messageService;
+@foreach (var info in informations)
+{
+    <div class="alert alert-info">
+        @info
+    </div>
+}
+@foreach (var error in errors)
+{
+    <div class="alert alert-danger">
+        @error
+    </div>
+}
+@if (loadingCount > 0)
+{
+    <div class="alert alert-info">
+        <i class="fa fa-circle-o-notch fa-spin"></i>Loading...
+    </div>
+}
+@functions{
+    private List<string> informations = new List<string>();
+    private List<string> errors = new List<string>();
+    private int loadingCount = 0;
+    protected override void OnInit()
+    {
+        messageService.OnLoading += (o, l) =>
+        {
+            if (l)
+            {
+                loadingCount++;
+            }
+            else
+            {
+                loadingCount--;
+            }
+            StateHasChanged();
+        };
+        messageService.OnInfo += (o, s) =>
+        {
+            this.informations.Add(s);
+            StateHasChanged();
+            Task.Delay(TimeSpan.FromSeconds(5)).ContinueWith((t) =>
+            {
+                this.informations.Remove(s);
+                StateHasChanged();
+            });
+        };
+        messageService.OnError += (o, s) =>
+        {
+            this.errors.Add(s);
+            StateHasChanged();
+            Task.Delay(TimeSpan.FromSeconds(15)).ContinueWith((t) =>
+            {
+                this.errors.Remove(s);
+                StateHasChanged();
+            });
+        };
+        base.OnInit();
+    }
+}

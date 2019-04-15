@@ -7,19 +7,20 @@
     <div class="modal-dialog" role="document">
 
         <div class="modal-content">
-            <ValidatedForm method="post" Model="@newToss" onsubmit="@SendToss">
+            <EditForm Model="@command" OnValidSubmit="@SendToss">
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
                 <div class="modal-body">
-
-                    <textarea bind="@newToss.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>
-                    <ValidationError FieldName="Content" Errors="@_errors" />
-                    <ClientValidationError FieldName="Content" Model="newToss" />
+                    <InputTextArea Class="form-control" bind-Value="@command.Content"></InputTextArea>
+                    <ValidationMessage For="@(() => command.Content)" />
+                    @*<textarea bind="@command.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>*@
 
                     <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" bind="isSpsonsoredToss" class="custom-control-input" id="customCheck1" />
+                        <input type="checkbox" bind="isSponsoredToss" class="custom-control-input" id="customCheck1" />
                         <label class="custom-control-label" for="customCheck1">Sponsored Toss</label>
                     </div>
-                    @if (isSpsonsoredToss)
+                    @if (isSponsoredToss)
                     {
                         <div class="alert alert-info mt-2">
                             You can create a sponsored Toss :
@@ -34,45 +35,42 @@
                         </div>
                         <div class="form-group">
                             <label for="TxtDisplayCount">Display count</label>
-                            <input type="number" class="form-control" id="TxtDisplayCount" bind="@newToss.SponsoredDisplayedCountStr" placeholder="Display count" />
-                            <ValidationError FieldName="SponsoredDisplayCount" Errors="@_errors" />
-                            <ClientValidationError FieldName="SponsoredDisplayCount" Model="newToss" />
+                            <InputNumber Value="@command.SponsoredDisplayedCount" Class="form-control"></InputNumber>
+                            <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
                         </div>
                     }
 
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="BtnNewToss" ref="sendButton" class="btn btn-primary btn-block" type="submit">Toss-it</button>
+                    <button id="BtnNewToss"class="btn btn-primary btn-block" type="submit">Toss-it</button>
                 </div>
-            </ValidatedForm>
+            </EditForm>
         </div>
     </div>
 </div>
 
 <div class="form-group">
     <div class="input-group m-1 btn-group" role="group">
-        <button type="button" class="btn btn-primary" id="BtnOpenNewToss" onclick="@(async () => await ShowModal())"><i class="fas fa-plus"></i> New TOSS</button>
+        <button type="button" class="btn btn-primary" id="BtnOpenNewToss" onclick="@ShowModal"><i class="fas fa-plus"></i> New TOSS</button>
     </div>
 </div>
 @functions{
     ElementRef modal;
 
-    bool isSpsonsoredToss = false;
+    bool isSponsoredToss = false;
 
     [Parameter]
     protected Func<Task> OnNewTossCreated { get; set; }
 
-    TossCreateCommand newToss = new TossCreateCommand();
-    Dictionary<string, List<string>> _errors;
-
-    ElementRef sendButton;
-
-    protected async Task SendToss(UIEventArgs ev)
+    TossCreateCommand command = new TossCreateCommand();
+    ServerSideValidator serverSideValidator;
+    
+    protected async Task SendToss()
     {
-        if (isSpsonsoredToss)
+        if (isSponsoredToss)
         {
-            await JsInterop.OpenStripe(this, newToss.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay);
+            await JsInterop.OpenStripe(this, command.SponsoredDisplayedCount.Value * TossCreateCommand.CtsCostPerDisplay);
             return;
         }
         await DoSendToss();
@@ -80,16 +78,15 @@
     }
     private async Task DoSendToss()
     {
-        await ClientFactory.Create("/api/toss/create", sendButton)
+        await ClientFactory.Create("/api/toss/create")
             .OnOK(async () =>
             {
-                newToss = new TossCreateCommand();
-                _errors = null;
+                command = new TossCreateCommand();
                 await OnNewTossCreated?.Invoke();
                 await JsInterop.HideModal(modal);
             })
-            .OnBadRequest<Dictionary<string, List<string>>>(e => _errors = e)
-            .Post(newToss);
+            .OnBadRequest<Dictionary<string, List<string>>>(e => serverSideValidator.DisplayErrors(e))
+            .Post(command);
         StateHasChanged();
     }
     protected async Task ShowModal()
@@ -99,7 +96,7 @@
     [JSInvokable]
     public async Task TokenReceived(string token)
     {
-        newToss.StripeChargeToken = token;
+        command.StripeChargeToken = token;
         await DoSendToss();
     }
 }

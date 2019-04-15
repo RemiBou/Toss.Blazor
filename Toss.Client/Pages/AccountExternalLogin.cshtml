@@ -23,7 +23,7 @@
                 <InputText Class="form-control" bind-Value="@command.Email" />
                 <ValidationMessage For="@(() => command.Email)" />
             </div>
-            <button type="submit" ref="confirmButton"  class="btn btn-primary">Register</button>
+            <button type="submit"  class="btn btn-primary">Register</button>
          </EditForm>
     </div>
 </div>
@@ -31,7 +31,6 @@
 
 @functions {
     ServerSideValidator serverSideValidator;
-    ElementRef confirmButton;
     ExternalLoginConfirmationCommand command = new ExternalLoginConfirmationCommand();
     protected override async Task OnInitAsync()
     {
@@ -42,7 +41,7 @@
     }
     async Task ExternalLoginConfirm()
     {
-        await ClientFactory.Create("/api/account/externalLoginConfirmation", confirmButton)
+        await ClientFactory.Create("/api/account/externalLoginConfirmation")
             .OnBadRequest<Dictionary<string,List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Account successfully set", "/")
             .Post(command);
