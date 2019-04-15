@@ -5,27 +5,25 @@
 
 <AccountMenu></AccountMenu>
 
-<form method="post" onsubmit="@PostAccount">
+<EditForm Model="_account" OnValidSubmit="@PostAccount">
+    <DataAnnotationsValidator />
+    <ServerSideValidator ref="serverSideValidator" />
     <div class="form-group">
         <label for="Email">Email</label>
-        <input for="Email" class="form-control" bind="@_account.Email" />
-        <ValidationError FieldName="Email" Errors="@_errors" />
-        <ValidationError FieldName="InvalidEmail" Errors="@_errors" />
-        <ValidationError FieldName="DuplicateEmail" Errors="@_errors" />
+        <InputText Class="form-control" bind-Value="@_account.Email" />
+        <ValidationMessage For="@(() => _account.Email)" />
     </div>
     <div class="form-group">
         <label for="Name">User name</label>
-        <input for="Name" class="form-control" bind="@_account.Name" />
-        <ValidationError FieldName="Name" Errors="@_errors" />
-        <ValidationError FieldName="DuplicateUserName" Errors="@_errors" />
-        <ValidationError FieldName="InvalidUserName" Errors="@_errors" />
+        <InputText Class="form-control" bind-Value="@_account.Name" />
+        <ValidationMessage For="@(() => _account.Name)" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
-</form>
+</EditForm>
 
 @functions {
+    ServerSideValidator serverSideValidator;
     AccountViewModel _account = new AccountViewModel();
-    Dictionary<string,List<string>> _errors;
     protected override async Task OnInitAsync()
     {
         _account = await AccountService.CurrentAccount();
@@ -33,9 +31,8 @@
     }
     async Task PostAccount()
     {
-        _errors = null;
         await ClientFactory.Create("/api/account/edit")
-            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Informations saved successfully")
             .Post(_account);
         StateHasChanged();

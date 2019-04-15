@@ -44,7 +44,29 @@ namespace Toss.Server.Models.Account
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, request.OldPassword, request.NewPassword);
             if (!changePasswordResult.Succeeded)
             {
-                return new CommandResult(changePasswordResult.ToValidationErrorDictonary());
+                // see https://github.com/aspnet/AspNetCore/blob/bfec2c14be1e65f7dd361a43950d4c848ad0cd35/src/Identity/Extensions.Core/src/IdentityErrorDescriber.cs
+                // for diffrent error codes
+                var keyMapping = new Dictionary<string, string>()
+                {
+                    {"PasswordMismatch","CurrentPassword" },
+                    {"PasswordTooShort","NewPassword" },
+                    {"PasswordRequiresUniqueChars","NewPassword" },
+                    {"PasswordRequiresNonAlphanumeric","NewPassword" },
+                    {"PasswordRequiresDigit","NewPassword" },
+                    {"PasswordRequiresLower","NewPassword" },
+                    {"PasswordRequiresUpper","NewPassword" },
+
+                };
+            var formatedErrors = changePasswordResult.Errors
+                .Select(e =>
+                {
+                    var key = e.Code;
+                    keyMapping.TryGetValue(key, out key);
+                    return new { Key = key, e.Description };
+                }
+                ).ToLookup(e => e.Key, e => e.Description)
+                .ToDictionary(l => l.Key, l => l.ToList());
+                return new CommandResult(formatedErrors);
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);

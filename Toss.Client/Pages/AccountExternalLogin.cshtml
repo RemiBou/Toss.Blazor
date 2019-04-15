@@ -14,23 +14,24 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form method="post" >
+
+        <EditForm Model="command" OnValidSubmit="@ExternalLoginConfirm">
+            <DataAnnotationsValidator />
+            <ServerSideValidator ref="serverSideValidator" />
             <div class="form-group">
                 <label for="Email">Email</label>
-                <input id="Email" bind="@command.Email" class="form-control" />
-                <ValidationError FieldName="Email" Errors="@_errors" />
-            </div>           
-            <button type="button" ref="confirmButton" onclick="@ExternalLoginConfirm" class="btn btn-primary">Register</button>
-            <ValidationError FieldName="Other" Errors="@_errors" />
-        </form>
+                <InputText Class="form-control" bind-Value="@command.Email" />
+                <ValidationMessage For="@(() => command.Email)" />
+            </div>
+            <button type="submit" ref="confirmButton"  class="btn btn-primary">Register</button>
+         </EditForm>
     </div>
 </div>
 
 
 @functions {
-
+    ServerSideValidator serverSideValidator;
     ElementRef confirmButton;
-    Dictionary<string,List<string>> _errors;
     ExternalLoginConfirmationCommand command = new ExternalLoginConfirmationCommand();
     protected override async Task OnInitAsync()
     {
@@ -41,9 +42,8 @@
     }
     async Task ExternalLoginConfirm()
     {
-        _errors = null;
         await ClientFactory.Create("/api/account/externalLoginConfirmation", confirmButton)
-            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Account successfully set", "/")
             .Post(command);
         StateHasChanged();
