@@ -21,23 +21,12 @@ namespace Toss.Client.Services
         {
             return await jsRuntime.InvokeAsync<string>("runCaptcha", actionName);
         }
-        public async Task Toastr(string toastType, string message)
-        {
-            await jsRuntime.InvokeAsync<bool>("toastrShow", toastType, message);
-        }
 
         public async Task<string[]> Languages()
         {
             return await jsRuntime.InvokeAsync<string[]>("navigatorLanguages");
         }
-        public async Task<int> AjaxLoaderShow(ElementRef elementRef)
-        {
-            return await jsRuntime.InvokeAsync<int>("ajaxLoaderShow", elementRef);
-        }
-        public async Task AjaxLoaderHide(int id)
-        {
-            await jsRuntime.InvokeAsync<bool>("ajaxLoaderHide", id);
-        }
+       
         public async Task ShowModal(ElementRef elementRef)
         {
             await jsRuntime.InvokeAsync<bool>("showModal", elementRef);
@@ -49,10 +38,6 @@ namespace Toss.Client.Services
         public async Task HideModal(ElementRef elementRef)
         {
             await jsRuntime.InvokeAsync<bool>("hideModal", elementRef);
-        }
-        private class StringHolder
-        {
-            public string Content { get; set; }
         }
 
         public async Task<string> GetFileData(ElementRef fileInputRef)

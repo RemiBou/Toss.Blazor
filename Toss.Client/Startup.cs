@@ -46,6 +46,7 @@ namespace Toss.Client
                 typeof(IExceptionNotificationService),
                 typeof(ExceptionNotificationService),
                 ServiceLifetime.Singleton));
+            services.AddSingleton<IMessageService, MessageService>();
             services.AddEnvironmentConfiguration<Startup>(() => 
                 new EnvironmentChooser("Development")
                     .Add("localhost", "Development")

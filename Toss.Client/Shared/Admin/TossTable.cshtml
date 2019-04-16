@@ -1,5 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
-@inject IJsInterop JsInterop
+@inject IMessageService messageService;
 <h5>Tosses <small class="text-muted">@TossCount tosses in the DB</small></h5>
 <table class="table">
     <thead>
@@ -57,9 +57,9 @@
     protected async Task Delete(TossListAdminItem toss)
     {
         await ClientFactory.Create("/api/toss/delete")
-                   .OnOK<TossListAdminItems>(async r =>
+                   .OnOK<TossListAdminItems>( r =>
                    {
-                       await JsInterop.Toastr("success", "Toss deleted with success");
+                       messageService.Info( "Toss deleted with success");
                        Tosses.Remove(toss);
                    })
                    .Post(new DeleteTossCommand(toss.Id));

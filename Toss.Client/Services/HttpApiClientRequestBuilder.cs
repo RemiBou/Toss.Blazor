@@ -15,21 +15,24 @@ namespace Toss.Client.Services
         private readonly string _uri;
         private readonly IUriHelper uriHelper;
         private readonly HttpClient _httpClient;
-        private readonly ElementRef _elementRef;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
         private readonly IBrowserCookieService browserCookieService;
-
+        private IMessageService messageService;
         public IJsInterop JsInterop { get; }
 
-        public HttpApiClientRequestBuilder(HttpClient httpClient, string uri, IUriHelper uriHelper, IBrowserCookieService browserCookieService, IJsInterop jsInterop, ElementRef elementRef = default)
+        public HttpApiClientRequestBuilder(HttpClient httpClient,
+            string uri, 
+            IUriHelper uriHelper, 
+            IBrowserCookieService browserCookieService, IJsInterop jsInterop, IMessageService messageService)
         {
             _uri = uri;
             this.uriHelper = uriHelper;
             _httpClient = httpClient;
-            _elementRef = elementRef;
+
             this.browserCookieService = browserCookieService;
             JsInterop = jsInterop;
+            this.messageService = messageService;
         }
 
         public async Task Post(byte[] data)
@@ -83,7 +86,7 @@ namespace Toss.Client.Services
                 case System.Net.HttpStatusCode.Forbidden:
                     break;
                 case System.Net.HttpStatusCode.InternalServerError:
-                    await JsInterop.Toastr("error", "A server error occured, sorry");
+                    messageService.Error( "A server error occured, sorry");
                     break;
                     //other case , we do nothing, I'll add this case as needed
             }
@@ -101,22 +104,20 @@ namespace Toss.Client.Services
         }
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {
-            var loaderId = await JsInterop.AjaxLoaderShow(_elementRef);
+            messageService.Loading();
             try
             {
-
-
                 var response = await httpCall();
                 await HandleHttpResponse(response);
             }
             catch
             {
-                await JsInterop.Toastr("error", "Connection error, server is down or you are not connected to the same network.");
+                messageService.Error( "Connection error, server is down or you are not connected to the same network.");
                 throw;
             }
             finally
             {
-                await JsInterop.AjaxLoaderHide(loaderId);
+                messageService.LoadingDone();
             }
         }
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)
@@ -173,10 +174,10 @@ namespace Toss.Client.Services
         }
         public HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null)
         {
-            OnOK(async () =>
+            OnOK( () =>
             {
                 if (!string.IsNullOrEmpty(successMessage))
-                    await JsInterop.Toastr("success", successMessage);
+                    messageService.Info( successMessage);
                 if (!string.IsNullOrEmpty(navigateTo))
                     uriHelper.NavigateTo(navigateTo);
             });

@@ -41,10 +41,10 @@ namespace Toss.Client.Services
             OnLogoutDone?.Invoke(this, null);
         }
 
-        public async Task<Dictionary<string, List<string>>> Login(LoginCommand loginCommand, ElementRef loginButton)
+        public async Task<Dictionary<string, List<string>>> Login(LoginCommand loginCommand)
         {
             Dictionary<string, List<string>> _errors = null;
-            await http.Create("/api/account/login", loginButton)
+            await http.Create("/api/account/login")
                   .OnBadRequest<Dictionary<string, List<string>>>(errors => _errors = errors)
                   .OnOK(() =>
                   {

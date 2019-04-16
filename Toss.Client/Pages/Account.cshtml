@@ -5,39 +5,38 @@
 
 <AccountMenu></AccountMenu>
 
-<form method="post" onsubmit="@PostAccount">
+<EditForm Model="command" OnValidSubmit="@PostAccount">
+    <DataAnnotationsValidator />
+    <ServerSideValidator ref="serverSideValidator" />
     <div class="form-group">
         <label for="Email">Email</label>
-        <input for="Email" class="form-control" bind="@_account.Email" />
-        <ValidationError FieldName="Email" Errors="@_errors" />
-        <ValidationError FieldName="InvalidEmail" Errors="@_errors" />
-        <ValidationError FieldName="DuplicateEmail" Errors="@_errors" />
+        <InputText Class="form-control" bind-Value="@command.Email" />
+        <ValidationMessage For="@(() => command.Email)" />
     </div>
     <div class="form-group">
         <label for="Name">User name</label>
-        <input for="Name" class="form-control" bind="@_account.Name" />
-        <ValidationError FieldName="Name" Errors="@_errors" />
-        <ValidationError FieldName="DuplicateUserName" Errors="@_errors" />
-        <ValidationError FieldName="InvalidUserName" Errors="@_errors" />
+        <InputText Class="form-control" bind-Value="@command.Name" />
+        <ValidationMessage For="@(() => command.Name)" />
     </div>
     <button type="submit" class="btn btn-primary">Save</button>
-</form>
+</EditForm>
 
 @functions {
-    AccountViewModel _account = new AccountViewModel();
-    Dictionary<string,List<string>> _errors;
+    ServerSideValidator serverSideValidator;
+    EditAccountCommand command = new EditAccountCommand();
     protected override async Task OnInitAsync()
     {
-        _account = await AccountService.CurrentAccount();
+        var account =   await AccountService.CurrentAccount();
+        command.Email = account.Email;
+        command.Name = account.Name;
         StateHasChanged();
     }
     async Task PostAccount()
     {
-        _errors = null;
         await ClientFactory.Create("/api/account/edit")
-            .OnBadRequest<Dictionary<string,List<string>>>(errors => _errors = errors)
+            .OnBadRequest<Dictionary<string,List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Informations saved successfully")
-            .Post(_account);
+            .Post(command);
         StateHasChanged();
     }
 }

@@ -1,48 +1,4 @@
-﻿function AjaxLoader() {
-    var toastrId = 0;
-
-    this.show = function (elementRef) {
-        toastrId++;
-        var currentToastr = toastr["info"]("", "Waiting for server response ...", { timeOut: 0 });
-        currentToastr.attr("id", "toastr-" + toastrId);
-        var loadingText = '<i class="fa fa-circle-o-notch fa-spin"></i> Loading...';
-        if (typeof (elementRef._blazorElementRef) === "object")//null elementref are send to js as json variable instead of null
-            return toastrId;
-        var btn = $(elementRef);
-
-        btn.data("original-text", $(elementRef).html());
-        btn.html(loadingText);
-        btn.attr("ajax-loader", toastrId);
-        btn.prop("disabled", true);
-
-        return toastrId;
-
-    };
-    this.hide = function (id) {
-        toastr.clear($("#toastr-" + id));
-        var btn = $("[ajax-loader=" + id + "]");
-        btn.html(btn.data("original-text"));
-        btn.prop("disabled", false);
-    };
-}
-
-//Blazor.registerFunction("log", function (message) {
-//    console.log(message);
-//    return true;
-//});
-toastrShow = function (toastType, message) {
-    toastr[toastType](message);
-    return true;
-};
-var ajaxLoader = new AjaxLoader();
-ajaxLoaderShow = function (elm) {
-    return ajaxLoader.show(elm);
-};
-ajaxLoaderHide = function (id) {
-    ajaxLoader.hide(id);
-    return true;
-};
-showModal = function (elementRef, closeCallBack) {
+﻿showModal = function (elementRef, closeCallBack) {
     $(elementRef).modal("show");
     if (closeCallBack) {
         $(elementRef).on('hidden.bs.modal', function (e) {

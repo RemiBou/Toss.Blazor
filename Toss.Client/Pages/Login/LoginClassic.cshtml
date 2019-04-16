@@ -6,23 +6,24 @@
         Use a Toss account to log in.
     </div>
     <div class="card-body  p-2">
-        <form method="post">
+        <EditForm Model="@command" OnValidSubmit="@TryLogin">
+            <DataAnnotationsValidator />
+            <ServerSideValidator ref="serverSideValidator" />
 
             <div class="form-group row mb-1">
                 <label for="UserName" class="col-sm-3 col-form-label">Username</label>
 
                 <div class="col-sm-9">
-                    <input bind="@loginCommand.UserName" id="UserName" class="form-control" />
-
-                    <ValidationError Errors="@_errors" FieldName="UserName" />
+                    <InputText Class="form-control" bind-Value="@command.UserName" />
+                    <ValidationMessage For="@(() => command.UserName)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
                 <label asp-for="Password" class="col-sm-3 col-form-label">Password</label>
 
                 <div class="col-sm-9">
-                    <input bind="@loginCommand.Password" id="Password" type="password" class="form-control" />
-                    <ValidationError Errors="@_errors" FieldName="Password" />
+                    <InputPassword Class="form-control" Autocomplete="current-password" bind-Value="@command.Password" />
+                    <ValidationMessage For="@(() => command.Password)" />
                 </div>
             </div>
             <div class="form-group row mb-1">
@@ -31,27 +32,31 @@
                 <div class="checkbox col-sm-9">
 
                     <div class="form-check">
-                        <input class="form-check-input" id="RememberMe" bind="@loginCommand.RememberMe" type="checkbox" />
+                        <InputCheckbox bind-Value="@command.RememberMe" Class="form-check-input"></InputCheckbox>
+                        <ValidationMessage For="@(() => command.RememberMe)" />
                         <label class="form-check-label" for="RememberMe">Remember me</label>
                     </div>
                 </div>
             </div>
             <div class="form-group text-center mb-1">
-                <button ref="loginButton" id="BtnLogin" type="button" onclick="@TryLogin" class="btn btn-primary">Log in</button>
+                <button id="BtnLogin" type="submit"  class="btn btn-primary">Log in</button>
                 <a href="/account/forgotPassword">Forgot your password?</a>
             </div>
-        </form>
+        </EditForm>
     </div>
 </div>
 
 @functions{
-    ElementRef loginButton;
-    LoginCommand loginCommand = new LoginCommand();
-    Dictionary<string, List<string>> _errors;
-    async Task<bool> TryLogin(UIEventArgs even)
+    LoginCommand command = new LoginCommand();
+    ServerSideValidator serverSideValidator;
+    async Task<bool> TryLogin()
     {
-        
-        _errors = await AccountService.Login(loginCommand,loginButton);
+
+        var errors = await AccountService.Login(command);
+        if (errors.Any())
+        {
+            serverSideValidator.DisplayErrors(errors);
+        }
         StateHasChanged();
         return false;
     }
