@@ -1,6 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
 @inject IJsInterop JsInterop
-@using Microsoft.AspNetCore.Components.Forms
 <div class="card">
     <div class="card-header">Create a Toss account</div>
     <div class="card-body p-2">
@@ -12,7 +11,7 @@
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <input id="NewEmail" bind="@registerCommand.Email" class="form-control @context.FieldClass(() => registerCommand.Email)"  />
+                    <InputText Class="form-control" bind-Value="@registerCommand.Email" />
                     <ValidationMessage For="@(() => registerCommand.Email)"/>
                 </div>
 
@@ -21,7 +20,7 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <input id="NewName" bind="@registerCommand.Name" class="form-control @context.FieldClass(() => registerCommand.Name)"  />
+                    <InputText Class="form-control" bind-Value="@registerCommand.Name" />
                      <ValidationMessage For="@(() => registerCommand.Name)" />
                 </div>
             </div>
@@ -29,7 +28,7 @@
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <input id="NewPassword" bind="@registerCommand.Password" type="password" class="form-control @context.FieldClass(() => registerCommand.Password)" />
+                    <InputPassword Class="form-control" bind-Value="@registerCommand.Password" />
                      <ValidationMessage For="@(() => registerCommand.Password)" />
                 </div>
             </div>
@@ -37,7 +36,7 @@
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <input id="NewConfirmPassword" bind="@registerCommand.ConfirmPassword" type="password" class="form-control @context.FieldClass(() => registerCommand.ConfirmPassword)" />
+                    <InputPassword Class="form-control" bind-Value="@registerCommand.ConfirmPassword" />
                     <ValidationMessage For="@(() => registerCommand.ConfirmPassword)" />
                 </div>
             </div>
