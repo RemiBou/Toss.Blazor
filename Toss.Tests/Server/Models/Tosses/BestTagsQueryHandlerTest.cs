@@ -72,9 +72,10 @@ namespace Toss.Tests.Server.Models.Tosses
         [Fact]
         public async Task best_tags_only_count_last_30_days()
         {
-            for (int i = 1; i <= 32; i++)
+            var now = DateTimeOffset.Now.Date;
+            for (int i = 1; i <= 31; i++)
             {
-                FakeNow.Current = DateTimeOffset.Now.AddDays(-i);
+                FakeNow.Current = now.AddDays(-i);
                 await _mediator.Send(
                    new TossCreateCommand()
                    {
@@ -82,7 +83,8 @@ namespace Toss.Tests.Server.Models.Tosses
                    });
             }
             await SaveAndWait();
-            FakeNow.Current = DateTimeOffset.Now;
+            FakeNow.Current = now;
+            //base.WaitForUserToContinueTheTest(documentStore);
             var res = await _mediator.Send(new BestTagsQuery());
 
             Assert.Equal(30, res.First().CountLastMonth);

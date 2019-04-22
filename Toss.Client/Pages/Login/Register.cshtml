@@ -12,7 +12,7 @@
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <input id="NewEmail" bind="@command.Email" class="form-control @context.FieldClass(() => command.Email)"  />
+                    <InputText Class="form-control" bind-Value="@command.Email" />
                     <ValidationMessage For="@(() => command.Email)"/>
                 </div>
 
@@ -21,7 +21,7 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <input id="NewName" bind="@command.Name" class="form-control @context.FieldClass(() => command.Name)"  />
+                    <InputText Class="form-control" bind-Value="@command.Name" />
                      <ValidationMessage For="@(() => command.Name)" />
                 </div>
             </div>
@@ -29,7 +29,7 @@
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <input id="NewPassword" bind="@command.Password" type="password" class="form-control @context.FieldClass(() => command.Password)" />
+                    <InputPassword Class="form-control" bind-Value="@command.Password" />
                      <ValidationMessage For="@(() => command.Password)" />
                 </div>
             </div>
@@ -37,7 +37,7 @@
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <input id="NewConfirmPassword" bind="@command.ConfirmPassword" type="password" class="form-control @context.FieldClass(() => command.ConfirmPassword)" />
+                    <InputPassword Class="form-control" bind-Value="@command.ConfirmPassword" />
                     <ValidationMessage For="@(() => command.ConfirmPassword)" />
                 </div>
             </div>

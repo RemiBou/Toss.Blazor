@@ -26,8 +26,8 @@ namespace Toss.Server.Models.Tosses
 
         public async Task<List<BestTagsResult>> Handle(BestTagsQuery request, CancellationToken cancellationToken)
         {
-            var firstDay = _now.Get().AddDays(-30);
-           
+            var firstDay = _now.Get().Date.AddDays(-30);
+
             return (await _session
                 .Query<TagByDayIndex, Toss_TagPerDay>()
                 .Where(i => i.CreatedOn >= firstDay)
