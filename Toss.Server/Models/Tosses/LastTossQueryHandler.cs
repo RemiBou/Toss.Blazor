@@ -12,28 +12,37 @@ namespace Toss.Server.Controllers
 {
     public class LastTossQueryHandler : IRequestHandler<TossLastQuery, IEnumerable<TossLastQueryItem>>
     {
+        
         private readonly IAsyncDocumentSession _session;
+        private readonly RavenDBIdUtil ravenDBIdUtil;
 
-        public LastTossQueryHandler(IAsyncDocumentSession session)
+        public LastTossQueryHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDBIdUtil)
         {
             _session = session;
+            this.ravenDBIdUtil = ravenDBIdUtil;
         }
 
         public async Task<IEnumerable<TossLastQueryItem>> Handle(TossLastQuery request, CancellationToken cancellationToken)
         {
-            return await _session.Query<TossEntity>()
+            List<TossLastQueryItem> list = await _session.Query<TossEntity>()
                 .Where(t => t.Tags.Contains(request.HashTag))
                 .OrderByDescending(t => t.CreatedOn)
-                 .Select(t => new TossLastQueryItem()
-                 {
-                     Content = t.Content.Substring(0, 100),
-                     CreatedOn = t.CreatedOn,
-                     Id = t.Id,
-                     UserName = t.UserName
-                 })
-                .Take(50)
-                
+                .Select(t => new TossLastQueryItem()
+                {
+                    Content = t.Content.Substring(0, 100),
+                    CreatedOn = t.CreatedOn,
+                    Id = t.Id,
+                    UserName = t.UserName
+                })
+                .Skip(TossLastQuery.TossPerPage * request.Page)
+                .Take(TossLastQuery.TossPerPage)
+
                 .ToListAsync();
+            foreach (var item in list)
+            {
+                item.Id = ravenDBIdUtil.GetUrlId(item.Id);
+            }
+            return list;
         }
     }
 }

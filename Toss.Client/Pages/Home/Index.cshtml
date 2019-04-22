@@ -29,28 +29,66 @@
     else
     {
         <OneTossDetail ref="tossDetail" OnTossDetailHide="OnTossDetailHide"></OneTossDetail>
-        <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-       
-        @if (Tosses != null )
+
+
+        if (Tosses.Any())
         {
-            if(Tosses.Any()){
-                foreach (var toss in Tosses?.OrderByDescending(t => t.CreatedOn))
+            foreach (var tossGroup in Tosses)
+            {
+                <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
+                foreach (var toss in tossGroup)
                 {
                     <OneToss toss="@toss" ShowDetailDelegate="ShowDetail" />
                 }
             }
-            else{
+            if (!LastPage)
+            {
+                if (Loading)
+                {
+                    <div class="col-md-3 col-sm-6 my-2">
+                        <div class="card text-white bg-warning   h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Loading</h5>
+                                <p class="card-text">We are loading the tosses ...</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-md-3 col-sm-6 my-2">
+                        <div class="card text-white bg-warning   h-100" onclick="@(async () => await ShowMore())">
+                            <div class="card-body">
+                                <p class="card-text">Click here to load more Toss.</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
                 <div class="col-md-3 col-sm-6 my-2">
                     <div class="card text-white bg-warning   h-100">
                         <div class="card-body">
-                            <h5 class="card-title">Nothing to show</h5>
-                            <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
+                            <p class="card-text">You've read all the toss for this tag.</p>
                         </div>
                     </div>
                 </div>
-            }           
+            }
         }
-        else if(Loading){
+        else
+        {
+            <div class="col-md-3 col-sm-6 my-2">
+                <div class="card text-white bg-warning   h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Nothing to show</h5>
+                        <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
+                    </div>
+                </div>
+            </div>
+        }
+        if (Loading)
+        {
             <div class="col-md-3 col-sm-6 my-2">
                 <div class="card text-white bg-warning   h-100">
                     <div class="card-body">
@@ -65,7 +103,7 @@
 @functions{
     OneTossDetail tossDetail;
 
-    List<TossLastQueryItem> Tosses;
+    List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
     [Parameter]
     private string CurrentTag { get; set; } = "";
@@ -77,7 +115,11 @@
 
     private AccountViewModel currentAccount;
 
-    private bool Loading {get;set;} = false;
+    private bool Loading { get; set; } = false;
+
+    public bool LastPage { get; set; } = false;
+
+    protected int Page { get; set; } = 0;
 
     protected async override Task OnInitAsync()
     {
@@ -109,20 +151,34 @@
 
     protected async Task RefreshTossList()
     {
-        
+        if (DisplayedTag != CurrentTag)
+        {
+            Tosses = new List<List<TossLastQueryItem>>();
+            LastPage = false;
+        }
         DisplayedTag = CurrentTag;
-        Tosses = null;
         if (string.IsNullOrWhiteSpace(CurrentTag))
-            return;
+            return;//
         Loading = true;
-        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag)
+        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag + "&query.Page=" + Page)
             .OnOK<List<TossLastQueryItem>>(l =>
             {
-                Tosses = l;
+                Tosses.Add(l);
+
                 Loading = false;
+                if (l.Count < TossLastQuery.TossPerPage)
+                {
+                    LastPage = true;
+                }
                 StateHasChanged();
             })
             .Get();
+    }
+
+    protected async Task ShowMore()
+    {
+        Page++;
+        await RefreshTossList();
     }
 
     protected Task ShowDetail(string tossId)

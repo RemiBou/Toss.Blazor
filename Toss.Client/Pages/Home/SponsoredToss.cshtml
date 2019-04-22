@@ -20,12 +20,10 @@
         if (string.IsNullOrWhiteSpace(CurrentTag))
             return;
         await ClientFactory.Create("/api/toss/sponsored?hashtag=" + CurrentTag)
-            .OnOK<TossLastQueryItem>(async l =>
+            .OnOK<TossLastQueryItem>( l =>
             {
                 sponsoredToss = l;
-                StateHasChanged();
-                await Task.Delay(TimeSpan.FromSeconds(30));
-                await RefreshSponsoredToss();
+                StateHasChanged();             
             })
             .Get();
     }

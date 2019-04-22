@@ -14,24 +14,26 @@ namespace Toss.Server.Models.Tosses
     public class TossDetailsQueryHandler : IRequestHandler<TossDetailQuery, TossDetail>
     {
         private readonly IAsyncDocumentSession _session;
+        private readonly RavenDBIdUtil ravenDBIdUtil;
 
-        public TossDetailsQueryHandler(IAsyncDocumentSession session)
+        public TossDetailsQueryHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDBIdUtil)
         {
             _session = session;
+            this.ravenDBIdUtil = ravenDBIdUtil;
         }
 
         public async Task<TossDetail> Handle(TossDetailQuery request, CancellationToken cancellationToken)
         {
-            return await _session.Query<TossEntity>()
-                .Where(t => t.Id == request.TossId)
-                .Select(t => new TossDetail()
+            var t = (await _session.LoadAsync<TossEntity>(ravenDBIdUtil.GetRavenDbIdFromUrlId<TossEntity>( request.TossId)));
+            if (t == null)
+                return null;
+            return new TossDetail()
                 {
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
                     UserName = t.UserName,
                     Id = t.Id
-                })
-                .FirstOrDefaultAsync();
+                };
         }
     }
 }

@@ -53,7 +53,7 @@
     {
 
         var errors = await AccountService.Login(command);
-        if (errors.Any())
+        if (errors != null && errors.Any())
         {
             serverSideValidator.DisplayErrors(errors);
         }

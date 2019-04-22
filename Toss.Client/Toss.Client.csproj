@@ -6,6 +6,10 @@
     <OutputType>Exe</OutputType>
     <BlazorRebuildOnFileChange>true</BlazorRebuildOnFileChange>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- extends watching group to include *.js files -->
+    <Watch Include="**\*.cstml"  />
+  </ItemGroup>
 
   <ItemGroup>
     <Content Remove="Configuration\appsettings.Development.json" />

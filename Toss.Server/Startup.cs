@@ -70,7 +70,7 @@ namespace Toss.Server
 
         private void AddRavenDBServices(IServiceCollection services)
         {
-            services.AddSingleton(s =>
+            services.AddSingleton<IDocumentStore>(s =>
             {
                 IDocumentStore store = new DocumentStore()
                 {
@@ -84,9 +84,10 @@ namespace Toss.Server
 
                         return "TossEntity";
                     }
-
+                    
                     return DocumentConventions.DefaultGetCollectionName(type);
                 };
+                
                 store.Initialize();
                 //taken from https://ravendb.net/docs/article-page/4.1/csharp/client-api/operations/server-wide/create-database
                 try
@@ -109,7 +110,7 @@ namespace Toss.Server
             });
 
             services.AddScoped(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
-
+            services.AddSingleton<RavenDBIdUtil>();
             services
                 .AddRavenDbIdentity<ApplicationUser>();
 

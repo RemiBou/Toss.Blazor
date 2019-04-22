@@ -17,17 +17,11 @@ namespace Toss.Tests.Server.Models.Tosses
 
     public class LastTossQueryHandlerTest : BaseTest
     {
-        private readonly IAsyncDocumentSession _session;
-        public LastTossQueryHandlerTest()
-        {
-            _session = serviceProviderInitializer.GetInstance<IAsyncDocumentSession>();
-
-        }
 
         [Fact]
         public async Task last_returns_last_items_from_table_ordered_desc_by_createdon()
         {
-            for (int i = 0; i < 60; i++)
+            for (int i = 0; i < 11; i++)
             {
                 FakeNow.Current = new DateTime(2017, 12, 31).AddDays(-i);
                 await _mediator.Send(new TossCreateCommand()
@@ -38,8 +32,29 @@ namespace Toss.Tests.Server.Models.Tosses
             await SaveAndWait();
             var res = await _mediator.Send(new TossLastQuery("ipsum"));
 
-            Assert.Equal(50, res.Count());
-            Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-50)));
+            Assert.Equal(10, res.Count());
+            Assert.Null(res.FirstOrDefault(r => r.CreatedOn < new DateTime(2017, 12, 31).AddDays(-10)));
+        }
+
+        [Fact]
+        public async Task returns_last_toss_paginated()
+        {
+            for (int i = 0; i < 31; i++)
+            {
+                FakeNow.Current = new DateTime(2017, 12, 31).AddDays(-i);
+                await _mediator.Send(new TossCreateCommand()
+                {
+                    Content = "num"+i+" #test"
+                });
+            }
+            await SaveAndWait();
+            var res = await _mediator.Send(new TossLastQuery("test",1 ));
+            Assert.Equal(10, res.Count());
+            foreach(var toss in res)
+            {
+                Assert.InRange(toss.CreatedOn, new DateTime(2017, 12, 12), new DateTime(2017, 12, 21));
+            }
+            
         }
 
         [Fact]
@@ -59,7 +74,7 @@ namespace Toss.Tests.Server.Models.Tosses
             });
             await SaveAndWait();
             var tosses = await _mediator.Send(
-                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "toto" });
+                new Toss.Shared.Tosses.TossLastQuery("toto"));
             Assert.Equal(3, tosses.Count());
             Assert.Null(tosses.FirstOrDefault(t => t.Content.Contains("#tutu")));
         }
@@ -92,6 +107,21 @@ namespace Toss.Tests.Server.Models.Tosses
             var tosses = await _mediator.Send(
                 new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });
             Assert.Equal(serviceProviderInitializer.UserName, tosses.First().UserName);
+        }
+
+        [Fact]
+        public async Task does_not_return_id_with_slash()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "blabla bla bla bla bla #test"
+
+            });
+            await SaveAndWait();
+            var tosses = await _mediator.Send(
+                new Toss.Shared.Tosses.TossLastQuery() { HashTag = "test" });
+            Assert.DoesNotContain("/", tosses.First().Id);
+
         }
     }
 }
