@@ -8,42 +8,17 @@ namespace Toss.Shared.Tosses
 {
     public class TossCreateCommand : IRequest
     {
-        public const string TagRegexString = @"(?<=[\s>]|^)#(\w*[A-Za-z_]+\w*)";
+        public const string TagRegexString = @"#(\w*[A-Za-z_]+\w*)";
 
         public static Regex TagRegex = new Regex(TagRegexString,RegexOptions.Compiled);
         [Required]
         [MaxLength(32000)]
         [MinLength(20)]
-        [RegularExpression("(?s)(.)*(?<=#)" + AddHashtagCommand.HashTagRegex + "(.)*", ErrorMessage = "Your toss must contain at least one hashtag (#)")]
+        [RegularExpression("(?s)(.)*" + TagRegexString + "(.)*", ErrorMessage = "Your toss must contain at least one hashtag (#)")]
         public string Content { get; set; }
 
-        [Range(50,1000)]
-        public int? SponsoredDisplayedCount { get; set; }
-
-        public string SponsoredDisplayedCountStr
-        {
-            get
-            {
-                return SponsoredDisplayedCount.ToString();
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                    SponsoredDisplayedCount = null;
-                else
-                {
-                    int parseResult;
-                    if (int.TryParse(value, out parseResult))
-                    {
-                        SponsoredDisplayedCount = parseResult;
-                    }
-                    else
-                    {
-                        SponsoredDisplayedCount = null;
-                    }
-                }
-            }
-        }
+        [Range(50, 1000)]
+        public int? SponsoredDisplayedCount { get; set; } 
 
         public string StripeChargeToken { get; set; }
 

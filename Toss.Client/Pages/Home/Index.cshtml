@@ -9,10 +9,10 @@
 <div class="form-inline">
     @if (currentAccount != null)
     {
-        <NewToss OnNewTossCreated="@RefreshTossList"></NewToss>
+        <NavLink href="/new" class="btn btn-primary" id="BtnOpenNewToss"><i class="fas fa-plus"></i> New Toss</NavLink>
     }
     <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
-    <button type="button" class="btn btn-warning" onclick="@RefreshTossList"><i class="fas fa-sync"></i></button>
+    <button type="button" class="btn btn-warning" onclick="@ResetCurrentTagDisplay"><i class="fas fa-sync"></i></button>
 </div>
 <div class="row">
     @if (string.IsNullOrEmpty(CurrentTag))
@@ -43,18 +43,7 @@
             }
             if (!LastPage)
             {
-                if (Loading)
-                {
-                    <div class="col-md-3 col-sm-6 my-2">
-                        <div class="card text-white bg-warning   h-100">
-                            <div class="card-body">
-                                <h5 class="card-title">Loading</h5>
-                                <p class="card-text">We are loading the tosses ...</p>
-                            </div>
-                        </div>
-                    </div>
-                }
-                else
+                if (!Loading)
                 {
                     <div class="col-md-3 col-sm-6 my-2">
                         <div class="card text-white bg-warning   h-100" onclick="@(async () => await ShowMore())">
@@ -68,7 +57,7 @@
             else
             {
                 <div class="col-md-3 col-sm-6 my-2">
-                    <div class="card text-white bg-warning   h-100">
+                    <div class="card text-white bg-success   h-100">
                         <div class="card-body">
                             <p class="card-text">You've read all the toss for this tag.</p>
                         </div>
@@ -76,7 +65,7 @@
                 </div>
             }
         }
-        else
+        else if(!Loading)
         {
             <div class="col-md-3 col-sm-6 my-2">
                 <div class="card text-white bg-warning   h-100">
@@ -130,7 +119,7 @@
     protected override async Task OnParametersSetAsync()
     {
         if (DisplayedTag != CurrentTag)
-            await RefreshTossList();
+            await GetTossCurrentTag();
         if (!string.IsNullOrEmpty(TossId))
             await tossDetail.ShowDetail(TossId);
     }
@@ -148,13 +137,22 @@
         }
         await base.SetParametersAsync(parameters);
     }
-
-    protected async Task RefreshTossList()
+    protected async Task ResetCurrentTagDisplay()
+    {
+        ResetDisplayState();
+        await GetTossCurrentTag();
+    }
+    private void ResetDisplayState()
+    {
+        Tosses = new List<List<TossLastQueryItem>>();
+        LastPage = false;
+        Page = 0;
+    }
+    protected async Task GetTossCurrentTag()
     {
         if (DisplayedTag != CurrentTag)
         {
-            Tosses = new List<List<TossLastQueryItem>>();
-            LastPage = false;
+            ResetDisplayState();
         }
         DisplayedTag = CurrentTag;
         if (string.IsNullOrWhiteSpace(CurrentTag))
@@ -178,7 +176,7 @@
     protected async Task ShowMore()
     {
         Page++;
-        await RefreshTossList();
+        await GetTossCurrentTag();
     }
 
     protected Task ShowDetail(string tossId)

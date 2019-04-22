@@ -236,6 +236,21 @@ namespace Toss.Tests.Server.Models.Tosses
             Assert.Contains("toto", toss.Tags);
         }
 
+
+        [Fact]
+        public async Task create_initalize_tags_next_to_char()
+        {
+            await _mediator.Send(new TossCreateCommand()
+            {
+                Content = "lorem ipsum lorem ipsum lorem ipsum lorem ipsum#test "
+            });
+
+
+            await SaveAndWait();
+            var toss = await _mediator.Send(new TossLastQuery("test"));
+            Assert.Single(toss);
+        }
+
         [Fact]
         public async Task create_adds_request_ip()
         {

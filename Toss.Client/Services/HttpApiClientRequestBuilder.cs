@@ -105,19 +105,27 @@ namespace Toss.Client.Services
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {
             messageService.Loading();
+            HttpResponseMessage response = null;
             try
             {
-                var response = await httpCall();
+                try
+                {
+                    response = await httpCall();
+                }
+                catch
+                {
+                    messageService.Error("Connection error, server is down or you are not connected to the same network (internet).");
+                    throw;
+                }
+                finally
+                {
+                    messageService.LoadingDone();
+                }
                 await HandleHttpResponse(response);
-            }
-            catch
-            {
-                messageService.Error( "Connection error, server is down or you are not connected to the same network.");
-                throw;
             }
             finally
             {
-                messageService.LoadingDone();
+                response?.Dispose();
             }
         }
         public HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo)

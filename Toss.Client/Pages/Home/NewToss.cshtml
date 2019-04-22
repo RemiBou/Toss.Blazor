@@ -1,71 +1,77 @@
-﻿
+﻿@page "/new"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @implements IStripeCallBack
-@inject IJsInterop JsInterop
-<!-- Modal -->
-<div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+@inject IJsInterop JsInterop;
+@inject IUriHelper urlHelper;
+@inject IMessageService messageService;
+<h1>New Toss</h1>
+<EditForm Model="@command" OnValidSubmit="@SendToss">
+    <DataAnnotationsValidator></DataAnnotationsValidator>
+    <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
+    <div class="form-group">
+        <InputTextArea Class="form-control" Id="TextAreaNewToss" bind-Value="@command.Content"></InputTextArea>
+        <ValidationMessage For="@(() => command.Content)" />
+        <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
+    </div>
 
-        <div class="modal-content">
-            <EditForm Model="@command" OnValidSubmit="@SendToss">
-                <DataAnnotationsValidator></DataAnnotationsValidator>
-                <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
-                <div class="modal-body">
-                    <InputTextArea Class="form-control" bind-Value="@command.Content"></InputTextArea>
-                    <ValidationMessage For="@(() => command.Content)" />
-                    @*<textarea bind="@command.Content" id="TxtNewToss" placeholder="New Toss" class="form-control" style="min-width: 100%; height:200px;"></textarea>*@
-
-                    <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" bind="isSponsoredToss" class="custom-control-input" id="customCheck1" />
-                        <label class="custom-control-label" for="customCheck1">Sponsored Toss</label>
-                    </div>
-                    @if (isSponsoredToss)
-                    {
-                        <div class="alert alert-info mt-2">
-                            You can create a sponsored Toss :
-                            <ul>
-                                <li>It'll be displayed as first Toss during 30 sec for the number of times entered below</li>
-                                <li>Only one sponsored toss is displayed at a time, if multiple matches the current tag, one is picked randomly. </li>
-                                <li>One display costs @(TossCreateCommand.CtsCostPerDisplay / 100) €, you have to get between 50 and 1000 displays. Once you click on "Toss it" you will be redirected to the payment system.</li>
-                                <li>The TOSS will be displayed as a normal toss, once we get the payment confirmation it will be displayed as a sponsored toss like said before.</li>
-                                <li>You can read more details about it <a href="https://github.com">here</a>. By creating a sponsored toss, you agree on the conditions explained on the provided link.</li>
-
-                            </ul>
-                        </div>
-                        <div class="form-group">
-                            <label for="TxtDisplayCount">Display count</label>
-                            <InputNumber Value="@command.SponsoredDisplayedCount" Class="form-control"></InputNumber>
-                            <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
-                        </div>
-                    }
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="BtnNewToss"class="btn btn-primary btn-block" type="submit">Toss-it</button>
-                </div>
-            </EditForm>
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" bind="isSponsoredToss" class="custom-control-input" id="sponsoredToss" />
+            <label class="custom-control-label" for="sponsoredToss">Sponsored Toss</label>
         </div>
     </div>
-</div>
+    @if (isSponsoredToss)
+    {
+        <div class="alert alert-info mt-2">
+            You can create a sponsored Toss :
+            <ul>
+                <li>One sponsored toss, picked randomly, will be displayed every 10 Toss on the matching tags.</li>
+                <li>One display costs @((decimal)TossCreateCommand.CtsCostPerDisplay / 100) €, you have to get between 50 and 1000 displays. Once you click on "Create this Toss" you will be redirected to the payment system.</li>
+                <li>The TOSS will be displayed as a normal toss, once we get the payment confirmation it will be displayed as a sponsored toss like said before.</li>
+            </ul>
+        </div>
+        <div class="form-group">
+            <label for="TxtDisplayCount">Display count</label>
+            <InputNumber bind-Value="@command.SponsoredDisplayedCount" Class="form-control"></InputNumber>
+            <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
 
-<div class="form-group">
-    <div class="input-group m-1 btn-group" role="group">
-        <button type="button" class="btn btn-primary" id="BtnOpenNewToss" onclick="@ShowModal"><i class="fas fa-plus"></i> New TOSS</button>
+        </div>
+    }
+    <div class="form-group">
+        <button id="BtnNewToss" class="btn btn-primary" type="submit">
+            Create this Toss
+            @if (isSponsoredToss)
+            {
+                <small class="">(and pay @(command.SponsoredDisplayedCount * (decimal)TossCreateCommand.CtsCostPerDisplay/100) €)</small>
+            }
+        </button>
     </div>
-</div>
+</EditForm>
+
 @functions{
-    ElementRef modal;
 
-    bool isSponsoredToss = false;
-
-    [Parameter]
-    protected Func<Task> OnNewTossCreated { get; set; }
+    bool isSponsoredToss
+    {
+        get
+        {
+            return command.SponsoredDisplayedCount.HasValue;
+        }
+        set
+        {
+            if (value)
+            {
+                command.SponsoredDisplayedCount = 50;
+            }
+            else
+            {
+                command.SponsoredDisplayedCount = null;
+            }
+        }
+    }
 
     TossCreateCommand command = new TossCreateCommand();
     ServerSideValidator serverSideValidator;
-    
+
     protected async Task SendToss()
     {
         if (isSponsoredToss)
@@ -79,20 +85,17 @@
     private async Task DoSendToss()
     {
         await ClientFactory.Create("/api/toss/create")
-            .OnOK(async () =>
+            .OnOK(() =>
             {
                 command = new TossCreateCommand();
-                await OnNewTossCreated?.Invoke();
-                await JsInterop.HideModal(modal);
+                messageService.Info("Toss successfully created.");
+                urlHelper.NavigateTo("/");
             })
             .OnBadRequest<Dictionary<string, List<string>>>(e => serverSideValidator.DisplayErrors(e))
             .Post(command);
         StateHasChanged();
     }
-    protected async Task ShowModal()
-    {
-        await JsInterop.ShowModal(modal);
-    }
+
     [JSInvokable]
     public async Task TokenReceived(string token)
     {
