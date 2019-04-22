@@ -7,6 +7,7 @@ namespace Toss.Client.Services
 {
     public class MessageService : IMessageService
     {
+        private int onGoingLoad = 0;
         public event EventHandler<string> OnInfo;
 
         public event EventHandler<string> OnError;
@@ -25,12 +26,17 @@ namespace Toss.Client.Services
 
         public void Loading()
         {
+            this.onGoingLoad++;
             this.OnLoading.Invoke(this, true);
         }
 
         public void LoadingDone()
         {
-            this.OnLoading.Invoke(this, false);
+            this.onGoingLoad--;
+            if (this.onGoingLoad == 0)
+            {
+                this.OnLoading.Invoke(this, false);
+            }
         }
     }
 }

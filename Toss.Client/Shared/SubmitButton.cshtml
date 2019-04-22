@@ -1,0 +1,32 @@
+﻿@implements IDisposable;
+@inject IMessageService mesageService;
+
+<button type="submit" class="@CssClass" @(loading ? "disabled": "")>
+    
+    @ChildContent
+</button>
+@functions{     
+    private bool loading = false;
+    [Parameter]
+
+    private RenderFragment ChildContent { get; set; }
+
+    [Parameter]
+    private string CssClass { get; set; }
+
+    [Parameter]
+    private string Id { get; set; }
+    protected override void OnInit()
+    {
+        this.mesageService.OnLoading += DisableButton;
+        base.OnInit();
+    }
+    public void DisableButton(object sender, bool loading)
+    {
+        this.loading = loading;
+    }
+    public void Dispose()
+    {
+        this.mesageService.OnLoading -= DisableButton;
+    }
+}

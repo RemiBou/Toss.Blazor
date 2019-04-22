@@ -11,7 +11,7 @@
         @error
     </div>
 }
-@if (loadingCount > 0)
+@if (loading)
 {
     <div class="alert alert-info">
         <i class="fa fa-circle-o-notch fa-spin"></i>Loading...
@@ -20,19 +20,12 @@
 @functions{
     private List<string> informations = new List<string>();
     private List<string> errors = new List<string>();
-    private int loadingCount = 0;
+    private bool loading = false;
     protected override void OnInit()
     {
         messageService.OnLoading += (o, l) =>
         {
-            if (l)
-            {
-                loadingCount++;
-            }
-            else
-            {
-                loadingCount--;
-            }
+            loading = l;
             StateHasChanged();
         };
         messageService.OnInfo += (o, s) =>
