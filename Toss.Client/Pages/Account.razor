@@ -18,7 +18,7 @@
         <InputText Class="form-control" bind-Value="@command.Name" />
         <ValidationMessage For="@(() => command.Name)" />
     </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <SubmitButton CssClass="btn btn-primary">Save</SubmitButton>
 </EditForm>
 
 @functions {
