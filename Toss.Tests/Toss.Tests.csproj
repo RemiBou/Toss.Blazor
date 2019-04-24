@@ -19,7 +19,7 @@
     <PackageReference Include="RavenDB.Embedded" Version="4.2.0-rc-42005" />
     <PackageReference Include="RavenDB.TestDriver" Version="4.2.0-rc-42005" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="3.0.0-preview-19075-0444" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.4" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

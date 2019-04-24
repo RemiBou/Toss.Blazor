@@ -11,10 +11,6 @@ variables:
 
 steps:
 - task: DotNetCoreInstaller@0
-  displayName: 'Install SDK For RavenDB'
-  inputs:
-    version: '2.2.106'
-- task: DotNetCoreInstaller@0
   displayName: 'Install SDK'
   inputs:
     version: '3.0.100-preview4-011223'
