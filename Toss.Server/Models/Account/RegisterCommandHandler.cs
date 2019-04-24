@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Toss.Server.Controllers;
-using Toss.Server.Extensions;
 using Toss.Server.Services;
-using Toss.Shared;
 using Toss.Shared.Account;
 
 namespace Toss.Server.Models.Account
@@ -19,25 +17,15 @@ namespace Toss.Server.Models.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger _logger;
-        private readonly IEmailSender _emailSender;
-        private readonly IUrlHelper urlHelper;
-        private readonly IHttpContextAccessor httpContextAccessor;
-
         private readonly IMediator _mediator;
 
         public RegisterCommandHandler(
             UserManager<ApplicationUser> userManager,
             ILogger<AccountController> logger,
-            IEmailSender emailSender,
-            IUrlHelper urlHelper,
-            IHttpContextAccessor httpContextAccessor,
             IMediator mediator)
         {
             _userManager = userManager;
             _logger = logger;
-            _emailSender = emailSender;
-            this.urlHelper = urlHelper;
-            this.httpContextAccessor = httpContextAccessor;
             _mediator = mediator;
         }
 
@@ -76,8 +64,8 @@ namespace Toss.Server.Models.Account
                     keyMapping.TryGetValue(key, out key);
                     return new { Key = key, e.Description };
                 }
-                ).ToLookup(e => e.Key,e => e.Description)
-                .ToDictionary(l => l.Key,l => l.ToList());
+                ).ToLookup(e => e.Key, e => e.Description)
+                .ToDictionary(l => l.Key, l => l.ToList());
             return new CommandResult(formatedErrors);
         }
     }

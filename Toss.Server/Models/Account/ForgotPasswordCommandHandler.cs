@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Toss.Server.Data;
 using Toss.Server.Extensions;
 using Toss.Server.Services;
 using Toss.Shared.Account;
@@ -19,13 +20,15 @@ namespace Toss.Server.Models.Account
         private readonly IEmailSender _emailSender;
         private readonly IUrlHelper _urlHelper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly RavenDBIdUtil _ravenDBIdUtil;
 
-        public ForgotPasswordCommandHandler(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor)
+        public ForgotPasswordCommandHandler(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IUrlHelper urlHelper, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDBIdUtil)
         {
             _userManager = userManager;
             _emailSender = emailSender;
             _urlHelper = urlHelper;
             _httpContextAccessor = httpContextAccessor;
+            _ravenDBIdUtil = ravenDBIdUtil;
         }
 
         public async Task<Unit> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
@@ -40,7 +43,7 @@ namespace Toss.Server.Models.Account
             // For more information on how to enable account confirmation and password reset please
             // visit https://go.microsoft.com/fwlink/?LinkID=532713
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = _urlHelper.ResetPasswordCallbackLink(user.Id, code, _httpContextAccessor.HttpContext.Request.Scheme);
+            var callbackUrl = _urlHelper.ResetPasswordCallbackLink(_ravenDBIdUtil.GetUrlId( user.Id), code, _httpContextAccessor.HttpContext.Request.Scheme);
             await _emailSender.SendPasswordForgetAsync(request.Email, user.UserName, callbackUrl);
             return Unit.Value;
 

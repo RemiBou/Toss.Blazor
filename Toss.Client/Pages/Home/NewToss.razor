@@ -9,7 +9,7 @@
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
     <div class="form-group">
-        <InputTextArea Class="form-control" Id="TextAreaNewToss" bind-Value="@command.Content"></InputTextArea>
+        <InputTextArea Class="form-control" Id="TxtNewToss" bind-Value="@command.Content"></InputTextArea>
         <ValidationMessage For="@(() => command.Content)" />
         <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
     </div>
