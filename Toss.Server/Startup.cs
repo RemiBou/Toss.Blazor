@@ -227,11 +227,11 @@ namespace Toss.Server
 
 
 
-            app.UseMvc(routes =>
+            app.UseRouting();
+
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "/api/{controller}/{action}/{id?}");
+                routes.MapDefaultControllerRoute();
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();

@@ -9,18 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Mailjet.Api" Version="1.0.1" />
+    <PackageReference Include="Mailjet.Api" Version="1.2.2" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="0.9.0-preview3-19154-02" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.Server" Version="3.0.0-preview3-19153-02" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="RavenDB.Client" Version="4.2.0-rc-42002" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.0-rc-42005" />
     <PackageReference Include="RavenDB.Identity" Version="6.0.3" />
     <PackageReference Include="Scrutor" Version="3.0.2" />
-    <PackageReference Include="Stripe.net" Version="21.4.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview3-19153-02" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview3-19153-02" />
+    <PackageReference Include="Stripe.net" Version="25.10.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0-preview4-19216-03" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
   </ItemGroup>
 

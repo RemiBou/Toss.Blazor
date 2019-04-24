@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Builder;
-using Microsoft.AspNetCore.Components.Services;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Primitives;
@@ -9,8 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Toss.Client.Services
 {
@@ -22,11 +19,11 @@ namespace Toss.Client.Services
         {
             serviceCollection.AddSingleton<IConfiguration>((s) =>
             {
-                var environementChooser = environmentChooserFactory();
-                var uri = new Uri(s.GetRequiredService<IUriHelper>().GetAbsoluteUri());
+                EnvironmentChooser environementChooser = environmentChooserFactory();
+                Uri uri = new Uri(s.GetRequiredService<IUriHelper>().GetAbsoluteUri());
                 System.Reflection.Assembly assembly = typeof(TResource).Assembly;
                 string environment = environementChooser.GetCurrent(uri);
-                var ressourceNames = new[]
+                string[] ressourceNames = new[]
                 {
                     assembly.GetName().Name + ".Configuration.appsettings.json",
                     assembly.GetName().Name + ".Configuration.appsettings." + environment + ".json"
@@ -36,7 +33,7 @@ namespace Toss.Client.Services
                 {
                     { "Environment", environment }
                 });
-                foreach (var resource in ressourceNames)
+                foreach (string resource in ressourceNames)
                 {
 
                     if (assembly.GetManifestResourceNames().Contains(resource))

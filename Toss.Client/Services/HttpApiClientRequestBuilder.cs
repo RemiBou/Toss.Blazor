@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
-
-using Microsoft.AspNetCore.Components.Services;
 using Microsoft.JSInterop;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Toss.Shared;
@@ -18,12 +15,12 @@ namespace Toss.Client.Services
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
         private readonly IBrowserCookieService browserCookieService;
-        private IMessageService messageService;
+        private readonly IMessageService messageService;
         public IJsInterop JsInterop { get; }
 
         public HttpApiClientRequestBuilder(HttpClient httpClient,
-            string uri, 
-            IUriHelper uriHelper, 
+            string uri,
+            IUriHelper uriHelper,
             IBrowserCookieService browserCookieService, IJsInterop jsInterop, IMessageService messageService)
         {
             _uri = uri;
@@ -50,7 +47,7 @@ namespace Toss.Client.Services
             await SetCaptchaToken(data);
             await ExecuteHttpQuery(async () =>
             {
-                var requestJson = Json.Serialize(data);
+                string requestJson = Json.Serialize(data);
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
@@ -62,7 +59,7 @@ namespace Toss.Client.Services
         {
             if (data is NotARobot)
             {
-                (data as NotARobot).Token = await JsInterop.Captcha(this._uri);
+                (data as NotARobot).Token = await JsInterop.Captcha(_uri);
             }
         }
 
@@ -86,7 +83,7 @@ namespace Toss.Client.Services
                 case System.Net.HttpStatusCode.Forbidden:
                     break;
                 case System.Net.HttpStatusCode.InternalServerError:
-                    messageService.Error( "A server error occured, sorry");
+                    messageService.Error("A server error occured, sorry");
                     break;
                     //other case , we do nothing, I'll add this case as needed
             }
@@ -132,7 +129,7 @@ namespace Toss.Client.Services
         {
             _onBadRequest = async (HttpResponseMessage r) =>
             {
-                var response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                T response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;
@@ -141,7 +138,7 @@ namespace Toss.Client.Services
         {
             _onOK = async (HttpResponseMessage r) =>
             {
-                var response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                T response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;
@@ -182,13 +179,13 @@ namespace Toss.Client.Services
         }
         public HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null)
         {
-            OnOK( () =>
-            {
-                if (!string.IsNullOrEmpty(successMessage))
-                    messageService.Info( successMessage);
-                if (!string.IsNullOrEmpty(navigateTo))
-                    uriHelper.NavigateTo(navigateTo);
-            });
+            OnOK(() =>
+           {
+               if (!string.IsNullOrEmpty(successMessage))
+                   messageService.Info(successMessage);
+               if (!string.IsNullOrEmpty(navigateTo))
+                   uriHelper.NavigateTo(navigateTo);
+           });
             return this;
         }
 

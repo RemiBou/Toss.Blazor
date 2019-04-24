@@ -1,7 +1,7 @@
 ﻿@implements IDisposable;
 @inject IMessageService mesageService;
 
-<button type="submit" class="@CssClass" @(loading ? "disabled": "")>
+<button type="submit" class="@CssClass" disabled="@loading">
     
     @ChildContent
 </button>

@@ -2,13 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <OutputType>Exe</OutputType>
-    <BlazorRebuildOnFileChange>true</BlazorRebuildOnFileChange>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <ReferenceBlazorBuildLocally>true</ReferenceBlazorBuildLocally>
   </PropertyGroup>
   <ItemGroup>
     <!-- extends watching group to include *.js files -->
-    <Watch Include="**\*.cstml"  />
+    <Watch Include="**\*.cstml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,11 +23,11 @@
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.16.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="0.9.0-preview3-19154-02" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="0.9.0-preview3-19154-02" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview3.19153.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview3.19153.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview4-19216-03" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview4.19216.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
