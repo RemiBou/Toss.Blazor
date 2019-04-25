@@ -12,7 +12,7 @@
                 <label class="col-sm-3 col-form-label" for="NewEmail">Email</label>
 
                 <div class="col-sm-9">
-                    <InputText Class="form-control" bind-Value="@command.Email" />
+                    <InputText Id="NewEmail" Class="form-control" bind-Value="@command.Email" />
                     <ValidationMessage For="@(() => command.Email)"/>
                 </div>
 
@@ -21,7 +21,7 @@
                 <label class="col-sm-3 col-form-label" for="NewName">Name</label>
 
                 <div class="col-sm-9">
-                    <InputText Class="form-control" bind-Value="@command.Name" />
+                    <InputText Id="NewName" Class="form-control" bind-Value="@command.Name" />
                      <ValidationMessage For="@(() => command.Name)" />
                 </div>
             </div>
@@ -29,7 +29,7 @@
                 <label class="col-sm-3 col-form-label" for="NewPassword">Password</label>
 
                 <div class="col-sm-9">
-                    <InputPassword Class="form-control" bind-Value="@command.Password" />
+                    <InputPassword Id="NewPassword" Class="form-control" bind-Value="@command.Password" />
                      <ValidationMessage For="@(() => command.Password)" />
                 </div>
             </div>
@@ -37,12 +37,12 @@
                 <label class="col-sm-3 col-form-label" for="NewConfirmPassword">Confirm</label>
 
                 <div class="col-sm-9">
-                    <InputPassword Class="form-control" bind-Value="@command.ConfirmPassword" />
+                    <InputPassword Id="NewConfirmPassword" Class="form-control" bind-Value="@command.ConfirmPassword" />
                     <ValidationMessage For="@(() => command.ConfirmPassword)" />
                 </div>
             </div>
             <div class="form-group text-center mb-0">
-                <button type="submit"  id="BtnRegister" class="btn btn-primary">Register</button>
+                <SubmitButton Id="BtnRegister" CssClass="btn btn-primary">Register</SubmitButton>
              
             </div>  
 

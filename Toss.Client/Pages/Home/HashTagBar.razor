@@ -1,7 +1,7 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IAccountService AccountService
-@inject IUriHelper urlHelper
-@inject IMessageService messageService
+@inject IAccountService AccountService;
+@inject IUriHelper urlHelper;
+@inject IMessageService messageService;
 
 <div class="form-group" id="BlockHashTagBar">
     <div class="input-group m-1">
@@ -47,7 +47,9 @@
     protected string GetUrl(string hashtag)
     {
         if (string.IsNullOrEmpty(hashtag))
+        {
             return "/";
+        }
         return "/tag/" + hashtag;
 
     }
@@ -56,7 +58,9 @@
         _account = await AccountService.CurrentAccount();
 
         if (_account != null && string.IsNullOrEmpty(CurrentTag) && _account.Hashtags.Any())
+        {
             urlHelper.NavigateTo(GetUrl(_account.Hashtags.First()));
+        }
         StateHasChanged();
     }
 

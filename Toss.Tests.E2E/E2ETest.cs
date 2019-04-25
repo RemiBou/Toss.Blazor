@@ -10,7 +10,7 @@ namespace Toss.Tests.E2E
     public class E2ETest : ServerTestBase
     {
         private readonly WebDriverWait _webDriveWaitDefault;
-        private const int DefaultWaitSecondsForPageChange = 30;
+        private const int DefaultWaitSecondsForPageChange = 15;
         private const string SubscribeEmail = "toss-unittests@yopmail.com";
         private const string SubscribePassword = "tossUnittests123456!!";
         private const string SubscribeLogin = "tossunittests";
@@ -36,7 +36,6 @@ namespace Toss.Tests.E2E
         {
             try
             {
-                Browser.Manage().Window.FullScreen();
                 Navigate("/login");
                 DisableRecaptcha();
                 Assert.Equal("TOSS", Browser.Title);
@@ -58,7 +57,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
 
                 //log in
-                Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeLogin);
+                Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeEmail);
                 Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
                 Browser.FindElement(By.Id("BtnLogin")).Click();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
@@ -69,14 +68,14 @@ namespace Toss.Tests.E2E
                 string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
                 Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
                 Browser.FindElement(By.Id("BtnNewToss")).Click();
-                _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
                 //add new toss x 2
                 Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
                 _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
                 Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
                 Browser.FindElement(By.Id("BtnNewToss")).Click();
-                _webDriveWaitDefault.Until(b => !b.FindElements(By.CssSelector(".modal-backdrop")).Any());
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
                 //add new hashtag
                 Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");

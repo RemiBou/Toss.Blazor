@@ -1,7 +1,7 @@
 ﻿@implements IDisposable;
 @inject IMessageService mesageService;
 
-<button type="submit" class="@CssClass" @(loading ? "disabled": "")>
+<button type="submit" id="@Id" class="@CssClass" disabled="@loading">
     
     @ChildContent
 </button>
@@ -24,6 +24,7 @@
     public void DisableButton(object sender, bool loading)
     {
         this.loading = loading;
+        this.StateHasChanged();
     }
     public void Dispose()
     {

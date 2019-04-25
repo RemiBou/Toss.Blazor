@@ -191,13 +191,7 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var options = new RewriteOptions()
-                .AddRewrite("^_framework/_bin/(.*)\\.blazor", "_framework/_bin/$1.dll", skipRemainingRules: true);
-
-            app.UseRewriter(options);
-
-            app.UseResponseCompression();
-
+            
             if (env.EnvironmentName.Equals("Development"))
             {
                 app.UseDeveloperExceptionPage();
@@ -205,6 +199,9 @@ namespace Toss.Server
             else
             {
                 app.UseExceptionHandler("/Home/Error");
+
+                app.UseResponseCompression();
+
             }
 
             var supportedCultures = new[]
@@ -224,14 +221,14 @@ namespace Toss.Server
             app.UseStaticFiles();
 
             app.UseAuthentication();
+            app.UseAuthorization();
 
 
+            app.UseRouting();
 
-            app.UseMvc(routes =>
+            app.UseEndpoints(routes =>
             {
-                routes.MapRoute(
-                    name: "default",
-                    template: "/api/{controller}/{action}/{id?}");
+                routes.MapDefaultControllerRoute();
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();

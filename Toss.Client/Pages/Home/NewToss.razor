@@ -9,7 +9,7 @@
     <DataAnnotationsValidator></DataAnnotationsValidator>
     <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
     <div class="form-group">
-        <InputTextArea Class="form-control" Id="TextAreaNewToss" bind-Value="@command.Content"></InputTextArea>
+        <InputTextArea Class="form-control" Id="TxtNewToss" bind-Value="@command.Content"></InputTextArea>
         <ValidationMessage For="@(() => command.Content)" />
         <small class="text-muted"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</small>
     </div>
@@ -38,13 +38,14 @@
         </div>
     }
     <div class="form-group">
-        <button id="BtnNewToss" class="btn btn-primary" type="submit">
+        <SubmitButton Id="BtnNewToss" CssClass="btn btn-primary">
             Create this Toss
             @if (isSponsoredToss)
             {
-                <small class="">(and pay @(command.SponsoredDisplayedCount * (decimal)TossCreateCommand.CtsCostPerDisplay/100) €)</small>
+                <small class="">(and pay @(command.SponsoredDisplayedCount * (decimal)TossCreateCommand.CtsCostPerDisplay / 100) €)</small>
             }
-        </button>
+        </SubmitButton>
+       
     </div>
 </EditForm>
 

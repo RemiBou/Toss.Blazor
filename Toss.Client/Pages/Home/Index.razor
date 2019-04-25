@@ -2,9 +2,9 @@
 @page "/tag/{CurrentTag}/{TossId}"
 @page "/tag/{CurrentTag}"
 @page "/tag/"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory
-@inject IAccountService AccountService
-@inject IUriHelper uriHelper
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IAccountService AccountService;
+@inject IUriHelper uriHelper;
 
 <div class="form-inline">
     @if (currentAccount != null)
@@ -65,7 +65,7 @@
                 </div>
             }
         }
-        else if(!Loading)
+        else if (!Loading)
         {
             <div class="col-md-3 col-sm-6 my-2">
                 <div class="card text-white bg-warning   h-100">
@@ -90,11 +90,11 @@
     }
 </div>
 @functions{
-    OneTossDetail tossDetail;
+        OneTossDetail tossDetail;
 
-    List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
+        List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
-    [Parameter]
+[Parameter]
     private string CurrentTag { get; set; } = "";
 
     [Parameter]
@@ -119,9 +119,13 @@
     protected override async Task OnParametersSetAsync()
     {
         if (DisplayedTag != CurrentTag)
+        {
             await GetTossCurrentTag();
+        }
         if (!string.IsNullOrEmpty(TossId))
+        {
             await tossDetail.ShowDetail(TossId);
+        }
     }
 
     public override async Task SetParametersAsync(ParameterCollection parameters)
@@ -156,7 +160,9 @@
         }
         DisplayedTag = CurrentTag;
         if (string.IsNullOrWhiteSpace(CurrentTag))
+        {
             return;//
+        }
         Loading = true;
         await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag + "&query.Page=" + Page)
             .OnOK<List<TossLastQueryItem>>(l =>

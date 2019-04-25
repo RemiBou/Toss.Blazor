@@ -61,14 +61,6 @@ stripeCheckout = function (callBackInstance, amount) {
     return Promise.resolve();
 };
 
-XMLHttpRequest.prototype.open_before = XMLHttpRequest.prototype.open;
-
-XMLHttpRequest.prototype.open = function (method, url, async) {
-    if (url.endsWith(".dll")) {
-        url = url.replace("dll", "blazor");
-    }
-    return this.open_before(method, url, async);
-};
 runCaptcha = function (actionName) {
     return new Promise((resolve, reject) => {
         grecaptcha.ready(function () {

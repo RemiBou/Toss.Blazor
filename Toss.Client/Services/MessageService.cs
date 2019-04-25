@@ -27,7 +27,7 @@ namespace Toss.Client.Services
         public void Loading()
         {
             this.onGoingLoad++;
-            this.OnLoading.Invoke(this, true);
+            this.OnLoading?.Invoke(this, true);
         }
 
         public void LoadingDone()
@@ -35,7 +35,7 @@ namespace Toss.Client.Services
             this.onGoingLoad--;
             if (this.onGoingLoad == 0)
             {
-                this.OnLoading.Invoke(this, false);
+                this.OnLoading?.Invoke(this, false);
             }
         }
     }
