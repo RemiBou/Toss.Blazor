@@ -85,7 +85,7 @@ namespace Toss.Server.Controllers
         /// <param name="createTossCommand"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> Create(TossCreateCommand createTossCommand)
+        public async Task<IActionResult> Create([FromBody] TossCreateCommand createTossCommand)
         {
             await _mediator.Send(createTossCommand);
             return Ok();
