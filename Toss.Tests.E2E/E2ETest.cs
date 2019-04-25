@@ -87,7 +87,9 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
 
                 //sign out
-
+                var action = new OpenQA.Selenium.Interactions.Actions(Browser);
+                action.MoveToElement(Browser.FindElement(By.Id("LinkLogout")));
+                action.Perform();
                 Browser.FindElement(By.Id("LinkLogout")).Click();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
                 //reset password
