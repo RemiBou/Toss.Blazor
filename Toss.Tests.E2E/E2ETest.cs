@@ -36,6 +36,7 @@ namespace Toss.Tests.E2E
         {
             try
             {
+                Browser.Manage().Window.FullScreen();
                 Navigate("/login");
                 DisableRecaptcha();
                 Assert.Equal("TOSS", Browser.Title);
@@ -87,7 +88,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
 
                 //sign out
-
+                ScrollToView(By.Id("LinkLogout"));
                 Browser.FindElement(By.Id("LinkLogout")).Click();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
                 //reset password
@@ -95,7 +96,7 @@ namespace Toss.Tests.E2E
                 //do reset password
                 //connect
             }
-            catch (WebDriverTimeoutException e)
+            catch (Exception e)
             {
                 Output.WriteLine("Exception: " + e.Message);
                 Output.WriteLine("Browser logs: ");
@@ -108,7 +109,27 @@ namespace Toss.Tests.E2E
                 throw;
             }
         }
+        public void ScrollTo(int xPosition = 0, int yPosition = 0)
+        {
+            var js = String.Format("window.scrollTo({0}, {1})", xPosition, yPosition);
+            (Browser as IJavaScriptExecutor).ExecuteScript(js);
+        }
 
+        public IWebElement ScrollToView(By selector)
+        {
+            var element = Browser.FindElement(selector);
+            ScrollToView(element);
+            return element;
+        }
+
+        public void ScrollToView(IWebElement element)
+        {
+            if (element.Location.Y > 200)
+            {
+                ScrollTo(0, element.Location.Y - 100); // Make sure element is in the view but below the top navigation pane
+            }
+
+        }
         private static void DisableRecaptcha()
         {
             if (Browser is IJavaScriptExecutor)
