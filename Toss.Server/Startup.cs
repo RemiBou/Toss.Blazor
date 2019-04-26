@@ -1,37 +1,32 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Builder; 
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Toss.Server.Data;
-using MediatR;
-using Toss.Server.Services;
-using Toss.Shared.Account;
-using Toss.Server.Models;
-using Toss.Server.Extensions;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Conventions;
+using Raven.Client.Documents.Indexes;
+using Raven.Client.Documents.Operations;
+using Raven.Client.Exceptions;
+using Raven.Client.Exceptions.Database;
+using Raven.Client.ServerWide;
+using Raven.Client.ServerWide.Operations;
+using Raven.Identity;
+using System;
 using System.Globalization;
 using System.Net.Http;
-using Raven.Identity;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
-using Raven.Client.Documents.Indexes;
-using Raven.Client.Documents.Conventions;
-using Raven.Client.Documents.Operations;
-using Raven.Client.Exceptions.Database;
-using Raven.Client.ServerWide.Operations;
-using Raven.Client.ServerWide;
-using Raven.Client.Exceptions;
+using System.Threading.Tasks;
+using Toss.Server.Data;
+using Toss.Server.Extensions;
+using Toss.Server.Models;
+using Toss.Server.Services;
+using Toss.Shared.Account;
 
 namespace Toss.Server
 {
@@ -84,10 +79,10 @@ namespace Toss.Server
 
                         return "TossEntity";
                     }
-                    
+
                     return DocumentConventions.DefaultGetCollectionName(type);
                 };
-                
+
                 store.Initialize();
                 //taken from https://ravendb.net/docs/article-page/4.1/csharp/client-api/operations/server-wide/create-database
                 try
@@ -191,7 +186,7 @@ namespace Toss.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            
+
             if (env.EnvironmentName.Equals("Development"))
             {
                 app.UseDeveloperExceptionPage();
@@ -201,6 +196,7 @@ namespace Toss.Server
                 app.UseExceptionHandler("/Home/Error");
 
                 app.UseResponseCompression();
+                app.UseHsts(hsts => hsts.MaxAge(365));
 
             }
 
@@ -217,8 +213,37 @@ namespace Toss.Server
                 // UI strings that we have localized.
                 SupportedUICultures = supportedCultures
             });
-
+            //must use report only until something is done about wasm
+            app.UseCspReportOnly(options =>
+            {
+                var fluentCspOptions = options
+                    .DefaultSources(s => s.Self())
+                    .ImageSources(s => s.Self().CustomSources("data:"))
+                    .ConnectSources(s => s.Self().CustomSources("https://raw.githubusercontent.com/RemiBou/Toss.Blazor/master/ABOUT.md"))
+                    .StyleSources(s => s.Self().CustomSources("use.fontawesome.com", "cdnjs.cloudflare.com"))
+                    .FontSources(s => s.Self().CustomSources("use.fontawesome.com"))
+                    .FrameSources(s => s.CustomSources("https://www.google.com/recaptcha/"))
+                    .ScriptSources(s => s.Self().UnsafeEval().UnsafeInline().CustomSources("checkout.stripe.com", "https://www.google.com/recaptcha/", "cdnjs.cloudflare.com", "https://www.gstatic.com/recaptcha/"))
+                    .ReportUris(r => r.Uris("https://toss.report-uri.com/r/d/csp/reportOnly"))
+                    .BlockAllMixedContent();
+                if (!env.EnvironmentName.Equals("Development"))
+                {
+                    fluentCspOptions.UpgradeInsecureRequests();
+                }
+            });
+            app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseStaticFiles();
+            app.UseXDownloadOptions();
+            app.UseXContentTypeOptions();
+            app.UseXXssProtection(options => options.EnabledWithBlockMode());
+            app.UseXfo(xfo => xfo.Deny());
+            app.UseRedirectValidation(opts =>
+            {
+                opts.AllowSameHostRedirectsToHttps();
+                opts.AllowedDestinations("https://accounts.google.com/");
+            });
+
+
 
             app.UseAuthentication();
             app.UseAuthorization();

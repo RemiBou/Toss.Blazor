@@ -7,10 +7,10 @@
     @foreach (var toss in AboutItems)
     {    
         <div class="col-md-3 col-sm-6 my-2 toss">        
-            <div class="card  h-100" data-toggle="modal" data-target="#modal-@toss.Id" style="cursor:zoom-in">           
+            <div class="card  h-100" data-toggle="modal" data-target="#modal-@toss.Id">           
                 
                 <div class="card-body p-2">
-                    <p class="card-text" style="max-height:200px;overflow-y: hidden;">
+                    <p class="card-text">
                        @markdown.ToHtml(toss.Content)
                     </p>                
                 </div>

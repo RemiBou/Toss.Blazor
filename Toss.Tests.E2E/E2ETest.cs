@@ -109,20 +109,20 @@ namespace Toss.Tests.E2E
                 throw;
             }
         }
-        public void ScrollTo(int xPosition = 0, int yPosition = 0)
+        private void ScrollTo(int xPosition = 0, int yPosition = 0)
         {
             var js = String.Format("window.scrollTo({0}, {1})", xPosition, yPosition);
             (Browser as IJavaScriptExecutor).ExecuteScript(js);
         }
 
-        public IWebElement ScrollToView(By selector)
+        private IWebElement ScrollToView(By selector)
         {
             var element = Browser.FindElement(selector);
             ScrollToView(element);
             return element;
         }
 
-        public void ScrollToView(IWebElement element)
+        private void ScrollToView(IWebElement element)
         {
             if (element.Location.Y > 200)
             {

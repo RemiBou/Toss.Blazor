@@ -22,7 +22,7 @@
                 <label asp-for="Password" class="col-sm-3 col-form-label">Password</label>
 
                 <div class="col-sm-9">
-                    <InputPassword Id="Password" Class="form-control" Autocomplete="current-password" bind-Value="@command.Password" />
+                    <MyInput type="password" Id="Password" Class="form-control" Autocomplete="current-password" bind-Value="@command.Password" />
                     <ValidationMessage For="@(() => command.Password)" />
                 </div>
             </div>
