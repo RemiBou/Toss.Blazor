@@ -224,19 +224,26 @@ namespace Toss.Server
                     .FontSources(s => s.Self().CustomSources("use.fontawesome.com"))
                     .FrameSources(s => s.CustomSources("https://www.google.com/recaptcha/"))
                     .ScriptSources(s => s.Self().UnsafeEval().UnsafeInline().CustomSources("checkout.stripe.com", "https://www.google.com/recaptcha/", "cdnjs.cloudflare.com", "https://www.gstatic.com/recaptcha/"))
-                    .ReportUris(r => r.Uris("https://toss.report-uri.com/r/d/csp/reportOnly"))
+                    .ReportUris(r => r.Uris("https://toss.report-uri.com/r/d/csp/reportOnly", "https://toss.report-uri.com/r/d/csp/wizard"))
                     .BlockAllMixedContent();
                 if (!env.EnvironmentName.Equals("Development"))
                 {
                     fluentCspOptions.UpgradeInsecureRequests();
                 }
             });
+            
             app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseStaticFiles();
             app.UseXDownloadOptions();
             app.UseXContentTypeOptions();
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
             app.UseXfo(xfo => xfo.Deny());
+            app.Use((context, next) =>
+            {
+                context.Response.Headers["Report-To"] = "{\"group\":\"default\",\"max_age\":31536000,\"endpoints\":[{\"url\":\"https://toss.report-uri.com/a/d/g\"}],\"include_subdomains\":true}";
+                context.Response.Headers["NEL"] = "{\"report_to\":\"default\",\"max_age\":31536000,\"include_subdomains\":true}";
+                return next.Invoke();
+            });
             app.UseRedirectValidation(opts =>
             {
                 opts.AllowSameHostRedirectsToHttps();

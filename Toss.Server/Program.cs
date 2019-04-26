@@ -24,6 +24,7 @@ namespace Toss.Server
 
         public static IHostBuilder BuildWebHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseConfiguration(new ConfigurationBuilder()
@@ -32,6 +33,7 @@ namespace Toss.Server
                         .AddJsonFile("/run/secrets/tossserver", true)//will be sued for mounting secrets on docker
                         .AddEnvironmentVariables()
                         .Build())
+                    .UseKestrel(k => k.AddServerHeader = false)
                     .UseStartup<Startup>();
                 });
     }
