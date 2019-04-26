@@ -36,6 +36,7 @@ namespace Toss.Tests.E2E
         {
             try
             {
+                Browser.Manage().Window.FullScreen();
                 Navigate("/login");
                 DisableRecaptcha();
                 Assert.Equal("TOSS", Browser.Title);
@@ -87,7 +88,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
 
                 //sign out
-                ScrollToView(Browser.FindElement(By.Id("LinkLogout")));
+                ScrollToView(By.Id("LinkLogout"));
                 Browser.FindElement(By.Id("LinkLogout")).Click();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
                 //reset password
@@ -95,7 +96,7 @@ namespace Toss.Tests.E2E
                 //do reset password
                 //connect
             }
-            catch (WebDriverTimeoutException e)
+            catch (Exception e)
             {
                 Output.WriteLine("Exception: " + e.Message);
                 Output.WriteLine("Browser logs: ");
