@@ -1,36 +1,4 @@
-﻿showModal = function (elementRef, closeCallBack) {
-    $(elementRef).modal("show");
-    if (closeCallBack) {
-        $(elementRef).on('hidden.bs.modal', function (e) {
-            closeCallBack.invokeMethodAsync('OnClose');
-            $(elementRef).off('hidden.bs.modal');//we unsubscribe the event as we won't need it anymore
-        });
-    }
-    return true;
-};
-hideModal = function (elementRef) {
-    $(elementRef).modal("hide");
-    return true;
-};
-
-const readUploadedFileAsText = (inputFile) => {
-    const temporaryFileReader = new FileReader();
-    return new Promise((resolve, reject) => {
-        temporaryFileReader.onerror = () => {
-            temporaryFileReader.abort();
-            reject(new DOMException("Problem parsing input file."));
-        };
-        temporaryFileReader.addEventListener("load", function () {
-            console.log("JS : file read done");
-            resolve(temporaryFileReader.result.split(',')[1]);
-        }, false);
-        temporaryFileReader.readAsDataURL(inputFile.files[0]);
-    });
-};
-getFileData = function (inputFile) {
-
-    return readUploadedFileAsText(inputFile);
-};
+﻿
 
 getDocumentCookie = function () {
     return Promise.resolve(document.cookie);

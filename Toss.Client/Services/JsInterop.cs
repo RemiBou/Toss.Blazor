@@ -27,25 +27,6 @@ namespace Toss.Client.Services
             return await jsRuntime.InvokeAsync<string[]>("navigatorLanguages");
         }
        
-        public async Task ShowModal(ElementRef elementRef)
-        {
-            await jsRuntime.InvokeAsync<bool>("showModal", elementRef);
-        }
-        public async Task ShowModal(ElementRef elementRef, IModalCloseCallback closeCallback)
-        {
-            await jsRuntime.InvokeAsync<bool>("showModal", elementRef, new DotNetObjectRef(closeCallback));
-        }
-        public async Task HideModal(ElementRef elementRef)
-        {
-            await jsRuntime.InvokeAsync<bool>("hideModal", elementRef);
-        }
-
-        public async Task<string> GetFileData(ElementRef fileInputRef)
-        {
-            return (await jsRuntime.InvokeAsync<string>("getFileData", fileInputRef));
-
-        }
-
         public async Task<string> GetCookie()
         {
             return await jsRuntime.InvokeAsync<string>("getDocumentCookie");
