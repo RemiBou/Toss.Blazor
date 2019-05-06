@@ -30,9 +30,10 @@
     {
         <OneTossDetail ref="tossDetail" OnTossDetailHide="OnTossDetailHide"></OneTossDetail>
 
-
+        
         if (Tosses.Any())
         {
+            <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>
             foreach (var tossGroup in Tosses)
             {
                 <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>

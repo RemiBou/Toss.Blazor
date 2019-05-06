@@ -1,0 +1,33 @@
+﻿@inject IHttpApiClientRequestBuilderFactory httpBuilder
+@if (connectedTags?.Hashtags != null)
+{
+    <h4>ConnectedTags tags :</h4> 
+    @foreach (var hashTag in connectedTags.Hashtags)
+    {
+        <div class="form-group">
+            <div class="input-group m-1 btn-group" role="group">
+                <NavLink href="@("/tag/"+hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary tag-link">
+                    #@hashTag
+                </NavLink>
+            </div>
+        </div>
+    }
+}
+@functions{
+
+    [Parameter]
+    protected String Hashtag { get; set; }
+
+    private ConnectedTags connectedTags;
+
+    protected async override Task OnParametersSetAsync()
+    {
+        await httpBuilder.Create("/api/toss/connectedTags/" + Hashtag)
+             .OnOK<ConnectedTags>(c =>
+             {
+                 this.connectedTags = c;
+                 this.StateHasChanged();
+             })
+             .Get();
+    }
+}
