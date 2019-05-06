@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Toss.Shared.Tosses
 {
@@ -8,5 +9,7 @@ namespace Toss.Shared.Tosses
         public DateTimeOffset CreatedOn { get; set; }
         public string Content { get; set; }
         public string Id { get; set; }
+
+        public List<string> Hashtags { get; set; }
     }
 }

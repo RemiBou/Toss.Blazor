@@ -24,16 +24,17 @@ namespace Toss.Server.Models.Tosses
 
         public async Task<TossDetail> Handle(TossDetailQuery request, CancellationToken cancellationToken)
         {
-            var t = (await _session.LoadAsync<TossEntity>(ravenDBIdUtil.GetRavenDbIdFromUrlId<TossEntity>( request.TossId)));
+            var t = (await _session.LoadAsync<TossEntity>(ravenDBIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.TossId)));
             if (t == null)
                 return null;
             return new TossDetail()
-                {
-                    Content = t.Content,
-                    CreatedOn = t.CreatedOn,
-                    UserName = t.UserName,
-                    Id = t.Id
-                };
+            {
+                Content = t.Content,
+                CreatedOn = t.CreatedOn,
+                UserName = t.UserName,
+                Id = t.Id,
+                Hashtags = t.Tags
+            };
         }
     }
 }
