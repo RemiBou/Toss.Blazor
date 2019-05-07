@@ -1,5 +1,4 @@
 ﻿@page "/"
-@page "/tag/{CurrentTag}/{TossId}"
 @page "/tag/{CurrentTag}"
 @page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
@@ -28,17 +27,18 @@
     }
     else
     {
-        <OneTossDetail ref="tossDetail" OnTossDetailHide="OnTossDetailHide"></OneTossDetail>
+       
 
-
+        
         if (Tosses.Any())
         {
+            <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>
             foreach (var tossGroup in Tosses)
             {
                 <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
                 foreach (var toss in tossGroup)
                 {
-                    <OneToss toss="@toss" ShowDetailDelegate="ShowDetail" />
+                    <OneToss toss="@toss" />
                 }
             }
             if (!LastPage)
@@ -90,15 +90,12 @@
     }
 </div>
 @functions{
-        OneTossDetail tossDetail;
 
-        List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
-
-[Parameter]
-    private string CurrentTag { get; set; } = "";
+    List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
     [Parameter]
-    private string TossId { get; set; } = "";
+    private string CurrentTag { get; set; } = "";
+
 
     private string DisplayedTag;
 
@@ -122,10 +119,6 @@
         {
             await GetTossCurrentTag();
         }
-        if (!string.IsNullOrEmpty(TossId))
-        {
-            await tossDetail.ShowDetail(TossId);
-        }
     }
 
     public override async Task SetParametersAsync(ParameterCollection parameters)
@@ -135,10 +128,7 @@
         {
             CurrentTag = null;
         }
-        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("TossId")))
-        {
-            TossId = null;
-        }
+       
         await base.SetParametersAsync(parameters);
     }
     protected async Task ResetCurrentTagDisplay()
@@ -185,16 +175,4 @@
         await GetTossCurrentTag();
     }
 
-    protected Task ShowDetail(string tossId)
-    {
-        this.uriHelper.NavigateTo("/tag/" + CurrentTag + "/" + tossId);
-        return Task.CompletedTask;
-    }
-
-    private Task OnTossDetailHide()
-    {
-        this.uriHelper.NavigateTo("/tag/" + CurrentTag);
-        return Task.CompletedTask;
-
-    }
 }

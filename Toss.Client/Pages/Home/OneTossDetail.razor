@@ -1,56 +1,45 @@
-﻿@implements IModalCloseCallback
-@using System.Web
+﻿@page "/toss/{TossId}"
 @inject IHttpApiClientRequestBuilderFactory httpBuilder
 @inject IMarkdownService markdown
 @inject IJsInterop JsInterop
 @if (tossDetail != null)
 {
-    <div class="modal fade" ref="modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
+    <div class="form-inline">
 
-                <div class="modal-body">
-                     @markdown.ToHtml(tossDetail.Content)
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-
+        @foreach (var hashTag in tossDetail.Hashtags ?? new List<string>())
+        {
+            <div class="form-group">
+                <div class="input-group m-1 btn-group" role="group">
+                    <NavLink href="@("/tag/"+hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary tag-link">
+                        #@hashTag
+                    </NavLink>
                 </div>
             </div>
-        </div>
+        }
     </div>
-}
-@functions{
-    [Parameter]
-    Func<Task> OnTossDetailHide { get; set; }
+    <hr />
+    @markdown.ToHtml(tossDetail.Content)
 
-    ElementRef modal { get; set; }
-
+    }
+    @functions{
+[Parameter]
+    protected string TossId { get; set; }
     private TossDetail tossDetail
     {
         get;
         set;
     }
-    public async Task ShowDetail(string tossId)
-    {
 
-        StateHasChanged();
-        await httpBuilder.Create("/api/toss/detail/" + tossId)
-              .OnOK<TossDetail>(async r =>
-              {
-                  this.tossDetail = r;
-                  StateHasChanged();
-                  if (tossDetail != null)
-                      await JsInterop.ShowModal(modal, this);
-              })
+    protected override async Task OnParametersSetAsync()
+    {
+        await httpBuilder.Create("/api/toss/detail/" + TossId)
+              .OnOK<TossDetail>(r =>
+             {
+                 this.tossDetail = r;
+                 StateHasChanged();
+             })
               .Get();
 
     }
 
-    [JSInvokable]
-    public async Task OnClose()
-    {
-        tossDetail = null;
-        await this.OnTossDetailHide();
     }
-}

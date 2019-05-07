@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Toss.Shared.Account;
@@ -28,6 +29,29 @@ namespace Toss.Tests.Server.Models.Tosses
             Assert.NotNull(res);
             Assert.Single(res.Hashtags);
             Assert.Equal("test", res.Hashtags[0]);
+        }
+
+        [Fact]
+        public async Task when_two_tags_in_same_toss_connected_tag_returns_most_referenced_tags()
+        {
+            for (int i = 0; i < 11; i++)
+            {
+                for (int j = 0; j < i; j++)
+                {
+
+                    await _mediator.Send(new TossCreateCommand("bla bla bla bla bla bla bla #test #test" +i));
+                }
+
+            }
+            await SaveAndWait();
+
+            var res = await _mediator.Send(new ConnectedTagsQuery("test"));
+
+            Assert.NotNull(res);
+            Assert.Equal(10, res.Hashtags.Length);
+            Assert.Equal(res.Hashtags.Length, res.Hashtags.Distinct().Count());
+            Assert.DoesNotContain("test0", res.Hashtags);
+             
         }
 
         [Fact]

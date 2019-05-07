@@ -54,8 +54,17 @@ namespace Toss.Server.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> BestTags()
         {
-            var result = await _mediator.Send(new BestTagsQuery());
-            return base.Ok(result);
+            return base.Ok(await _mediator.Send(new BestTagsQuery()));
+        }
+
+        /// <summary>
+        /// Returns the last created Toss for the homepage
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{hashTag}"), AllowAnonymous]
+        public async Task<IActionResult> ConnectedTags([FromRoute] ConnectedTagsQuery connectedTagsQuery)
+        {
+            return base.Ok(await _mediator.Send(connectedTagsQuery));
         }
 
         /// <summary>
@@ -68,6 +77,8 @@ namespace Toss.Server.Controllers
             var result = await _mediator.Send(query);
             return base.Ok(result);
         }
+
+
 
         /// <summary>
         /// Returns the last created Toss for the homepage

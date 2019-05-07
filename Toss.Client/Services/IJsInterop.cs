@@ -7,10 +7,8 @@ namespace Toss.Client.Services
     {
         Task<string> Captcha(string actionName);
         Task<string> GetCookie();
-        Task HideModal(ElementRef elementRef);
+      
         Task<string[]> Languages();
         Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts);
-        Task ShowModal(ElementRef elementRef);
-        Task ShowModal(ElementRef elementRef, IModalCloseCallback closeCallback);
     }
 }

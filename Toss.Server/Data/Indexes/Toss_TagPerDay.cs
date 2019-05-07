@@ -26,6 +26,7 @@ namespace Toss.Server.Data.Indexes
                                     CreatedOn = g.Key.CreatedOn,
                                     Count = g.Sum(i => i.Count)
                                 };
+            
         }
     }
 }

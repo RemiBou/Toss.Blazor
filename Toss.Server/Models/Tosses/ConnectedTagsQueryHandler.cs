@@ -24,13 +24,14 @@ namespace Toss.Server.Models.Tosses
         async Task<ConnectedTags> IRequestHandler<ConnectedTagsQuery, ConnectedTags>.Handle(ConnectedTagsQuery request, CancellationToken cancellationToken)
         {
             var res = await _session.Query<TossConnectedTagsIndex, Toss_ConnectedTags>()
-                .Where(t => t.Tag == request.Hashtag)
-                .FirstOrDefaultAsync();
-            if(res == null)
-            {
-                return new ConnectedTags(); 
-            }
-            return new ConnectedTags(res.ConnectedTags);
+                .Where(t => t.Tag1 == request.Hashtag)
+                .OrderByDescending(c => c.Count)
+                .Take(10)
+                .Select(c => c.Tag2)
+                .ToListAsync();
+            if (res == null)
+                return new ConnectedTags();
+            return new ConnectedTags(res);
 
 
         }
