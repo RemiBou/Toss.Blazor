@@ -1,18 +1,87 @@
-﻿@inject IExceptionNotificationService exceptionNotificationService
-@implements IDisposable
+﻿@inject IExceptionNotificationService exceptionNotificationService;
+@inject IAccountService accountService;
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IUriHelper urlHelper;
+@implements IDisposable;
 @inject IMessageService messageService;
 <Message />
-<TopMenu />
+<div class="pure-menu pure-menu-horizontal pure-menu-scrollable">
+    <a href="#" class="pure-menu-link pure-menu-heading">Toss</a>
+    <ul class="pure-menu-list">
+        @if(_account != null)
+        {
+            <li class="pure-menu-item">
+                <NavLink href="/setting" class="pure-menu-link" id="BtnMenu">
+                    Setting
+                </NavLink>
+            </li>
+                   
+        } 
+        else
+        {
+            <li class="pure-menu-item">
+                <NavLink href="/login" class="pure-menu-link" id="BtnMenu">
+                    Login
+                </NavLink>
+            </li>
+        }
+        <li class="pure-menu-item">
+            <NavLink href="/new" class="pure-menu-link" id="BtnOpenNewToss">
+                New Toss
+            </NavLink>
+        </li>
+        @if (_account != null)
+        {
+            @foreach (var hashTag in _account.Hashtags ?? new List<string>())
+            {
+                <li class="pure-menu-item">
+                     <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link">
+                        #@hashTag
+                    </NavLink>
+                    <!-- @if (hashTag == CurrentTag)
+                        {
+                            <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
+                        } -->
+                </li>
+            }
+            <li class="pure-menu-item">
+                <span class="pure-form">
+                    <EditForm OnValidSubmit="AddHashtag"  Model="@addHashtagCommand">
+
+                        <MyInput Placeholder="Favorite tag" Type="text" Id="TxtAddHashTag" bind-Value="@addHashtagCommand.NewHashTag" />
+                        <ValidationMessage For="@(() => addHashtagCommand.NewHashTag)" />
+                        <div class="pure-button-group" role="toolbar" aria-label="...">
+                            <button type="submit" class="pure-button pure-button-primary">Add</button>
+                            <button type="button" class="pure-button pure-button-secondary" onclick="@SeeHashtag">Look</button>
+                        </div>
+                    </EditForm>
+                </span>
+            </li>
+        }       
+    </ul>
+</div>
 @Body
 
 @functions {
 
-    [Parameter]
+    [Parameter]    
     RenderFragment Body { get; set; }
+
+
+    AddHashtagCommand addHashtagCommand = new AddHashtagCommand();
+
+    private AccountViewModel _account;
     protected override void OnInit()
     {
         this.exceptionNotificationService.OnException += HandleExceptions;
+        this.accountService.SubscribeOnCurrentAccountChanged(this.OnAccountChanged);
         base.OnInit();
+    }
+
+    private void OnAccountChanged(object sender, AccountViewModel account)
+    {
+        this._account = account;
+        this.StateHasChanged();
     }
     private void HandleExceptions(object sender, string s)
     {
@@ -22,5 +91,30 @@
     {
 
         this.exceptionNotificationService.OnException -= HandleExceptions;
+    }
+    protected async Task LogOff()
+    {
+        await accountService.Logout();
+
+    }
+    protected async Task AddHashtag()
+    {
+
+        await ClientFactory.Create("/api/account/addHashTag")
+            .OnOK( () =>
+            {
+                messageService.Info( "Hashtag added with success");
+                _account.Hashtags.Add(addHashtagCommand.NewHashTag);
+                urlHelper.NavigateTo("/tag/"+addHashtagCommand.NewHashTag);
+                addHashtagCommand = new AddHashtagCommand();
+            })
+            .OnBadRequest<Dictionary<string, List<string>>>( e => messageService.Error( string.Join(",", e["NewHashTag"])))
+            .Post(addHashtagCommand);
+        StateHasChanged();
+
+    }
+    protected void SeeHashtag()
+    {
+        urlHelper.NavigateTo("/tag/"+addHashtagCommand.NewHashTag);
     }
 }

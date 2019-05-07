@@ -4,15 +4,8 @@
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
 @inject IUriHelper uriHelper;
+@layout MainLayout
 
-<div class="form-inline">
-    @if (currentAccount != null)
-    {
-        <NavLink href="/new" class="btn btn-primary" id="BtnOpenNewToss"><i class="fas fa-plus"></i> New Toss</NavLink>
-    }
-    <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
-    <button type="button" class="btn btn-warning" onclick="@ResetCurrentTagDisplay"><i class="fas fa-sync"></i></button>
-</div>
 <div class="row">
     @if (string.IsNullOrEmpty(CurrentTag))
     {
@@ -26,10 +19,7 @@
         </div>
     }
     else
-    {
-       
-
-        
+    {   
         if (Tosses.Any())
         {
             <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>

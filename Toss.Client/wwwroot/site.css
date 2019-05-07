@@ -16,12 +16,60 @@
 #TextAreaNewToss {
     height: 200px;
 }
-.toss .card {
-    cursor: zoom-in
+
+
+/* taken from here https://purecss.io/layouts/marketing/ */
+.splash-container {
+    z-index: 1;
+    overflow: hidden;
+    /* The following styles are required for the "scroll-over" effect */
+    width: 100%;
+    height: 88%;
+    top: 0;
+    left: 0;
+    position: fixed !important;
 }
-.toss .card-text {
-    max-height: 200px;
-    overflow-y: hidden;
+
+.splash {
+    width: 80%;
+    height: 50%;
+    margin: auto;
+    position: absolute;
+    top: 100px; left: 0; bottom: 0; right: 0;
+    text-align: center;
+    text-transform: uppercase;
 }
-body {
+
+.splash-head {
+    font-size: 20px;
+    font-weight: bold;
+    color: black;
+    border: 3px solid black;
+    padding: 1em 1.6em;
+    font-weight: 100;
+    border-radius: 5px;
+    line-height: 1em;
+}
+
+.splash-subhead {
+    color: black;
+    letter-spacing: 0.05em;
+    opacity: 0.8;
+}
+@media (min-width: 48em) {
+
+    .splash {
+        width: 50%;
+        height: 50%;
+    }
+
+    .splash-head {
+        font-size: 250%;
+    }
+
+}
+@media (min-width: 78em) {
+    .splash-head {
+        font-size: 300%;
+    }
 }
