@@ -6,26 +6,28 @@
 @inject IUriHelper uriHelper;
 @layout MainLayout
 
-<div class="row">
+<div class="pure-g tag-result">
     @if (string.IsNullOrEmpty(CurrentTag))
     {
-        <div class="col-md-3 col-sm-6 my-2">
-            <div class="card text-white bg-warning   h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Select a hashtag</h5>
-                    <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
-                </div>
-            </div>
+        <div class="pure-u-2-5 no-content">
+            Use the textbox below for searching content based on a hashtag.
         </div>
     }
     else
-    {   
-        if (Tosses.Any())
-        {
+    {
+        <div class="pure-u-5-5 tag-header">
+
+            <h1>#@CurrentTag</h1>
             <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>
+
+
+        </div>
+
+        @if (Tosses.Any())
+        {
             foreach (var tossGroup in Tosses)
             {
-                <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
+                <AdToss CurrentTag="@CurrentTag"></AdToss>
                 foreach (var toss in tossGroup)
                 {
                     <OneToss toss="@toss" />
@@ -35,46 +37,28 @@
             {
                 if (!Loading)
                 {
-                    <div class="col-md-3 col-sm-6 my-2">
-                        <div class="card text-white bg-warning   h-100" onclick="@(async () => await ShowMore())">
-                            <div class="card-body">
-                                <p class="card-text">Click here to load more Toss.</p>
-                            </div>
-                        </div>
+                    <div class="page-next pure-u-2-5" onclick="@ShowMore">
+                        Click here to load more Toss for  #@CurrentTag.
                     </div>
                 }
             }
             else
             {
-                <div class="col-md-3 col-sm-6 my-2">
-                    <div class="card text-white bg-success   h-100">
-                        <div class="card-body">
-                            <p class="card-text">You've read all the toss for this tag.</p>
-                        </div>
-                    </div>
+                <div class="page-end pure-u-2-5">
+                    You've read all the toss for  #@CurrentTag.
                 </div>
             }
         }
         else if (!Loading)
         {
-            <div class="col-md-3 col-sm-6 my-2">
-                <div class="card text-white bg-warning   h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Nothing to show</h5>
-                        <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
-                    </div>
-                </div>
+            <div class="no-content pure-u-2-5">
+                There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.
             </div>
         }
-        if (Loading)
+        @if (Loading)
         {
-            <div class="col-md-3 col-sm-6 my-2">
-                <div class="card text-white bg-warning   h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Loading</h5>
-                        <p class="card-text">We are loading the tosses ...</p>
-                    </div>
-                </div>
+            <div class="loading pure-u-2-5">
+                Loading
             </div>
         }
     }
@@ -118,7 +102,7 @@
         {
             CurrentTag = null;
         }
-       
+
         await base.SetParametersAsync(parameters);
     }
     protected async Task ResetCurrentTagDisplay()

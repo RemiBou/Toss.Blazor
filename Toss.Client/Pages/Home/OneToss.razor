@@ -1,42 +1,40 @@
-﻿@using System.Web
+﻿
 @inject IMarkdownService markdown
 @inject IUriHelper uriHelper;
-<div class="col-md-3 col-sm-6 my-2 toss">
-    
-    <div class="card  h-100 @additionnalClass" data-toggle="modal" onclick="@ShowDetail">
-        @if(headerText != null)
-        {
-            <div class="card-header">
-                @headerText
-            </div>
-        }
-        <div class="card-body p-2">
-            <p class="card-text">
-                @markdown.ToHtml(toss.Content)
-            </p>
-            <p class="card-text">
-                <small class="text-muted">
-                    @toss.UserName <br/> 
-                    @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
-                </small>
-            </p>
+<div class="pure-u-5-5  toss-preview" onclick="@ShowDetail">
+    @if (isAdverstisment)
+    {
+        <div class="tag">
+            Ad
         </div>
+    }
+    <div class="content-preview">
+        @markdown.ToHtml(toss.Content)
+    </div>
+    <div class="meta">
+        <span class="user-name">
+            @toss.UserName
+        </span>
+        <span class="write-date">
+            @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
+        </span>
+        <span class="read-toss">
+            <a class="link-button" href="/toss/@toss.Id">
+                Read
+            </a>
+        </span>
     </div>
 </div>
-    @functions{
-        [Parameter]
-        Func<string, Task> ShowDetailDelegate { get; set; }
+@functions{
 
-        [Parameter]
-        string headerText { get; set; }
-        [Parameter]
-        string additionnalClass { get; set; }
-        [Parameter]
-        TossLastQueryItem toss { get; set; }
+    [Parameter]
+    bool isAdverstisment { get; set; }
+    [Parameter]
+    TossLastQueryItem toss { get; set; }
 
 
-        protected void ShowDetail()
-        {
-             this.uriHelper.NavigateTo("/toss/" + toss.Id);
-        }
+    protected void ShowDetail()
+    {
+        this.uriHelper.NavigateTo("/toss/" + toss.Id);
     }
+}

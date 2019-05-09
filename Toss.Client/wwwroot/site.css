@@ -17,7 +17,9 @@
     height: 200px;
 }
 
-
+#TxtAddHashTag {
+    width: 8em;
+}
 /* taken from here https://purecss.io/layouts/marketing/ */
 .splash-container {
     z-index: 1;
@@ -30,46 +32,117 @@
     position: fixed !important;
 }
 
-.splash {
-    width: 80%;
-    height: 50%;
-    margin: auto;
-    position: absolute;
-    top: 100px; left: 0; bottom: 0; right: 0;
-    text-align: center;
-    text-transform: uppercase;
-}
-
-.splash-head {
-    font-size: 20px;
-    font-weight: bold;
-    color: black;
-    border: 3px solid black;
-    padding: 1em 1.6em;
-    font-weight: 100;
-    border-radius: 5px;
-    line-height: 1em;
-}
-
-.splash-subhead {
-    color: black;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
-}
-@media (min-width: 48em) {
-
-    .splash {
-        width: 50%;
+    .splash-container .splash {
+        width: 80%;
         height: 50%;
+        margin: auto;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+        text-transform: uppercase;
     }
 
-    .splash-head {
-        font-size: 250%;
+        .splash-container .splash .splash-head {
+            font-size: 20px;
+            font-weight: bold;
+            color: black;
+            border: 3px solid black;
+            padding: 1em 1.6em;
+            font-weight: 100;
+            border-radius: 5px;
+            line-height: 1em;
+        }
+
+        .splash-container .splash .splash-subhead {
+            color: black;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+
+.top-menu {
+    background-color: #2d3e50;
+    color: white;
+}
+
+
+
+.tag-result {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+    .tag-result .tag-header {
+        margin-bottom: 0px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 10px;
+        margin-left: 10px;
     }
 
-}
-@media (min-width: 78em) {
-    .splash-head {
-        font-size: 300%;
+        .tag-result .tag-header h1 {
+            margin-bottom: 10px;
+        }
+
+    .tag-result .toss-preview {
+        border-bottom: 1px solid #eee;
+        margin: 0px 10px;
+        padding: 10px;
     }
+
+        .tag-result .toss-preview .meta {
+            color: #808080;
+            font-size: 0.8em;
+        }
+
+        .tag-result .toss-preview .tag {
+            float: right;
+            background-color: #808080;
+            color: white;
+            padding: 5px;
+        }
+        .tag-result .toss-preview .content-preview {
+            margin-bottom:10px;
+            color:rgb(34,34,34);
+        }
+        .tag-result .toss-preview .content-preview > p {
+            margin: 0px;
+        }
+        .tag-result .toss-preview .read-toss {
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 1em;
+        }
+        .tag-result .toss-preview:hover {
+            cursor: pointer;
+            border-color: #808080;
+            border-top: 1px solid #808080;
+            border-left: 2px solid #808080;
+            padding-left:8px;
+        }
+            .tag-result .toss-preview:hover .read-toss a {
+                background-color: #eee;
+            }
+
+        .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
+            margin-left: auto;
+            margin-right: auto;
+            border: 2px solid #ddd;
+            padding: 1em 1.6em;
+            display: block;
+            margin-top: 40px;
+        }
+
+.link-button {
+    padding: .5em 1em;
+    color: #777;
+    outline: 0;
+    text-decoration: none;
 }
+
+    .link-button:hover {
+        background-color: #eee;
+    }

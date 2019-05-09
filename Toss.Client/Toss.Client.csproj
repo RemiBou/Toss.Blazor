@@ -7,7 +7,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- extends watching group to include *.js files -->
-    <Watch Include="**\*.cstml" />
+    <Watch Include="**\*.razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +19,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Configuration\appsettings.json" />
     <EmbeddedResource Include="Configuration\appsettings.*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="Pages\Home\AdToss.razor" />
   </ItemGroup>
 
   <ItemGroup>

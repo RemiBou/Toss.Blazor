@@ -1,10 +1,11 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
 @if (sponsoredToss != null)
 {
-    <OneToss toss="@sponsoredToss" additionnalClass="bg-light" headerText="Sponsored Toss"></OneToss>
+
+    <OneToss toss="@sponsoredToss" isAdverstisment="true"></OneToss>
 }
 @functions{
-        TossLastQueryItem sponsoredToss;
+    TossLastQueryItem sponsoredToss;
 
     [Parameter]
     private string CurrentTag { get; set; } = "";
@@ -22,8 +23,8 @@
             return;
         }
         await ClientFactory.Create("/api/toss/sponsored?hashtag=" + CurrentTag)
-            .OnOK<TossLastQueryItem>( l =>
-            {
+            .OnOK<TossLastQueryItem>(l =>
+           {
                 sponsoredToss = l;
                 StateHasChanged();
             })
