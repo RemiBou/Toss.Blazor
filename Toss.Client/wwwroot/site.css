@@ -2,7 +2,7 @@
     border-color: #dc3545;
 }
 
-.pure-form  .valid {
+.pure-form .valid {
     border-color: #28a745;
 }
 
@@ -88,6 +88,10 @@
             margin-bottom: 10px;
         }
 
+            .tag-result .tag-header h1 button {
+                font-size: 10px;
+            }
+
     .tag-result .toss-preview {
         border-bottom: 1px solid #eee;
         margin: 0px 10px;
@@ -162,6 +166,7 @@
         color: #808080;
         padding: .5em 0em;
     }
+
 .new-toss {
     padding: 10px;
     border-bottom: 1px solid #eee;

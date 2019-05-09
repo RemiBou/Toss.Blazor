@@ -1,152 +1,24 @@
 ﻿@page "/"
-@page "/tag/{CurrentTag}"
-@page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
 @inject IUriHelper uriHelper;
 @layout MainLayout
 
 <div class="pure-g tag-result">
-    @if (string.IsNullOrEmpty(CurrentTag))
-    {
-        <div class="pure-u-2-5 no-content">
-            Use the textbox below for searching content based on a hashtag.
-        </div>
-    }
-    else
-    {
-        <div class="pure-u-5-5 tag-header">
-
-            <h1>#@CurrentTag</h1>
-            <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>
-
-
-        </div>
-
-        @if (Tosses.Any())
-        {
-            foreach (var tossGroup in Tosses)
-            {
-                <AdToss CurrentTag="@CurrentTag"></AdToss>
-                foreach (var toss in tossGroup)
-                {
-                    <OneToss toss="@toss" />
-                }
-            }
-            if (!LastPage)
-            {
-                if (!Loading)
-                {
-                    <div class="page-next pure-u-2-5" onclick="@ShowMore">
-                        Click here to load more Toss for  #@CurrentTag.
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="page-end pure-u-2-5">
-                    You've read all the toss for  #@CurrentTag.
-                </div>
-            }
-        }
-        else if (!Loading)
-        {
-            <div class="no-content pure-u-2-5">
-                There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.
-            </div>
-        }
-        @if (Loading)
-        {
-            <div class="loading pure-u-2-5">
-                Loading
-            </div>
-        }
-    }
+    <div class="pure-u-2-5 no-content">
+        Use the textbox below for searching content based on a hashtag.
+    </div>
 </div>
 @functions{
 
-    List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
-    [Parameter]
-    private string CurrentTag { get; set; } = "";
-
-
-    private string DisplayedTag;
 
     private AccountViewModel currentAccount;
-
-    private bool Loading { get; set; } = false;
-
-    public bool LastPage { get; set; } = false;
-
-    protected int Page { get; set; } = 0;
 
     protected async override Task OnInitAsync()
     {
         currentAccount = await AccountService.CurrentAccount();
 
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (DisplayedTag != CurrentTag)
-        {
-            await GetTossCurrentTag();
-        }
-    }
-
-    public override async Task SetParametersAsync(ParameterCollection parameters)
-    {
-
-        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
-        {
-            CurrentTag = null;
-        }
-
-        await base.SetParametersAsync(parameters);
-    }
-    protected async Task ResetCurrentTagDisplay()
-    {
-        ResetDisplayState();
-        await GetTossCurrentTag();
-    }
-    private void ResetDisplayState()
-    {
-        Tosses = new List<List<TossLastQueryItem>>();
-        LastPage = false;
-        Page = 0;
-    }
-    protected async Task GetTossCurrentTag()
-    {
-        if (DisplayedTag != CurrentTag)
-        {
-            ResetDisplayState();
-        }
-        DisplayedTag = CurrentTag;
-        if (string.IsNullOrWhiteSpace(CurrentTag))
-        {
-            return;//
-        }
-        Loading = true;
-        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag + "&query.Page=" + Page)
-            .OnOK<List<TossLastQueryItem>>(l =>
-            {
-                Tosses.Add(l);
-
-                Loading = false;
-                if (l.Count < TossLastQuery.TossPerPage)
-                {
-                    LastPage = true;
-                }
-                StateHasChanged();
-            })
-            .Get();
-    }
-
-    protected async Task ShowMore()
-    {
-        Page++;
-        await GetTossCurrentTag();
     }
 
 }

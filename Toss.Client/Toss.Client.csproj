@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Watch Remove="Pages\Home\AdToss.razor" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Markdig" Version="0.16.0" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview4-19216-03" />
     <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview4-19216-03" />
