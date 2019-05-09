@@ -1,8 +1,8 @@
-﻿.form-control.invalid {
+﻿.pure-form .invalid {
     border-color: #dc3545;
 }
 
-.form-control.valid {
+.pure-form  .valid {
     border-color: #28a745;
 }
 
@@ -13,8 +13,9 @@
     color: #dc3545;
 }
 
-#TextAreaNewToss {
+#TxtNewToss {
     height: 200px;
+    width: 100%;
 }
 
 #TxtAddHashTag {
@@ -70,7 +71,7 @@
 
 
 
-.tag-result, .toss-detail {
+.tag-result, .toss-detail, .new-toss {
     max-width: 980px;
     margin-left: auto;
     margin-right: auto;
@@ -161,3 +162,7 @@
         color: #808080;
         padding: .5em 0em;
     }
+.new-toss {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
