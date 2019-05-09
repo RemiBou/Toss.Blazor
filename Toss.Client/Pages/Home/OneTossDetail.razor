@@ -2,27 +2,31 @@
 @inject IHttpApiClientRequestBuilderFactory httpBuilder
 @inject IMarkdownService markdown
 @inject IJsInterop JsInterop
-@if (tossDetail != null)
-{
-    <div class="form-inline">
+@layout MainLayout
+<div class="toss-detail">
+    @if (tossDetail != null)
+    {
+        <div class=" toss-header">
 
-        @foreach (var hashTag in tossDetail.Hashtags ?? new List<string>())
-        {
-            <div class="form-group">
-                <div class="input-group m-1 btn-group" role="group">
-                    <NavLink href="@("/tag/"+hashTag)" Match="NavLinkMatch.All" class="btn btn-secondary tag-link">
-                        #@hashTag
-                    </NavLink>
-                </div>
-            </div>
-        }
-    </div>
-    <hr />
-    @markdown.ToHtml(tossDetail.Content)
+
+            @tossDetail.UserName,
+            @tossDetail.CreatedOn.ToString("f")
+            @foreach (var hashTag in tossDetail.Hashtags ?? new List<string>())
+            {
+
+                <a class="link-button" href="@("/tag/"+hashTag)">
+                    #@hashTag
+                </a>
+            }
+        </div>
+        <div class="toss-content">
+            @markdown.ToHtml(tossDetail.Content)
+        </div>
 
     }
-    @functions{
-[Parameter]
+</div>
+@functions{
+    [Parameter]
     protected string TossId { get; set; }
     private TossDetail tossDetail
     {
@@ -42,4 +46,4 @@
 
     }
 
-    }
+}

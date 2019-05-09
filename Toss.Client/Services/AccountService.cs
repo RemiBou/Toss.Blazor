@@ -57,7 +57,7 @@ namespace Toss.Client.Services {
 
         public void SubscribeOnCurrentAccountChanged (EventHandler<AccountViewModel> handler) {
             this.OnCurrentAccountChanged += handler;
-            handler.Invoke (this, _currentAccount);
+            handler.Invoke (this, _currentAccount); 
         }
     }
 }

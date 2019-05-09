@@ -70,7 +70,7 @@
 
 
 
-.tag-result {
+.tag-result, .toss-detail {
     max-width: 980px;
     margin-left: auto;
     margin-right: auto;
@@ -104,37 +104,42 @@
             color: white;
             padding: 5px;
         }
+
         .tag-result .toss-preview .content-preview {
-            margin-bottom:10px;
-            color:rgb(34,34,34);
+            margin-bottom: 10px;
+            color: rgb(34,34,34);
         }
-        .tag-result .toss-preview .content-preview > p {
-            margin: 0px;
-        }
+
+            .tag-result .toss-preview .content-preview > p {
+                margin: 0px;
+            }
+
         .tag-result .toss-preview .read-toss {
             text-align: center;
             vertical-align: middle;
             padding-top: 1em;
         }
+
         .tag-result .toss-preview:hover {
             cursor: pointer;
             border-color: #808080;
             border-top: 1px solid #808080;
             border-left: 2px solid #808080;
-            padding-left:8px;
+            padding-left: 20px;
         }
+
             .tag-result .toss-preview:hover .read-toss a {
                 background-color: #eee;
             }
 
-        .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
-            margin-left: auto;
-            margin-right: auto;
-            border: 2px solid #ddd;
-            padding: 1em 1.6em;
-            display: block;
-            margin-top: 40px;
-        }
+    .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
+        margin-left: auto;
+        margin-right: auto;
+        border: 2px solid #ddd;
+        padding: 1em 1.6em;
+        display: block;
+        margin-top: 40px;
+    }
 
 .link-button {
     padding: .5em 1em;
@@ -145,4 +150,14 @@
 
     .link-button:hover {
         background-color: #eee;
+    }
+
+.toss-detail {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+    .toss-detail .toss-header {
+        color: #808080;
+        padding: .5em 0em;
     }
