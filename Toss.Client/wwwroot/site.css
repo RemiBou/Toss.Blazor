@@ -1,4 +1,34 @@
-﻿.pure-form .invalid {
+﻿
+body {
+    background-color: #eee;
+}
+
+.main {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 10px;
+}
+
+    .main .pure-form {
+        border-bottom: 1px solid #e5e5e5;
+        margin-bottom: 10px;
+        padding-left: 10px;
+    }
+
+        .main .pure-form legend {
+            margin-bottom: 0em;
+            font-size: 1.3em;
+            border-bottom-width: 0px;
+        }
+
+        .main .pure-form label {
+            margin: 0.6em 0;
+        }
+
+.pure-form .invalid {
     border-color: #dc3545;
 }
 
@@ -6,7 +36,12 @@
     border-color: #28a745;
 }
 
-.validation-message {
+.pure-form .pure-button[type=submit] {
+    margin-top: 10px;
+}
+
+
+.pure-form .validation-message {
     width: 100%;
     margin-top: .25rem;
     font-size: 80%;
@@ -20,6 +55,7 @@
 
 #TxtAddHashTag {
     width: 8em;
+    color: #2d3e50;
 }
 /* taken from here https://purecss.io/layouts/marketing/ */
 .splash-container {
@@ -65,36 +101,30 @@
 
 
 .top-menu {
-    background-color: #2d3e50;
-    color: white;
+    background-color: white;
+    color: #2d3e50;
+    padding: 0;
 }
 
-
-
-.tag-result, .toss-detail, .new-toss {
-    max-width: 980px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-    .tag-result .tag-header {
+    .top-menu .pure-form {
         margin-bottom: 0px;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 10px;
-        margin-left: 10px;
     }
 
-        .tag-result .tag-header h1 {
-            margin-bottom: 10px;
-        }
 
-            .tag-result .tag-header h1 button {
-                font-size: 10px;
-            }
 
+.tag-result {
+}
+
+
+    .tag-result .tag-header h1 button, .tag-result .tag-header h1 .connected-tags {
+        font-size: 0.4em;
+    }
+    .tag-result .tag-header h1 .connected-tags {
+        float:right;
+        margin-top:10px;
+    }
     .tag-result .toss-preview {
         border-bottom: 1px solid #eee;
-        margin: 0px 10px;
         padding: 10px;
     }
 
@@ -102,6 +132,14 @@
             color: #808080;
             font-size: 0.8em;
         }
+
+
+            .tag-result .toss-preview .meta .tags .link-button {
+                background-color: #eee;
+                display: inline-block;
+                margin-right: 5px;
+                font-size: 0.8em;
+            }
 
         .tag-result .toss-preview .tag {
             float: right;
@@ -137,17 +175,21 @@
                 background-color: #eee;
             }
 
+    .tag-result .page-next {
+        cursor: pointer;
+    }
+
     .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
         margin-left: auto;
         margin-right: auto;
         border: 2px solid #ddd;
         padding: 1em 1.6em;
         display: block;
-        margin-top: 40px;
+        margin-top: 10px;
     }
 
 .link-button {
-    padding: .5em 1em;
+    padding: 5px;
     color: #777;
     outline: 0;
     text-decoration: none;
@@ -158,16 +200,22 @@
     }
 
 .toss-detail {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
 }
-
-    .toss-detail .toss-header {
-        color: #808080;
-        padding: .5em 0em;
+    .toss-detail h1{
+        font-size:1.4em;
     }
 
-.new-toss {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-}
+    .toss-detail h1 .tags {
+        float: right;
+        font-size: 0.7em;
+        margin-top: 6px;
+    }
+    .toss-detail .toss-content{
+        margin-left:10px;
+    }
+
+    h1 {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        margin-top: 10px;
+    }

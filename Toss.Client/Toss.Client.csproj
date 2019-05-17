@@ -6,7 +6,7 @@
     <ReferenceBlazorBuildLocally>true</ReferenceBlazorBuildLocally>
   </PropertyGroup>
   <ItemGroup>
-    <!-- extends watching group to include *.js files -->
+    <!-- extends watching group to include *.razor files -->
     <Watch Include="**\*.razor" />
   </ItemGroup>
 

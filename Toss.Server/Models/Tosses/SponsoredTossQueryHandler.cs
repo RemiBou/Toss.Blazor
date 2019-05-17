@@ -36,7 +36,8 @@ namespace Toss.Server.Models.Tosses
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
                     Id = t.Id,
-                    UserName = t.UserName
+                    UserName = t.UserName,
+                    Tags = t.Tags
                 })
                 .ToListAsync())
                   .ToLookup(t => t.UserName)

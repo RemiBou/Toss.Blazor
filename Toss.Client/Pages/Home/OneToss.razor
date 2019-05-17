@@ -2,31 +2,44 @@
 @inject IMarkdownService markdown
 @inject IUriHelper uriHelper;
 <div class="pure-u-5-5  toss-preview" onclick="@ShowDetail">
-    @if (isAdverstisment)
-    {
-        <div class="tag">
-            Ad
+    <div class="pure-g">
+        <div class="pure-u-24-24">
+
+            @if (isAdverstisment)
+            {
+                <div class="tag">
+                    Ad
+                </div>
+            }
+            <div class="content-preview">
+                @markdown.ToHtml(toss.Content)
+            </div>
+            <div class="meta">
+                <span class="tags">
+                    @foreach (var hashTag in toss.Tags)
+                    {
+
+                        <span class="link-button">
+                            #@hashTag
+                        </span>
+                    }
+                </span>
+                <span class="user-name">
+                    @toss.UserName -
+                </span>
+                <span class="write-date">
+                    @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
+                </span>
+                <span class="read-toss">
+                    <a class="link-button" href="/toss/@toss.Id">
+                        Read
+                    </a>
+                </span>
+            </div>
         </div>
-    }
-    <div class="content-preview">
-        @markdown.ToHtml(toss.Content)
-    </div>
-    <div class="meta">
-        <span class="user-name">
-            @toss.UserName
-        </span>
-        <span class="write-date">
-            @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
-        </span>
-        <span class="read-toss">
-            <a class="link-button" href="/toss/@toss.Id">
-                Read
-            </a>
-        </span>
     </div>
 </div>
 @functions{
-
     [Parameter]
     bool isAdverstisment { get; set; }
     [Parameter]

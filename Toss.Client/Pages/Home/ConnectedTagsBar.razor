@@ -1,14 +1,13 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory httpBuilder
 @if (connectedTags?.Hashtags != null)
 {
-    <div class="connected-tags  pure-menu-horizontal">
+    <div class="connected-tags  ">
         @foreach (var hashTag in connectedTags.Hashtags)
         {
-        <div class="pure-menu-item">
-            <a class="pure-menu-link" href="@("/tag/"+hashTag)">
+
+            <a class="link-button" href="@("/tag/"+hashTag)">
                 #@hashTag
             </a>
-        </div>
         }
     </div>
 }

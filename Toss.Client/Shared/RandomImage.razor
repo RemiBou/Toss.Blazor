@@ -1,0 +1,18 @@
+﻿
+<img src="@GetUrl()" />
+@functions{
+    static Random _random = new Random();
+    [Parameter]
+    protected IEnumerable<string> tags { get; set; }
+
+    [Parameter]
+    protected int width{ get; set; }
+
+    [Parameter]
+    protected int height{ get; set; }
+
+    private string GetUrl()
+    {
+        return $"https://loremflickr.com/{width}/{height}/{string.Join(",", tags)}?random={_random.Next()}";
+    }
+}

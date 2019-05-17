@@ -5,51 +5,55 @@
 @inject IUriHelper urlHelper;
 @inject IMessageService messageService;
 @layout MainLayout
-<div class="new-toss pure-form pure-form-stacked">
-    <EditForm Model="@command" OnValidSubmit="@SendToss">
-        <fieldset>
-            <legend>
-                New Toss
-            </legend>
-            <DataAnnotationsValidator></DataAnnotationsValidator>
-            <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
 
-            <InputTextArea Id="TxtNewToss" bind-Value="@command.Content"></InputTextArea>
-            <ValidationMessage For="@(() => command.Content)" />
-            <span class="pure-form-message"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</span>
+<div class="new-toss">
+    <h1>
+        New Toss
+    </h1>
+    <div class=" pure-form pure-form-stacked">
+        <EditForm Model="@command" OnValidSubmit="@SendToss">
+            <fieldset>
+
+                <DataAnnotationsValidator></DataAnnotationsValidator>
+                <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
+
+                <InputTextArea Id="TxtNewToss" bind-Value="@command.Content"></InputTextArea>
+                <ValidationMessage For="@(() => command.Content)" />
+                <span class="pure-form-message"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</span>
 
 
 
 
-            <label class="pure-checkbox" for="sponsoredToss">
-                <input type="checkbox" bind="isSponsoredToss" id="sponsoredToss" />
-                New Ad
-            </label>
+                <label class="pure-checkbox" for="sponsoredToss">
+                    <input type="checkbox" bind="isSponsoredToss" id="sponsoredToss" />
+                    New Ad
+                </label>
 
-            @if (isSponsoredToss)
-            {
-                <div class="alert alert-info mt-2">
-                    You can create a Ad :
-                    <ul>
-                        <li>One As, picked randomly, will be displayed every 10 Toss on the matching tags.</li>
-                        <li>One display costs @((decimal)TossCreateCommand.CtsCostPerDisplay / 100) €, you have to get between 50 and 1000 displays. Once you click on "Create this Toss" you will be redirected to the payment system.</li>
-                        <li>The Toss will be displayed as a normal Toss, once we get the payment confirmation it will also be displayed as an Ad like said before.</li>
-                    </ul>
-                </div>
-                <label for="TxtDisplayCount">Display count</label>
-                <InputNumber bind-Value="@command.SponsoredDisplayedCount"></InputNumber>
-                <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
-
-            }
-            <SubmitButton Id="BtnNewToss" CssClass="pure-button pure-button-primary">
-                Create this Toss
                 @if (isSponsoredToss)
                 {
-                    <small class="">(and pay @(command.SponsoredDisplayedCount * (decimal)TossCreateCommand.CtsCostPerDisplay / 100) €)</small>
+                    <div class="alert alert-info mt-2">
+                        You can create a Ad :
+                        <ul>
+                            <li>One As, picked randomly, will be displayed every 10 Toss on the matching tags.</li>
+                            <li>One display costs @((decimal)TossCreateCommand.CtsCostPerDisplay / 100) €, you have to get between 50 and 1000 displays. Once you click on "Create this Toss" you will be redirected to the payment system.</li>
+                            <li>The Toss will be displayed as a normal Toss, once we get the payment confirmation it will also be displayed as an Ad like said before.</li>
+                        </ul>
+                    </div>
+                    <label for="TxtDisplayCount">Display count</label>
+                    <InputNumber bind-Value="@command.SponsoredDisplayedCount"></InputNumber>
+                    <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
+
                 }
-            </SubmitButton>
-        </fieldset>
-    </EditForm>
+                <SubmitButton Id="BtnNewToss" CssClass="pure-button pure-button-primary">
+                    Create this Toss
+                    @if (isSponsoredToss)
+                    {
+                        <small class="">(and pay @(command.SponsoredDisplayedCount * (decimal)TossCreateCommand.CtsCostPerDisplay / 100) €)</small>
+                    }
+                </SubmitButton>
+            </fieldset>
+        </EditForm>
+    </div>
 </div>
 @functions{
 

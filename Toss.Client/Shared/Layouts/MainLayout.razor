@@ -12,7 +12,7 @@
             @if (_account != null)
             {
                 <li class="pure-menu-item">
-                    <NavLink href="/setting" class="pure-menu-link" id="BtnMenu">
+                    <NavLink href="/settings" class="pure-menu-link" id="BtnMenu">
                         Setting
                     </NavLink>
                 </li>
@@ -57,8 +57,9 @@
         </ul>
     </div>
 </div>
-@Body
-
+<div class="main">
+    @Body
+</div>
 @functions {
 
     [Parameter]

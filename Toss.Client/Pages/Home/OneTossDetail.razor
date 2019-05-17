@@ -6,19 +6,20 @@
 <div class="toss-detail">
     @if (tossDetail != null)
     {
-        <div class=" toss-header">
+        <h1>
 
-
-            @tossDetail.UserName,
+            @tossDetail.UserName -
             @tossDetail.CreatedOn.ToString("f")
-            @foreach (var hashTag in tossDetail.Hashtags ?? new List<string>())
-            {
+            <div class="tags">
+                @foreach (var hashTag in tossDetail.Hashtags)
+                {
 
-                <a class="link-button" href="@("/tag/"+hashTag)">
-                    #@hashTag
-                </a>
-            }
-        </div>
+                    <a class="link-button" href="@("/tag/"+hashTag)">
+                        #@hashTag
+                    </a>
+                }
+            </div>
+        </h1>
         <div class="toss-content">
             @markdown.ToHtml(tossDetail.Content)
         </div>
