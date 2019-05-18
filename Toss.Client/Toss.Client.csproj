@@ -14,11 +14,20 @@
     <Content Remove="Configuration\appsettings.Development.json" />
     <Content Remove="Configuration\appsettings.json" />
     <Content Remove="Configuration\appsettings.Production.json" />
+    <Content Remove="Pages\Settings\Logout.Razor" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Configuration\appsettings.json" />
     <EmbeddedResource Include="Configuration\appsettings.*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="Pages\Settings\Logout.Razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Settings\Logout.razor" />
   </ItemGroup>
 
   <ItemGroup>

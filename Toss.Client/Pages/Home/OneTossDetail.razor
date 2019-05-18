@@ -8,8 +8,7 @@
     {
         <h1>
 
-            @tossDetail.UserName -
-            @tossDetail.CreatedOn.ToString("f")
+          
             <div class="tags">
                 @foreach (var hashTag in tossDetail.Hashtags)
                 {
@@ -23,7 +22,10 @@
         <div class="toss-content">
             @markdown.ToHtml(tossDetail.Content)
         </div>
-
+        <div class="toss-footer">
+            @tossDetail.UserName -
+            @tossDetail.CreatedOn.ToString("f")
+        </div>
     }
 </div>
 @functions{

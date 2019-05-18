@@ -16,6 +16,7 @@ body {
         border-bottom: 1px solid #e5e5e5;
         margin-bottom: 10px;
         padding-left: 10px;
+        padding-bottom: 10px;
     }
 
         .main .pure-form legend {
@@ -116,13 +117,10 @@ body {
 }
 
 
-    .tag-result .tag-header h1 button, .tag-result .tag-header h1 .connected-tags {
+    .tag-result .tag-header h1 button, .tag-result .tag-header h1 .connected-tags, .toss-detail h1 .tags {
         font-size: 0.4em;
     }
-    .tag-result .tag-header h1 .connected-tags {
-        float:right;
-        margin-top:10px;
-    }
+
     .tag-result .toss-preview {
         border-bottom: 1px solid #eee;
         padding: 10px;
@@ -201,21 +199,86 @@ body {
 
 .toss-detail {
 }
-    .toss-detail h1{
-        font-size:1.4em;
+
+    .toss-detail h1 {
     }
 
-    .toss-detail h1 .tags {
-        float: right;
-        font-size: 0.7em;
-        margin-top: 6px;
-    }
-    .toss-detail .toss-content{
-        margin-left:10px;
-    }
 
-    h1 {
-        padding: 10px;
+    .toss-detail .toss-content {
+        padding-left: 10px;
         border-bottom: 1px solid #eee;
-        margin-top: 10px;
     }
+    .toss-detail .toss-footer {
+        padding-left: 10px;
+        font-size: 0.8em;
+        color: #777;
+        margin-top:10px;
+    }
+
+h1 {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.toss-detail h1 .tags, .tag-result .tag-header h1 .connected-tags {
+    margin-top: 10px;
+}
+.no-loader {
+    height: 2px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.loader {
+    height: 2px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #eee;
+}
+
+    .loader:before {
+        display: block;
+        position: absolute;
+        content: "";
+        left: -200px;
+        width: 200px;
+        height: 2px;
+        background-color: #777;
+        animation: loading 2s linear infinite;
+    }
+
+@keyframes loading {
+    from {
+        left: -200px;
+        width: 30%;
+    }
+
+    50% {
+        width: 30%;
+    }
+
+    70% {
+        width: 70%;
+    }
+
+    80% {
+        left: 50%;
+    }
+
+    95% {
+        left: 120%;
+    }
+
+    to {
+        left: 100%;
+    }
+}
+
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+.message-warning{
+}

@@ -1,49 +1,38 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IUriHelper UriHelper
 @inject IAccountService AccountService;
-<div class="card">
-    <div class="card-header">
-        Use a Toss account to log in.
-    </div>
-    <div class="card-body  p-2">
+<div class="pure-form  pure-form-stacked">
+    <fieldset>
+        <legend>
+            Use a Toss account to log in.
+        </legend>
         <EditForm Model="@command" OnValidSubmit="@TryLogin">
             <DataAnnotationsValidator />
             <ServerSideValidator ref="serverSideValidator" />
 
-            <div class="form-group row mb-1">
-                <label for="UserName" class="col-sm-3 col-form-label">Username</label>
+            <label for="UserName">Username</label>
 
-                <div class="col-sm-9">
-                    <InputText Id="UserName" Class="form-control" bind-Value="@command.UserName" />
-                    <ValidationMessage For="@(() => command.UserName)" />
-                </div>
-            </div>
-            <div class="form-group row mb-1">
-                <label asp-for="Password" class="col-sm-3 col-form-label">Password</label>
 
-                <div class="col-sm-9">
-                    <MyInput type="password" Id="Password" Class="form-control" Autocomplete="current-password" bind-Value="@command.Password" />
-                    <ValidationMessage For="@(() => command.Password)" />
-                </div>
-            </div>
-            <div class="form-group row mb-1">
-                <div class="col-sm-3"></div>
+            <InputText Id="UserName" bind-Value="@command.UserName" />
+            <ValidationMessage For="@(() => command.UserName)" />
 
-                <div class="checkbox col-sm-9">
 
-                    <div class="form-check">
-                        <InputCheckbox bind-Value="@command.RememberMe" Class="form-check-input"></InputCheckbox>
-                        <ValidationMessage For="@(() => command.RememberMe)" />
-                        <label class="form-check-label" for="RememberMe">Remember me</label>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group text-center mb-1">
-                <SubmitButton  CssClass="btn btn-primary" Id="BtnLogin">Log in</SubmitButton>
-                <a href="/account/forgotPassword">Forgot your password?</a>
-            </div>
+            <label asp-for="Password">Password</label>
+
+
+            <MyInput type="password" Id="Password" Autocomplete="current-password" bind-Value="@command.Password" />
+            <ValidationMessage For="@(() => command.Password)" />
+
+
+            <label class="pure-checkbox" for="RememberMe">
+                <InputCheckbox bind-Value="@command.RememberMe"></InputCheckbox>
+                Remember me
+            </label>
+            <SubmitButton CssClass="pure-button  pure-button-primary" Id="BtnLogin">Log in</SubmitButton>
+            <NavLink href="/register">Create an account</NavLink>
+            <NavLink href="/account/forgotPassword">Forgot your password?</NavLink>
         </EditForm>
-    </div>
+    </fieldset>
 </div>
 
 @functions{

@@ -4,7 +4,6 @@
 @inject IUriHelper urlHelper;
 @implements IDisposable;
 @inject IMessageService messageService;
-<Message />
 <div class="pure-g">
     <div class="top-menu pure-menu pure-u-5-5 pure-menu-horizontal pure-menu-scrollable">
         <a href="#" class="pure-menu-link pure-menu-heading">Toss</a>
@@ -39,17 +38,12 @@
                         <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link">
                             #@hashTag
                         </NavLink>
-                        <!-- @if (hashTag == CurrentTag)
-                            {
-                                <button type="button" class="btn btn-warning" onclick="@RemoveHashTag"><i class="fas fa-trash"></i></button>
-                            } -->
                     </li>
                 }
                 <li class="pure-menu-item">
                     <div class="pure-form">
                         <EditForm OnValidSubmit="SeeHashtag" Model="@addHashtagCommand">
                             <MyInput Placeholder="Tag" Type="text" Id="TxtAddHashTag" bind-Value="@addHashtagCommand.NewHashTag" />
-                            @*<button type="submit" class="pure-button pure-button-secondary">Look</button>*@
                         </EditForm>
                     </div>
                 </li>
@@ -57,6 +51,7 @@
         </ul>
     </div>
 </div>
+<Message />
 <div class="main">
     @Body
 </div>
@@ -89,27 +84,6 @@
     {
 
         this.exceptionNotificationService.OnException -= HandleExceptions;
-    }
-    protected async Task LogOff()
-    {
-        await accountService.Logout();
-
-    }
-    protected async Task AddHashtag()
-    {
-
-        await ClientFactory.Create("/api/account/addHashTag")
-            .OnOK(() =>
-           {
-               messageService.Info("Hashtag added with success");
-               _account.Hashtags.Add(addHashtagCommand.NewHashTag);
-               urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
-               addHashtagCommand = new AddHashtagCommand();
-           })
-            .OnBadRequest<Dictionary<string, List<string>>>(e => messageService.Error(string.Join(",", e["NewHashTag"])))
-            .Post(addHashtagCommand);
-        StateHasChanged();
-
     }
     protected void SeeHashtag()
     {

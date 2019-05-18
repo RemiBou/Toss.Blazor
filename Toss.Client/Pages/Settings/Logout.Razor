@@ -1,0 +1,11 @@
+﻿@inject IAccountService accountService;
+<div class="pure-form">
+    <button type="button" onclick="@LogOff" class="pure-button button-warning">Log out</button>
+</div>
+@functions{
+    protected async Task LogOff()
+    {
+        await accountService.Logout();
+
+    }
+}

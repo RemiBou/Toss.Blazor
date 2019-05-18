@@ -13,9 +13,12 @@
 }
 @if (loading)
 {
-    <div class="alert alert-info">
-        <i class="fa fa-circle-o-notch fa-spin"></i>Loading...
-    </div>
+    <div class="loader"></div>
+
+}
+else
+{
+    <div class="no-loader"></div>
 }
 @functions{
     private List<string> informations = new List<string>();
