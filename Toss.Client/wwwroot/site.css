@@ -17,6 +17,7 @@ body {
         margin-bottom: 10px;
         padding-left: 10px;
         padding-bottom: 10px;
+        padding-right: 10px;
     }
 
         .main .pure-form legend {
@@ -208,11 +209,12 @@ body {
         padding-left: 10px;
         border-bottom: 1px solid #eee;
     }
+
     .toss-detail .toss-footer {
         padding-left: 10px;
         font-size: 0.8em;
         color: #777;
-        margin-top:10px;
+        margin-top: 10px;
     }
 
 h1 {
@@ -225,12 +227,14 @@ h1 {
 .toss-detail h1 .tags, .tag-result .tag-header h1 .connected-tags {
     margin-top: 10px;
 }
+
 .no-loader {
     height: 2px;
     width: 100%;
     position: relative;
     overflow: hidden;
 }
+
 .loader {
     height: 2px;
     width: 100%;
@@ -280,5 +284,6 @@ h1 {
 .button-warning {
     background: rgb(223, 117, 20); /* this is an orange */
 }
-.message-warning{
+
+.message-warning {
 }

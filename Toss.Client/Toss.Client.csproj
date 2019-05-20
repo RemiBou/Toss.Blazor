@@ -14,7 +14,6 @@
     <Content Remove="Configuration\appsettings.Development.json" />
     <Content Remove="Configuration\appsettings.json" />
     <Content Remove="Configuration\appsettings.Production.json" />
-    <Content Remove="Pages\Settings\Logout.Razor" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,21 +21,14 @@
     <EmbeddedResource Include="Configuration\appsettings.*.json" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Watch Remove="Pages\Settings\Logout.Razor" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Pages\Settings\Logout.razor" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.16.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview4-19216-03" />
-    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview4-19216-03" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview4.19216.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview4.19216.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview4.19216.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor" Version="3.0.0-preview5-19227-01" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Build" Version="3.0.0-preview5-19227-01" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="3.0.0-preview5.19227.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.0.0-preview5.19227.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.0.0-preview5.19227.9" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />

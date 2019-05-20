@@ -87,6 +87,6 @@
     }
     protected void SeeHashtag()
     {
-        urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
+        Task.Delay(100).ContinueWith((t) => urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag));
     }
 }
