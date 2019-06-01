@@ -21,6 +21,11 @@
     <EmbeddedResource Include="Configuration\appsettings.*.json" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Watch Remove="Pages\Settings\AccountSettings.razor" />
+    <Watch Remove="Shared\Layouts\EmptyLayout.razor" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Markdig" Version="0.16.0" />

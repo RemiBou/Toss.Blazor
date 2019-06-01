@@ -42,28 +42,38 @@
         {
             if (!Loading)
             {
-                <div class="page-next pure-u-2-5" onclick="@ShowMore">
-                    Click here to load more Toss for  #@tag.
+                <div class="pure-u-5-5">
+                    <div class="message-info page-next" onclick="@ShowMore">
+                        Click here to load more Toss for  #@tag.
+                    </div>
                 </div>
             }
         }
         else
         {
-            <div class="page-end pure-u-2-5">
-                This is all we have for #@tag.
+            <div class="pure-u-5-5">
+                <div class="message-warning page-end">
+                    This is all we have for #@tag.
+                </div>
             </div>
         }
     }
     else if (!Loading)
     {
-        <div class="no-content pure-u-2-5">
-            There is not Toss for #@tag yet :( <br /> It's up to you to start something.
+
+        <div class="pure-u-5-5">
+            <div class="message-warning no-content">
+                There is not Toss for #@tag yet :( <br /> It's up to you to start something.
+            </div>
         </div>
     }
     @if (Loading)
     {
-        <div class="loading pure-u-2-5">
-            Loading
+
+        <div class="pure-u-5-5">
+            <div class="message-info loading">
+                Loading
+            </div>
         </div>
     }
 </div>
@@ -173,9 +183,9 @@
         await ClientFactory.Create("/api/account/removeHashTag")
               .OnOK(() =>
              {
-                  messageService.Info("Hashtag removed with success");
-                  currentAccount.Hashtags.Remove(tag);
-              })
+                 messageService.Info("Hashtag removed with success");
+                 currentAccount.Hashtags.Remove(tag);
+             })
               .Post(new RemoveHashTagCommand(tag));
 
     }

@@ -1,16 +1,5 @@
 ﻿@inject IMessageService messageService;
-@foreach (var info in informations)
-{
-    <div class="alert alert-info">
-        @info
-    </div>
-}
-@foreach (var error in errors)
-{
-    <div class="alert alert-danger">
-        @error
-    </div>
-}
+
 @if (loading)
 {
     <div class="loader"></div>
@@ -19,6 +8,18 @@
 else
 {
     <div class="no-loader"></div>
+}
+@foreach (var info in informations)
+{
+    <div class="message-success">
+        @info
+    </div>
+}
+@foreach (var error in errors)
+{
+    <div class="message-error">
+        @error
+    </div>
 }
 @functions{
     private List<string> informations = new List<string>();

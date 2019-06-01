@@ -11,7 +11,7 @@ using Toss.Shared.Account;
 
 namespace Toss.Server.Models.Account
 {
-    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,CommandResult>
+    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
 
@@ -32,7 +32,7 @@ namespace Toss.Server.Models.Account
             }
             var result = await _userManager.ResetPasswordAsync(user, request.Code, request.Password);
 
-            return result.Succeeded ? CommandResult.Success() : new CommandResult(result.ToValidationErrorDictonary());
+            return result.Succeeded ? CommandResult.Success() : new CommandResult("Password", string.Join(",", result.Errors.Select(e => e.Description)));
         }
     }
 }

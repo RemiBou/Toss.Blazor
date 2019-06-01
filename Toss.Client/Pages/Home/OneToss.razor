@@ -28,7 +28,7 @@
                     @toss.UserName -
                 </span>
                 <span class="write-date">
-                    @(Math.Round(toss.PostedAgo.TotalHours)) hrs ago
+                    @toss.CreatedOn
                 </span>
                 <span class="read-toss">
                     <a class="link-button" href="/toss/@toss.Id">
@@ -44,8 +44,7 @@
     bool isAdverstisment { get; set; }
     [Parameter]
     TossLastQueryItem toss { get; set; }
-
-
+    
     protected void ShowDetail()
     {
         this.uriHelper.NavigateTo("/toss/" + toss.Id);

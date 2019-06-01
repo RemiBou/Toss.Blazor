@@ -10,7 +10,9 @@ body {
     background-color: white;
     margin-top: 20px;
     padding-bottom: 10px;
+    padding-top: 10px;
 }
+
 
     .main .pure-form {
         border-bottom: 1px solid #e5e5e5;
@@ -179,12 +181,7 @@ body {
     }
 
     .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
-        margin-left: auto;
-        margin-right: auto;
-        border: 2px solid #ddd;
-        padding: 1em 1.6em;
-        display: block;
-        margin-top: 10px;
+      
     }
 
 .link-button {
@@ -220,11 +217,11 @@ body {
 h1 {
     padding: 10px;
     border-bottom: 1px solid #eee;
-    margin-top: 10px;
     margin-bottom: 10px;
+    margin-top: 0px; /* compensated by the padding 10 on main */
 }
 
-.toss-detail h1 .tags, .tag-result .tag-header h1 .connected-tags {
+.tag-result .tag-header h1 .connected-tags {
     margin-top: 10px;
 }
 
@@ -284,6 +281,28 @@ h1 {
 .button-warning {
     background: rgb(223, 117, 20); /* this is an orange */
 }
+.message-warning, .message-info, .message-success, .message-error {
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid #ddd;
+    padding: 1em 1.6em;
+    display: block;
+    margin-top: 10px;
+    max-width:80%;
+}
+.message-error{
+    border-color:indianred;
+    max-height: 200px;
+    overflow: hidden;
+}
+.message-success {
+    border-color: limegreen;
+}
+.message-info {
+    border-color: dodgerblue;
+}
 
 .message-warning {
+    border-color: rgb(223, 117, 20);
+
 }

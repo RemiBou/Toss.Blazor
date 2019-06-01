@@ -183,7 +183,7 @@ namespace Toss.Server {
                     .DefaultSources (s => s.Self ())
                     .ImageSources (s => s.Self ().CustomSources ("data:"))
                     .ConnectSources (s => s.Self ().CustomSources ("https://raw.githubusercontent.com/RemiBou/Toss.Blazor/master/ABOUT.md"))
-                    .StyleSources (s => s.Self ().CustomSources ("use.fontawesome.com", "cdnjs.cloudflare.com"))
+                    .StyleSources (s => s.Self ().CustomSources ("https://unpkg.com/purecss@1.0.0/build/pure-min.css"))
                     .FontSources (s => s.Self ().CustomSources ("use.fontawesome.com"))
                     .FrameSources (s => s.CustomSources ("https://www.google.com/recaptcha/"))
                     .ScriptSources (s => s.Self ().UnsafeEval ().UnsafeInline ().CustomSources ("checkout.stripe.com", "https://www.google.com/recaptcha/", "cdnjs.cloudflare.com", "https://www.gstatic.com/recaptcha/"))
