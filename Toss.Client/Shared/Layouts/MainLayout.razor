@@ -40,14 +40,14 @@
                         </NavLink>
                     </li>
                 }
-                <li class="pure-menu-item">
-                    <div class="pure-form">
-                        <EditForm OnValidSubmit="SeeHashtag" Model="@addHashtagCommand">
-                            <MyInput Placeholder="Tag" Type="text" Id="TxtAddHashTag" bind-Value="@addHashtagCommand.NewHashTag" />
-                        </EditForm>
-                    </div>
-                </li>
             }
+            <li class="pure-menu-item">
+                <div class="pure-form">
+                    <EditForm OnValidSubmit="SeeHashtag" Model="@addHashtagCommand">
+                        <MyInput Placeholder="Tag" Type="text" Id="TxtAddHashTag" bind-Value="@addHashtagCommand.NewHashTag" />
+                    </EditForm>
+                </div>
+            </li>
         </ul>
     </div>
 </div>
@@ -87,6 +87,6 @@
     }
     protected void SeeHashtag()
     {
-        Task.Delay(100).ContinueWith((t) => urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag));
+        urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
     }
 }
