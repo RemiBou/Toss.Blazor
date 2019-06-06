@@ -181,7 +181,6 @@ body {
     }
 
     .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
-      
     }
 
 .link-button {
@@ -281,6 +280,7 @@ h1 {
 .button-warning {
     background: rgb(223, 117, 20); /* this is an orange */
 }
+
 .message-warning, .message-info, .message-success, .message-error {
     margin-left: auto;
     margin-right: auto;
@@ -288,21 +288,35 @@ h1 {
     padding: 1em 1.6em;
     display: block;
     margin-top: 10px;
-    max-width:80%;
+    max-width: 80%;
 }
-.message-error{
-    border-color:indianred;
+
+.message-error {
+    border-color: indianred;
     max-height: 200px;
     overflow: hidden;
 }
+
 .message-success {
     border-color: limegreen;
 }
+
 .message-info {
     border-color: dodgerblue;
 }
 
 .message-warning {
     border-color: rgb(223, 117, 20);
-
 }
+
+.icon {
+}
+
+    .icon svg {
+        stroke: #777;
+        stroke-width: 1.5;
+        stroke-linecap: square;
+        stroke-linejoin: miter;
+        fill: none;
+        color: #777;
+    }

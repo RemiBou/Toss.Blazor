@@ -1,0 +1,22 @@
+﻿
+<div class="icon">
+    <svg role="img" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-labelledby="@("icon"+IconType)">
+        <title id="@("icon"+IconType)">@Title</title>
+        <path d="@InlinePath[IconType]"></path>
+    </svg>
+</div>
+@functions{
+    private static Dictionary<string, string> InlinePath = new Dictionary<string, string>()
+{
+        {"chat","M13,17 L7,21 L7,17 L3,17 L3,4 L21,4 L21,17 L13,17 Z" },
+        {"edit","M18.4142136 4.41421356L19.5857864 5.58578644C20.366835 6.36683502 20.366835 7.63316498 19.5857864 8.41421356L8 20 4 20 4 16 15.5857864 4.41421356C16.366835 3.63316498 17.633165 3.63316498 18.4142136 4.41421356zM14 6L18 10" },
+        {"person","M4,20 C4,17 8,17 10,15 C11,14 8,14 8,9 C8,5.667 9.333,4 12,4 C14.667,4 16,5.667 16,9 C16,14 13,14 14,15 C16,17 20,17 20,20" },
+        {"plus","M20 12L4 12M12 4L12 20" },
+        {"minus","M20,12 L4,12" }
+    };
+    [Parameter]
+    protected string Title { get; set; }
+
+    [Parameter]
+    protected string IconType { get; set; }
+}

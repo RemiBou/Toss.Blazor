@@ -1,0 +1,78 @@
+<html lang="en" dir="ltr">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Ikonate</title>
+    <style>
+      :root {
+        --grey--light: #fafaff;
+        --white: #ffffff;
+      }
+
+      body {
+        background: var(--grey--light);
+      }
+
+      .main {
+        width: 1152px;
+        text-align: center;
+        margin: 0 auto;
+      }
+
+      .main__item {
+        background: var(--white);
+        border-radius: 4px;
+        padding: 20px;
+        display: inline-block;
+        margin: 10px;
+      }
+
+      .main__item svg {
+          width: 32px;
+          height: 32px;
+          stroke: #777;
+          stroke-width: 1.5;
+          stroke-linecap: square;
+          stroke-linejoin: miter;
+          fill: none;
+          color: #777;
+  }</style>
+  </head>
+
+  <body>
+    <div class="main">
+      <div class="main__item">
+        <svg>
+          <title id="chatAltIconTitle">Chat</title>
+          <use xlink:href="./ikonate.svg#chat-alt"></use>
+        </svg>
+      </div>
+      <div class="main__item">
+        <svg>
+          <title id="editIconTitle">Edit</title>
+          <use xlink:href="./ikonate.svg#edit"></use>
+        </svg>
+      </div>
+      <div class="main__item">
+        <svg>
+          <title id="personIconTitle">Person</title>
+          <use xlink:href="./ikonate.svg#person"></use>
+        </svg>
+      </div>
+      <div class="main__item">
+        <svg>
+          <title id="plusIconTitle">Plus</title>
+          <use xlink:href="./ikonate.svg#plus"></use>
+        </svg>
+      </div>
+      <div class="main__item">
+        <svg>
+          <title id="minusIconTitle">Minus</title>
+          <use xlink:href="./ikonate.svg#minus"></use>
+        </svg>
+      </div>
+    </div>
+
+  </body>
+
+</html>

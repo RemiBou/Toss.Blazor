@@ -15,11 +15,15 @@
             {
                 if (!currentAccount.Hashtags.Contains(tag))
                 {
-                    <button class="pure-button" onclick="@AddHashtag">Add</button>
+                    <button onclick="@AddHashtag">
+                        <Icon Title="Add" IconType="plus"></Icon>
+                    </button>
                 }
                 else
                 {
-                    <button class="pure-button" onclick="@RemoveHashTag">Remove</button>
+                    <button onclick="@RemoveHashTag">
+                        <Icon Title="Remove" IconType="minus"></Icon>
+                    </button>
                 }
             }
             <ConnectedTagsBar Hashtag="@tag"></ConnectedTagsBar>
