@@ -32,7 +32,8 @@ namespace Toss.Server.Controllers
                     Content = t.Content.Substring(0, 100),
                     CreatedOn = t.CreatedOn,
                     Id = t.Id,
-                    UserName = t.UserName
+                    UserName = t.UserName,
+                    Tags = t.Tags
                 })
                 .Skip(TossLastQuery.TossPerPage * request.Page)
                 .Take(TossLastQuery.TossPerPage)

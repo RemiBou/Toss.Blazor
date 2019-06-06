@@ -1,13 +1,13 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory Http;
 @inject IUriHelper UriHelper;
-<div class="card mt-3">
-    <div class="card-header">Use another service to log in.</div>
-    <div class="card-body p-2">
+<div class="pure-form">
+    <fieldset>
+        <legend>Use another service to log in.</legend>
         @foreach (var provider in loginProviders)
         {
             <form action="/api/account/externalLogin" method="post">
                 <button type="submit"
-                        class="btn btn-primary"
+                        class="pure-button pure-button-primary"
                         name="provider"
                         value="@provider.Name"
                         title="@("Log in using your "+provider.DisplayName+" account")">
@@ -15,16 +15,16 @@
                 </button>
             </form>
         }
-    </div>
+    </fieldset>
 </div>
-    @functions{
-        IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
-        protected override async Task OnInitAsync()
-        {
-            await Http.Create("/api/account/loginProviders")
-                .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
-                .Get();
+@functions{
+    IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
+    protected override async Task OnInitAsync()
+    {
+        await Http.Create("/api/account/loginProviders")
+            .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)
+            .Get();
 
-            StateHasChanged();
-        }
+        StateHasChanged();
     }
+}

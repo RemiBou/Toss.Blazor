@@ -1,0 +1,51 @@
+﻿@page "/register"
+@inject IHttpApiClientRequestBuilderFactory ClientFactory
+@inject IMessageService messageService
+@layout MainLayout
+<h1>Create a Toss account</h1>
+<div class="pure-form pure-form-stacked">
+    <EditForm OnValidSubmit="CreateAccount" Model="@command">
+        <DataAnnotationsValidator />
+        <ServerSideValidator ref="serverSideValidator" />
+        <label for="NewEmail">Email</label>
+
+
+        <MyInput Type="text" Id="NewEmail" bind-Value="@command.Email" />
+        <ValidationMessage For="@(() => command.Email)" />
+        <label for="NewName">Name</label>
+        <MyInput Type="text" Autocomplete="username" Id="NewName" bind-Value="@command.Name" />
+        <ValidationMessage For="@(() => command.Name)" />
+        <label for="NewPassword">Password</label>
+
+        <MyInput Type="password" Autocomplete="new-password" Id="NewPassword" bind-Value="@command.Password" />
+        <ValidationMessage For="@(() => command.Password)" />
+        <label for="NewConfirmPassword">Confirm</label>
+        <MyInput Type="password" Autocomplete="new-password" Id="NewConfirmPassword" bind-Value="@command.ConfirmPassword" />
+        <ValidationMessage For="@(() => command.ConfirmPassword)" />
+        <SubmitButton Id="BtnRegister" CssClass="pure-button pure-button-primary btn-primary">Register</SubmitButton>
+
+
+    </EditForm>
+</div>
+<Toss.Client.Pages.Login.LoginExternal></Toss.Client.Pages.Login.LoginExternal>
+@functions{
+
+    RegisterCommand command = new RegisterCommand();
+    ServerSideValidator serverSideValidator;
+    async Task CreateAccount(EditContext context)
+    {
+        await ClientFactory.Create("/api/account/register")
+            .OnBadRequest<Dictionary<string, List<string>>>(errors =>
+            {
+
+                serverSideValidator.DisplayErrors(errors);
+            })
+            .OnOK(() =>
+           {
+               messageService.Info("Successfully registered, please confirm your account by clicking on the link in the email sent to " + command.Email);
+               command = new RegisterCommand();
+               StateHasChanged();
+           })
+            .Post(command);
+    }
+}

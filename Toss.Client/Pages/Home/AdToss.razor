@@ -1,29 +1,30 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
 @if (sponsoredToss != null)
 {
-    <OneToss toss="@sponsoredToss" additionnalClass="bg-light" headerText="Sponsored Toss"></OneToss>
+
+    <OneToss toss="@sponsoredToss" isAdverstisment="true"></OneToss>
 }
 @functions{
-        TossLastQueryItem sponsoredToss;
+    TossLastQueryItem sponsoredToss;
 
     [Parameter]
-    private string CurrentTag { get; set; } = "";
+    private string tag { get; set; } = "";
 
     protected override async Task OnParametersSetAsync()
     {
         await RefreshSponsoredToss();
-    }
+    } 
 
     protected async Task RefreshSponsoredToss()
     {
         sponsoredToss = null;
-        if (string.IsNullOrWhiteSpace(CurrentTag))
+        if (string.IsNullOrWhiteSpace(tag))
         {
             return;
         }
-        await ClientFactory.Create("/api/toss/sponsored?hashtag=" + CurrentTag)
-            .OnOK<TossLastQueryItem>( l =>
-            {
+        await ClientFactory.Create("/api/toss/sponsored?hashtag=" + tag)
+            .OnOK<TossLastQueryItem>(l =>
+           {
                 sponsoredToss = l;
                 StateHasChanged();
             })

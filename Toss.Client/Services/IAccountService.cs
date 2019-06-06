@@ -1,30 +1,28 @@
-﻿using Microsoft.AspNetCore.Components;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
 using Toss.Shared;
 using Toss.Shared.Account;
 
-namespace Toss.Client.Services
-{
+namespace Toss.Client.Services {
     /// <summary>
     /// Access to account informations
     /// </summary>
-    public interface IAccountService
-    {
+    public interface IAccountService {
 
         /// <summary>
         /// Get the current user account details from backend
         /// </summary>
         /// <returns></returns>
-        Task<AccountViewModel> CurrentAccount();
+        Task<AccountViewModel> CurrentAccount ();
 
-        Task Logout();
+        Task Logout ();
 
-        event EventHandler OnLogoutDone;
-        event EventHandler OnLoginDone;
+        void SubscribeOnCurrentAccountChanged (EventHandler<AccountViewModel> handler);
 
-        Task<Dictionary<string, List<string>>> Login(LoginCommand loginCommand);
-
+        Task<Dictionary<string, List<string>>> Login (LoginCommand loginCommand);
+        Task AddHashTag(AddHashtagCommand command, Action successCallback, Action<Dictionary<string, List<string>>> badRequestCallBack);
+        Task RemoveHashTag(RemoveHashTagCommand command, Action successCallback);
     }
 }

@@ -13,7 +13,7 @@ steps:
 - task: DotNetCoreInstaller@0
   displayName: 'Install SDK'
   inputs:
-    version: '3.0.100-preview4-011223'
+    version: '3.0.100-preview5-011568'
 - script: dotnet build Toss.sln --configuration $(buildConfiguration)
   displayName: 'dotnet build Toss.sln'
 - script: dotnet test ./Toss.Tests/Toss.Tests.csproj  --configuration $(buildConfiguration) --no-build  -v q --logger trx;LogFileName=test.trx

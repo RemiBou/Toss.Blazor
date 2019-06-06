@@ -16,12 +16,14 @@ namespace Toss.Server.Models.Tosses
         private readonly IAsyncDocumentSession _session;
         private readonly IMediator mediator;
         private readonly IRandom random;
+        private readonly RavenDBIdUtil ravenDBIdUtil;
 
-        public SponsoredTossQueryHandler(IAsyncDocumentSession session, IMediator mediator, IRandom random)
+        public SponsoredTossQueryHandler(IAsyncDocumentSession session, IMediator mediator, IRandom random, RavenDBIdUtil ravenDBIdUtil)
         {
             this._session = session;
             this.mediator = mediator;
             this.random = random;
+            this.ravenDBIdUtil = ravenDBIdUtil;
         }
 
         public async Task<TossLastQueryItem> Handle(SponsoredTossQuery request, CancellationToken cancellationToken)
@@ -34,7 +36,8 @@ namespace Toss.Server.Models.Tosses
                     Content = t.Content,
                     CreatedOn = t.CreatedOn,
                     Id = t.Id,
-                    UserName = t.UserName
+                    UserName = t.UserName,
+                    Tags = t.Tags
                 })
                 .ToListAsync())
                   .ToLookup(t => t.UserName)
@@ -45,6 +48,7 @@ namespace Toss.Server.Models.Tosses
             var userToss = resCollection[index].ToArray();
             var res = userToss[random.NewRandom(userToss.Count() - 1)];
             await mediator.Publish(new SponsoredTossDisplayed(res.Id));
+            res.Id = ravenDBIdUtil.GetUrlId(res.Id);
             return res;
 
         }

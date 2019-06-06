@@ -1,27 +1,322 @@
-﻿.form-control.invalid {
+﻿
+body {
+    background-color: #eee;
+}
+
+.main {
+    max-width: 980px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+    margin-top: 20px;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+
+    .main .pure-form {
+        border-bottom: 1px solid #e5e5e5;
+        margin-bottom: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+        padding-right: 10px;
+    }
+
+        .main .pure-form legend {
+            margin-bottom: 0em;
+            font-size: 1.3em;
+            border-bottom-width: 0px;
+        }
+
+        .main .pure-form label {
+            margin: 0.6em 0;
+        }
+
+.pure-form .invalid {
     border-color: #dc3545;
 }
 
-.form-control.valid {
+.pure-form .valid {
     border-color: #28a745;
 }
 
-.validation-message {
+.pure-form .pure-button[type=submit] {
+    margin-top: 10px;
+}
+
+
+.pure-form .validation-message {
     width: 100%;
     margin-top: .25rem;
     font-size: 80%;
     color: #dc3545;
 }
 
-#TextAreaNewToss {
+#TxtNewToss {
     height: 200px;
+    width: 100%;
 }
-.toss .card {
-    cursor: zoom-in
+
+#TxtAddHashTag {
+    width: 8em;
+    color: #2d3e50;
 }
-.toss .card-text {
+/* taken from here https://purecss.io/layouts/marketing/ */
+.splash-container {
+    z-index: 1;
+    overflow: hidden;
+    /* The following styles are required for the "scroll-over" effect */
+    width: 100%;
+    height: 88%;
+    top: 0;
+    left: 0;
+    position: fixed !important;
+}
+
+    .splash-container .splash {
+        width: 80%;
+        height: 50%;
+        margin: auto;
+        position: absolute;
+        top: 100px;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+        .splash-container .splash .splash-head {
+            font-size: 20px;
+            font-weight: bold;
+            color: black;
+            border: 3px solid black;
+            padding: 1em 1.6em;
+            font-weight: 100;
+            border-radius: 5px;
+            line-height: 1em;
+        }
+
+        .splash-container .splash .splash-subhead {
+            color: black;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+        }
+
+
+.top-menu {
+    background-color: white;
+    color: #2d3e50;
+    padding: 0;
+}
+
+    .top-menu .pure-form {
+        margin-bottom: 0px;
+    }
+
+
+
+.tag-result {
+}
+
+
+    .tag-result .tag-header h1 button, .tag-result .tag-header h1 .connected-tags, .toss-detail h1 .tags {
+        font-size: 0.4em;
+    }
+
+    .tag-result .toss-preview {
+        border-bottom: 1px solid #eee;
+        padding: 10px;
+    }
+
+        .tag-result .toss-preview .meta {
+            color: #808080;
+            font-size: 0.8em;
+        }
+
+
+            .tag-result .toss-preview .meta .tags .link-button {
+                background-color: #eee;
+                display: inline-block;
+                margin-right: 5px;
+                font-size: 0.8em;
+            }
+
+        .tag-result .toss-preview .tag {
+            float: right;
+            background-color: #808080;
+            color: white;
+            padding: 5px;
+        }
+
+        .tag-result .toss-preview .content-preview {
+            margin-bottom: 10px;
+            color: rgb(34,34,34);
+        }
+
+            .tag-result .toss-preview .content-preview > p {
+                margin: 0px;
+            }
+
+        .tag-result .toss-preview .read-toss {
+            text-align: center;
+            vertical-align: middle;
+            padding-top: 1em;
+        }
+
+        .tag-result .toss-preview:hover {
+            cursor: pointer;
+            border-color: #808080;
+            border-top: 1px solid #808080;
+            border-left: 2px solid #808080;
+            padding-left: 20px;
+        }
+
+            .tag-result .toss-preview:hover .read-toss a {
+                background-color: #eee;
+            }
+
+    .tag-result .page-next {
+        cursor: pointer;
+    }
+
+    .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
+    }
+
+.link-button {
+    padding: 5px;
+    color: #777;
+    outline: 0;
+    text-decoration: none;
+}
+
+    .link-button:hover {
+        background-color: #eee;
+    }
+
+.toss-detail {
+}
+
+    .toss-detail h1 {
+    }
+
+
+    .toss-detail .toss-content {
+        padding-left: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .toss-detail .toss-footer {
+        padding-left: 10px;
+        font-size: 0.8em;
+        color: #777;
+        margin-top: 10px;
+    }
+
+h1 {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
+    margin-top: 0px; /* compensated by the padding 10 on main */
+}
+
+.tag-result .tag-header h1 .connected-tags {
+    margin-top: 10px;
+}
+
+.no-loader {
+    height: 2px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.loader {
+    height: 2px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #eee;
+}
+
+    .loader:before {
+        display: block;
+        position: absolute;
+        content: "";
+        left: -200px;
+        width: 200px;
+        height: 2px;
+        background-color: #777;
+        animation: loading 2s linear infinite;
+    }
+
+@keyframes loading {
+    from {
+        left: -200px;
+        width: 30%;
+    }
+
+    50% {
+        width: 30%;
+    }
+
+    70% {
+        width: 70%;
+    }
+
+    80% {
+        left: 50%;
+    }
+
+    95% {
+        left: 120%;
+    }
+
+    to {
+        left: 100%;
+    }
+}
+
+.button-warning {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
+
+.message-warning, .message-info, .message-success, .message-error {
+    margin-left: auto;
+    margin-right: auto;
+    border: 2px solid #ddd;
+    padding: 1em 1.6em;
+    display: block;
+    margin-top: 10px;
+    max-width: 80%;
+}
+
+.message-error {
+    border-color: indianred;
     max-height: 200px;
-    overflow-y: hidden;
+    overflow: hidden;
 }
-body {
+
+.message-success {
+    border-color: limegreen;
 }
+
+.message-info {
+    border-color: dodgerblue;
+}
+
+.message-warning {
+    border-color: rgb(223, 117, 20);
+}
+
+.icon {
+}
+
+    .icon svg {
+        stroke: #777;
+        stroke-width: 1.5;
+        stroke-linecap: square;
+        stroke-linejoin: miter;
+        fill: none;
+        color: #777;
+    }

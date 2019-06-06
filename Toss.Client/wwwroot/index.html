@@ -6,28 +6,28 @@
     <title>TOSS</title>
 
     <base href="/" />
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css"
+          integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+
     <link rel="stylesheet" href="site.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css"
-          integrity="sha256-NJWeQ+bs82iAeoT5Ktmqbi3NXwxcHlfaVejzJI2dklU=" crossorigin="anonymous" />
 </head>
 
 <body>
-    <div class="container">
+
         <app>
-            <div class="jumbotron p-2 m-2">
-                <h1 class="display-4">Welcome to TOSS</h1>
-                <p class="lead">Loading all the things ....</p>
+            <div class="splash-container pure-u-5-5">
+                <div class="splash">
+                    <h1 class="splash-head">Welcome to Toss</h1>
+                    <p class="splash-subhead">
+                       Loading ...
+                    </p>
+                </div>
             </div>
         </app>
-    </div>
     <script type="blazor-boot">
     </script>
 
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/solid.css" integrity="sha384-HTDlLIcgXajNzMJv5hiW5s2fwegQng6Hi+fN6t5VAcwO/9qbg2YEANIyKBlqLsiT"
-        crossorigin="anonymous">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.10/css/fontawesome.css" integrity="sha384-8WwquHbb2jqa7gKWSoAwbJBV2Q+/rQRss9UXL5wlvXOZfSodONmVnifo/+5xJIWX"
-        crossorigin="anonymous">
-  
+
     <script src="https://checkout.stripe.com/checkout.js"></script>
     <script src="/site.js"></script>
     <script src="_framework/blazor.webassembly.js"></script>

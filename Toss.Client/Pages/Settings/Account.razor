@@ -1,0 +1,43 @@
+﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IAccountService AccountService;
+@inject IUriHelper UriHelper
+
+<div class="pure-form  pure-form-stacked">
+    <fieldset>
+        <legend>Informations</legend>
+        <EditForm Model="command" OnValidSubmit="@PostAccount">
+            <DataAnnotationsValidator />
+            <ServerSideValidator ref="serverSideValidator" />
+
+            <label for="Email">Email</label>
+            <InputText Class="form-control" bind-Value="@command.Email" />
+            <ValidationMessage For="@(() => command.Email)" />
+
+            <label for="Name">User name</label>
+            <InputText Class="form-control" bind-Value="@command.Name" />
+            <ValidationMessage For="@(() => command.Name)" />
+
+            <SubmitButton CssClass="pure-button pure-button-primary">Save</SubmitButton>
+        </EditForm>
+    </fieldset>
+</div>
+@functions {
+    ServerSideValidator serverSideValidator;
+    EditAccountCommand command = new EditAccountCommand();
+    protected override async Task OnInitAsync()
+    {
+        var account = await AccountService.CurrentAccount();
+        command.Email = account.Email;
+        command.Name = account.Name;
+        StateHasChanged();
+    }
+    async Task PostAccount()
+    {
+        await ClientFactory.Create("/api/account/edit")
+            .OnBadRequest<Dictionary<string, List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
+            .OnOK("Informations saved successfully")
+            .Post(command);
+        StateHasChanged();
+    }
+}
+

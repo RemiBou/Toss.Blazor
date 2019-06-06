@@ -1,20 +1,24 @@
 ﻿@inject IMessageService messageService;
+
+@if (loading)
+{
+    <div class="loader"></div>
+
+}
+else
+{
+    <div class="no-loader"></div>
+}
 @foreach (var info in informations)
 {
-    <div class="alert alert-info">
+    <div class="message-success">
         @info
     </div>
 }
 @foreach (var error in errors)
 {
-    <div class="alert alert-danger">
+    <div class="message-error">
         @error
-    </div>
-}
-@if (loading)
-{
-    <div class="alert alert-info">
-        <i class="fa fa-circle-o-notch fa-spin"></i>Loading...
     </div>
 }
 @functions{

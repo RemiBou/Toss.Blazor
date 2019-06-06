@@ -1,178 +1,22 @@
 ﻿@page "/"
-@page "/tag/{CurrentTag}"
-@page "/tag/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
 @inject IUriHelper uriHelper;
+@layout MainLayout
 
-<div class="form-inline">
-    @if (currentAccount != null)
-    {
-        <NavLink href="/new" class="btn btn-primary" id="BtnOpenNewToss"><i class="fas fa-plus"></i> New Toss</NavLink>
-    }
-    <HashTagBar CurrentTag="@CurrentTag"></HashTagBar>
-    <button type="button" class="btn btn-warning" onclick="@ResetCurrentTagDisplay"><i class="fas fa-sync"></i></button>
-</div>
-<div class="row">
-    @if (string.IsNullOrEmpty(CurrentTag))
-    {
-        <div class="col-md-3 col-sm-6 my-2">
-            <div class="card text-white bg-warning   h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Select a hashtag</h5>
-                    <p class="card-text">Use the textbox below for searching content based on a hashtag.</p>
-                </div>
-            </div>
-        </div>
-    }
-    else
-    {
-       
-
-        
-        if (Tosses.Any())
-        {
-            <ConnectedTagsBar Hashtag="@CurrentTag"></ConnectedTagsBar>
-            foreach (var tossGroup in Tosses)
-            {
-                <SponsoredToss CurrentTag="@CurrentTag"></SponsoredToss>
-                foreach (var toss in tossGroup)
-                {
-                    <OneToss toss="@toss" />
-                }
-            }
-            if (!LastPage)
-            {
-                if (!Loading)
-                {
-                    <div class="col-md-3 col-sm-6 my-2">
-                        <div class="card text-white bg-warning   h-100" onclick="@(async () => await ShowMore())">
-                            <div class="card-body">
-                                <p class="card-text">Click here to load more Toss.</p>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-            else
-            {
-                <div class="col-md-3 col-sm-6 my-2">
-                    <div class="card text-white bg-success   h-100">
-                        <div class="card-body">
-                            <p class="card-text">You've read all the toss for this tag.</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-        else if (!Loading)
-        {
-            <div class="col-md-3 col-sm-6 my-2">
-                <div class="card text-white bg-warning   h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Nothing to show</h5>
-                        <p class="card-text">There is not Toss for #@CurrentTag yet :( <br /> It's up to you to start something.</p>
-                    </div>
-                </div>
-            </div>
-        }
-        if (Loading)
-        {
-            <div class="col-md-3 col-sm-6 my-2">
-                <div class="card text-white bg-warning   h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Loading</h5>
-                        <p class="card-text">We are loading the tosses ...</p>
-                    </div>
-                </div>
-            </div>
-        }
-    }
+<div class=" message-info">
+    Use the textbox below for searching content based on a hashtag.
 </div>
 @functions{
 
-    List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
-    [Parameter]
-    private string CurrentTag { get; set; } = "";
-
-
-    private string DisplayedTag;
 
     private AccountViewModel currentAccount;
-
-    private bool Loading { get; set; } = false;
-
-    public bool LastPage { get; set; } = false;
-
-    protected int Page { get; set; } = 0;
 
     protected async override Task OnInitAsync()
     {
         currentAccount = await AccountService.CurrentAccount();
 
-    }
-
-    protected override async Task OnParametersSetAsync()
-    {
-        if (DisplayedTag != CurrentTag)
-        {
-            await GetTossCurrentTag();
-        }
-    }
-
-    public override async Task SetParametersAsync(ParameterCollection parameters)
-    {
-
-        if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("CurrentTag")))
-        {
-            CurrentTag = null;
-        }
-       
-        await base.SetParametersAsync(parameters);
-    }
-    protected async Task ResetCurrentTagDisplay()
-    {
-        ResetDisplayState();
-        await GetTossCurrentTag();
-    }
-    private void ResetDisplayState()
-    {
-        Tosses = new List<List<TossLastQueryItem>>();
-        LastPage = false;
-        Page = 0;
-    }
-    protected async Task GetTossCurrentTag()
-    {
-        if (DisplayedTag != CurrentTag)
-        {
-            ResetDisplayState();
-        }
-        DisplayedTag = CurrentTag;
-        if (string.IsNullOrWhiteSpace(CurrentTag))
-        {
-            return;//
-        }
-        Loading = true;
-        await ClientFactory.Create("/api/toss/last?query.HashTag=" + CurrentTag + "&query.Page=" + Page)
-            .OnOK<List<TossLastQueryItem>>(l =>
-            {
-                Tosses.Add(l);
-
-                Loading = false;
-                if (l.Count < TossLastQuery.TossPerPage)
-                {
-                    LastPage = true;
-                }
-                StateHasChanged();
-            })
-            .Get();
-    }
-
-    protected async Task ShowMore()
-    {
-        Page++;
-        await GetTossCurrentTag();
     }
 
 }

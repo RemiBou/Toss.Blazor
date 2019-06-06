@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0-preview4.19212.13" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0-preview5.19224.8" />
   </ItemGroup>
 
 </Project>
