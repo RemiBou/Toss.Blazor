@@ -104,7 +104,7 @@ namespace Toss.Server.Controllers
             var info = await _mediator.Send(new ExternalLoginDetailQuery());
             return Ok(new ExternalLoginConfirmationCommand()
             {
-                Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
                 Provider = info.LoginProvider
             });
         }
