@@ -59,5 +59,30 @@ namespace Toss.Client.Services {
             this.OnCurrentAccountChanged += handler;
             handler.Invoke (this, _currentAccount); 
         }
+
+        public async Task AddHashTag(AddHashtagCommand command, Action successCallback, Action<Dictionary<string,List<string>>> badRequestCallBack)
+        {
+            await http.Create("/api/account/addHashTag")
+            .OnOK(() =>
+            {
+                _currentAccount.Hashtags.Add(command.NewHashTag);
+                RaiseEvent();
+                successCallback();
+            })
+            .OnBadRequest<Dictionary<string, List<string>>>(badRequestCallBack)
+            .Post(command);
+        }
+
+        public async Task RemoveHashTag(RemoveHashTagCommand command, Action successCallback)
+        {
+            await http.Create("/api/account/removeHashTag")
+                .OnOK(() =>
+                {
+                    _currentAccount.Hashtags.Remove(command.HashTag);
+                    RaiseEvent();
+                    successCallback();
+                })
+                .Post(command);
+        }
     }
 }
