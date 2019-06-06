@@ -11,7 +11,7 @@
             @if (_account != null)
             {
                 <li class="pure-menu-item">
-                    <NavLink href="/account" class="pure-menu-link" id="BtnMenu">
+                    <NavLink href="/account" class="pure-menu-link" id="LinkAccount">
                         <Icon Title="Account" IconType="person"></Icon>
                     </NavLink>
                 </li>
@@ -20,13 +20,13 @@
             else
             {
                 <li class="pure-menu-item">
-                    <NavLink href="/login" class="pure-menu-link" id="BtnMenu">
+                    <NavLink href="/login" class="pure-menu-link" id="LinkLogin">
                         Login
                     </NavLink>
                 </li>
             }
             <li class="pure-menu-item">
-                <NavLink href="/new" class="pure-menu-link" id="BtnOpenNewToss">
+                <NavLink href="/new" class="pure-menu-link" id="LinkNewToss">
                     <Icon Title="New Toss" IconType="edit"></Icon>
                 </NavLink>
             </li>
@@ -35,7 +35,7 @@
                 @foreach (var hashTag in _account.Hashtags ?? new List<string>())
                 {
                     <li class="pure-menu-item">
-                        <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link">
+                        <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
                             #@hashTag
                         </NavLink>
                     </li>

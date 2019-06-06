@@ -37,7 +37,8 @@ namespace Toss.Tests.E2E
             try
             {
                 Browser.Manage().Window.FullScreen();
-                Navigate("/login");
+                Browser.FindElement(By.Id("LinkLogin")).Click();
+                Browser.FindElement(By.Id("LinkRegister")).Click();
                 DisableRecaptcha();
                 Assert.Equal("TOSS", Browser.Title);
                 //load and redirect to /login
@@ -64,7 +65,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
                 //publish toss
-                Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+                Browser.FindElement(By.Id("LinkNewToss")).Click();
                 _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
                 string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
                 Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
@@ -72,7 +73,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
                 //add new toss x 2
-                Browser.FindElement(By.Id("BtnOpenNewToss")).Click();
+                Browser.FindElement(By.Id("LinkNewToss")).Click();
                 _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
                 Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
                 Browser.FindElement(By.Id("BtnNewToss")).Click();
@@ -80,17 +81,25 @@ namespace Toss.Tests.E2E
 
                 //add new hashtag
                 Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
+                Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(Environment.NewLine);
                 Browser.FindElement(By.Id("BtnAddHashTag")).Click();
                 _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
 
                 //filter on hashtag
                 Browser.FindElement(By.CssSelector(".tag-link")).Click();
-                _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss .card-text")).Text == newTossContent);
+
+                // read first toss
+                _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".toss-preview")).Any());
+                Browser.FindElement(By.CssSelector(".toss-preview")).Click();
+                _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss-detail .toss-content")).Text == newTossContent);
 
                 //sign out
-                ScrollToView(By.Id("LinkLogout"));
-                Browser.FindElement(By.Id("LinkLogout")).Click();
+                Browser.FindElement(By.Id("LinkAccount")).Click();
+                _webDriveWaitDefault.Until(b => b.Url.EndsWith("/account"));
+                ScrollToView(By.Id("BtnLogout"));
+                Browser.FindElement(By.Id("BtnLogout")).Click();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
+
                 //reset password
                 //click reset link
                 //do reset password
