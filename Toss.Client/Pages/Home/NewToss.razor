@@ -43,7 +43,7 @@
                             </ul>
                         </div>
                         <label for="TxtDisplayCount">Display count</label>
-                        <InputNumber bind-Value="@command.SponsoredDisplayedCount"></InputNumber>
+                        <InputNumber @bind-Value="@command.SponsoredDisplayedCount"></InputNumber>
                         <ValidationMessage For="@(() => command.SponsoredDisplayedCount)" />
 
                     }

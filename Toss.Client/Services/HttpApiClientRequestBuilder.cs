@@ -2,6 +2,7 @@
 using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Toss.Shared;
 
@@ -25,10 +26,10 @@ namespace Toss.Client.Services
             IBrowserCookieService browserCookieService, IJsInterop jsInterop, IMessageService messageService)
         {
             _relativeUri = uri;
-            _uri = uriHelper.ToAbsoluteUri( uri).ToString();
+            _uri = uriHelper.ToAbsoluteUri(uri).ToString();
             _uriHelper = uriHelper;
             _httpClient = httpClient;
-           
+
             _browserCookieService = browserCookieService;
             _jsInterop = jsInterop;
             _messageService = messageService;
@@ -49,7 +50,7 @@ namespace Toss.Client.Services
             await SetCaptchaToken(data);
             await ExecuteHttpQuery(async () =>
             {
-                string requestJson = Json.Serialize(data);
+                string requestJson = JsonSerializer.ToString(data);
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
@@ -131,7 +132,7 @@ namespace Toss.Client.Services
         {
             _onBadRequest = async (HttpResponseMessage r) =>
             {
-                T response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;
@@ -140,7 +141,7 @@ namespace Toss.Client.Services
         {
             _onOK = async (HttpResponseMessage r) =>
             {
-                T response = Json.Deserialize<T>(await r.Content.ReadAsStringAsync());
+                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
                 todo(response);
             };
             return this;

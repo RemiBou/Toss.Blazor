@@ -26,7 +26,7 @@ namespace Toss.Client.Services
         {
             return await jsRuntime.InvokeAsync<string[]>("navigatorLanguages");
         }
-       
+
         public async Task<string> GetCookie()
         {
             return await jsRuntime.InvokeAsync<string>("getDocumentCookie");
@@ -34,7 +34,7 @@ namespace Toss.Client.Services
 
         public async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
         {
-            await jsRuntime.InvokeAsync<string>("stripeCheckout", new DotNetObjectRef(stripeCallBack), amountInCts);
+            await jsRuntime.InvokeAsync<string>("stripeCheckout", DotNetObjectRef.Create(stripeCallBack), amountInCts);
         }
     }
 }
