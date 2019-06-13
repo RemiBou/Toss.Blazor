@@ -2,7 +2,7 @@ version: '3.5'
 secrets:
   tossserver2:
     # secret location on mac
-     file: ~/.microsoft/usersecrets/<userSecretsId>/secrets.json
+     file: ~/.microsoft/usersecrets/ae68635e-649c-4f23-a39b-24a5ea3987f4/secrets.json
     # secret location on windows
     # file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
   #raven_license:
@@ -28,6 +28,6 @@ services:
     environment:
       RAVEN_ARGS: "--Setup.Mode=None -c /root/ravendb/settings.json"     
     ports:
-      - 8080:8080
+      - 888:8080
    # secrets:
    #   - raven_license

@@ -161,11 +161,11 @@ namespace Toss.Server
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             }).AddNewtonsoftJson();
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
-                options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
-            });
+            /*  services.ConfigureApplicationCookie(options =>
+             {
+                 options.Events.OnRedirectToAccessDenied = ReplaceRedirector(StatusCodes.Status403Forbidden, options.Events.OnRedirectToAccessDenied);
+                 options.Events.OnRedirectToLogin = ReplaceRedirector(StatusCodes.Status401Unauthorized, options.Events.OnRedirectToLogin);
+             });*/
             services.AddAntiforgery(options =>
             {
                 options.HeaderName = "X-CSRF-TOKEN";
@@ -175,6 +175,7 @@ namespace Toss.Server
         static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(int statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
             context =>
             {
+
                 if (context.Request.Path.StartsWithSegments("/api"))
                 {
                     context.Response.StatusCode = statusCode;
@@ -227,12 +228,13 @@ namespace Toss.Server
                     .BlockAllMixedContent();
                 if (!testorDev)
                 {
-                    fluentCspOptions.UpgradeInsecureRequests();
+                    //fluentCspOptions.UpgradeInsecureRequests();
                 }
             });
 
             app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseStaticFiles();
+            app.UseClientSideBlazorFiles<Toss.Client.Program>();
             app.UseXDownloadOptions();
             app.UseXContentTypeOptions();
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
@@ -257,10 +259,11 @@ namespace Toss.Server
             app.UseEndpoints(routes =>
             {
                 routes.MapDefaultControllerRoute();
+                routes.MapFallbackToClientSideBlazor<Toss.Client.Program>("index.html");
+
             });
 
             app.UseMiddleware<CsrfTokenCookieMiddleware>();
-            app.UseClientSideBlazorFiles<Toss.Client.Program>();
         }
     }
 }

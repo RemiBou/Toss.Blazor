@@ -44,7 +44,7 @@
             <li class="pure-menu-item">
                 <div class="pure-form">
                     <EditForm OnValidSubmit="SeeHashtag" Model="@addHashtagCommand">
-                        <MyInput Placeholder="Tag" Type="text" Id="TxtAddHashTag" bind-Value="@addHashtagCommand.NewHashTag" />
+                        <MyInput Placeholder="Tag" Type="text" Id="TxtAddHashTag" @bind-Value="@addHashtagCommand.NewHashTag" />
                     </EditForm>
                 </div>
             </li>

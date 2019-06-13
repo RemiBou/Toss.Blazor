@@ -8,24 +8,24 @@
         </legend>
         <EditForm Model="@command" OnValidSubmit="@TryLogin">
             <DataAnnotationsValidator />
-            <ServerSideValidator ref="serverSideValidator" />
+            <ServerSideValidator @ref="serverSideValidator" />
 
             <label for="UserName">Username</label>
 
 
-            <InputText Id="UserName" bind-Value="@command.UserName" />
+            <InputText Id="UserName" @bind-Value="@command.UserName" />
             <ValidationMessage For="@(() => command.UserName)" />
 
 
             <label asp-for="Password">Password</label>
 
 
-            <MyInput type="password" Id="Password" Autocomplete="current-password" bind-Value="@command.Password" />
+            <MyInput type="password" Id="Password" Autocomplete="current-password" @bind-Value="@command.Password" />
             <ValidationMessage For="@(() => command.Password)" />
 
 
             <label class="pure-checkbox" for="RememberMe">
-                <InputCheckbox bind-Value="@command.RememberMe"></InputCheckbox>
+                <InputCheckbox @bind-Value="@command.RememberMe"></InputCheckbox>
                 Remember me
             </label>
             <SubmitButton CssClass="pure-button  pure-button-primary" Id="BtnLogin">Log in</SubmitButton>

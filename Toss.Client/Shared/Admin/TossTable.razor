@@ -19,14 +19,14 @@
                 <td>@toss.CreatedOn</td>
                 <td>@toss.UserName</td>
                 <td>@toss.Content</td>
-                <td><button type="button" class="btn btn-danger" onclick="@(async () => await Delete(toss))"><i class="fas fa-trash"></i></button></td>
+                <td><button type="button" class="btn btn-danger" @onclick="@(async () => await Delete(toss))"><i class="fas fa-trash"></i></button></td>
             </tr>
 
         }
         @if (maxDate.HasValue)
         {
             <tr>
-                <td colspan="5"><button type="button" class="btn btn-block" onclick="@LoadMore">Load More</button></td>
+                <td colspan="5"><button type="button" class="btn btn-block" @onclick="@LoadMore">Load More</button></td>
             </tr>
         }
         else

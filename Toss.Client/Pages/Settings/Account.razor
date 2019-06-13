@@ -7,14 +7,14 @@
         <legend>Informations</legend>
         <EditForm Model="command" OnValidSubmit="@PostAccount">
             <DataAnnotationsValidator />
-            <ServerSideValidator ref="serverSideValidator" />
+            <ServerSideValidator @ref="serverSideValidator" />
 
             <label for="Email">Email</label>
-            <InputText Class="form-control" bind-Value="@command.Email" />
+            <InputText Class="form-control" @bind-Value="@command.Email" />
             <ValidationMessage For="@(() => command.Email)" />
 
             <label for="Name">User name</label>
-            <InputText Class="form-control" bind-Value="@command.Name" />
+            <InputText Class="form-control" @bind-Value="@command.Name" />
             <ValidationMessage For="@(() => command.Name)" />
 
             <SubmitButton CssClass="pure-button pure-button-primary">Save</SubmitButton>

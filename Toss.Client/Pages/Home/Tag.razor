@@ -15,13 +15,13 @@
             {
                 if (!currentAccount.Hashtags.Contains(tag))
                 {
-                    <button onclick="@AddHashtag" id="BtnAddHashTag">
+                    <button @onclick="@AddHashtag" id="BtnAddHashTag">
                         <Icon Title="Add" IconType="plus"></Icon>
                     </button>
                 }
                 else
                 {
-                    <button onclick="@RemoveHashTag">
+                    <button @onclick="@RemoveHashTag">
                         <Icon Title="Remove" IconType="minus"></Icon>
                     </button>
                 }
@@ -47,7 +47,7 @@
             if (!Loading)
             {
                 <div class="pure-u-5-5">
-                    <div class="message-info page-next" onclick="@ShowMore">
+                    <div class="message-info page-next" @onclick="@ShowMore">
                         Click here to load more Toss for  #@tag.
                     </div>
                 </div>

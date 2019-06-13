@@ -18,9 +18,9 @@
                 <fieldset>
 
                     <DataAnnotationsValidator></DataAnnotationsValidator>
-                    <ServerSideValidator ref="serverSideValidator"></ServerSideValidator>
+                    <ServerSideValidator @ref="serverSideValidator"></ServerSideValidator>
 
-                    <InputTextArea Id="TxtNewToss" bind-Value="@command.Content"></InputTextArea>
+                    <InputTextArea Id="TxtNewToss" @bind-Value="@command.Content"></InputTextArea>
                     <ValidationMessage For="@(() => command.Content)" />
                     <span class="pure-form-message"><a href="https://www.markdownguide.org/cheat-sheet" target="_blank">Markdown syntax</a> supported</span>
 
@@ -28,7 +28,7 @@
 
 
                     <label class="pure-checkbox" for="sponsoredToss">
-                        <input type="checkbox" bind="isSponsoredToss" id="sponsoredToss" />
+                        <input type="checkbox" @bind="isSponsoredToss" id="sponsoredToss" />
                         New Ad
                     </label>
 

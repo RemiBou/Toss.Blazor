@@ -12,14 +12,14 @@
 
     <EditForm Model="command" OnValidSubmit="@ExternalLoginConfirm">
         <DataAnnotationsValidator />
-        <ServerSideValidator ref="serverSideValidator" />
+        <ServerSideValidator @ref="serverSideValidator" />
 
         <label for="UserName">Email</label>
-        <MyInput Type="text" bind-Value="@command.Email" />
+        <MyInput Type="text" @bind-Value="@command.Email" />
         <ValidationMessage For="@(() => command.Email)" />
 
         <label for="UserName">User name</label>
-        <MyInput Type="text" bind-Value="@command.UserName" />
+        <MyInput Type="text" @bind-Value="@command.UserName" />
         <ValidationMessage For="@(() => command.UserName)" />
         <SubmitButton CssClass="pure-button pure-button-primary">Confirm my account</SubmitButton>
     </EditForm>

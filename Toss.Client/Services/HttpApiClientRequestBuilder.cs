@@ -96,6 +96,7 @@ namespace Toss.Client.Services
             string csrfCookieValue = await _browserCookieService.Get(c => c.Equals("CSRF-TOKEN"));
             if (csrfCookieValue != null)
                 httpRequestMessage.Headers.Add("X-CSRF-TOKEN", csrfCookieValue);
+            httpRequestMessage.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return httpRequestMessage;
         }
         public async Task Get()
