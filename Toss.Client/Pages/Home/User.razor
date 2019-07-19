@@ -1,0 +1,32 @@
+@page "/user/{UserName}"
+@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@layout MainLayout
+
+<div class="pure-g user-view">
+    <div class="pure-u-5-5">
+        <h1>@(UserView?.UserName)</h1>
+    </div>
+    <div class="pure-u-5-5">
+        <p>
+            @(UserView?.Bio)
+        </p>
+    </div>
+</div>
+@code {
+    [Parameter]
+    private string UserName { get; set; }
+
+    private UserViewResult UserView { get; set; }
+
+    protected async override Task OnInitAsync()
+    {        
+        await ClientFactory.Create("/api/account/view/"+UserName)
+            .OnOK<UserViewResult>(u =>
+            {
+                UserView = u;
+                StateHasChanged();
+            })
+            .Get();
+
+    }
+}

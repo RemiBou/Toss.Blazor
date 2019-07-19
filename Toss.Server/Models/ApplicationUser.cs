@@ -24,6 +24,12 @@ namespace Toss.Server.Models
                 Hashtags = JsonConvert.DeserializeObject<HashSet<string>>(value);
             }
         }
+
+        /// <summary>
+        /// The user own description
+        /// </summary>
+        public String Bio { get; set; }
+
         /// <summary>
         /// Add the tag to the list of hashtags
         /// </summary>

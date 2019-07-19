@@ -5,18 +5,14 @@
 <h1>Associate your @command.Provider account.</h1>
 <div class="message-info">
     You've successfully authenticated with <strong> @command.Provider </strong>.
-    Please enter a login and email below and click the button for confirming your Toss account.
+    Please enter a user name below and click the button for creating your Toss account.
 </div>
 
 <div class="pure-form pure-form-stacked">
 
     <EditForm Model="command" OnValidSubmit="@ExternalLoginConfirm">
         <DataAnnotationsValidator />
-        <ServerSideValidator @ref="serverSideValidator" />
-
-        <label for="UserName">Email</label>
-        <MyInput Type="text" @bind-Value="@command.Email" />
-        <ValidationMessage For="@(() => command.Email)" />
+        <ServerSideValidator @ref="serverSideValidator" />       
 
         <label for="UserName">User name</label>
         <MyInput Type="text" @bind-Value="@command.UserName" />
@@ -39,7 +35,7 @@
     {
         await ClientFactory.Create("/api/account/externalLoginConfirmation")
             .OnBadRequest<Dictionary<string, List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
-            .OnOK("Account successfully set", "/")
+            .OnOK("Account successfully created", "/")
             .Post(command);
         StateHasChanged();
     }

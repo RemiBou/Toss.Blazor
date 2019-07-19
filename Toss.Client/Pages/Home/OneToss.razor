@@ -18,14 +18,15 @@
                 <span class="tags">
                     @foreach (var hashTag in toss.Tags)
                     {
-
-                        <span class="link-button">
+                        <a class="link-button" href="@("/tag/"+hashTag)">
                             #@hashTag
-                        </span>
+                        </a>
                     }
                 </span>
                 <span class="user-name">
-                    @toss.UserName -
+                    <a class="link-button" href="@("/user/"+toss.UserName)">
+                        @toss.UserName
+                    </a> -
                 </span>
                 <span class="write-date">
                     @toss.CreatedOn

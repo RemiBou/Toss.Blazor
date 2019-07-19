@@ -55,7 +55,7 @@ namespace Toss.Server.Controllers
             //}
             return Ok();
         }
-        
+
         [HttpPost, AllowAnonymous]
         public async Task<IActionResult> Register(RegisterCommand command)
         {
@@ -104,7 +104,7 @@ namespace Toss.Server.Controllers
             var info = await _mediator.Send(new ExternalLoginDetailQuery());
             return Ok(new ExternalLoginConfirmationCommand()
             {
-                UserName = info.Principal.FindFirstValue(ClaimTypes.Email),
+                UserName = null,
                 Provider = info.LoginProvider
             });
         }
@@ -191,10 +191,21 @@ namespace Toss.Server.Controllers
             return Redirect("/login");
         }
 
-        [HttpGet, Authorize(Roles ="Admin")]
+        [HttpGet, Authorize(Roles = "Admin")]
         public async Task<IActionResult> List()
         {
-            return Ok( await _mediator.Send(new AccountListQuery()));
+            return Ok(await _mediator.Send(new AccountListQuery()));
+        }
+
+        [HttpGet("{userName}")]
+        public async Task<IActionResult> View([FromRoute] UserViewQuery query)
+        {
+            UserViewResult value = await _mediator.Send(query);
+            if (value == null)
+            {
+                return NotFound();
+            }
+            return base.Ok(value);
         }
     }
 }
