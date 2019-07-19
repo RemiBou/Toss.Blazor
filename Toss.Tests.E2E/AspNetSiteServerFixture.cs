@@ -19,7 +19,7 @@ namespace Toss.Tests.E2E
         public FakeEmailSender EmailSender { get; private set; }
         public Uri RootUri => _rootUriInitializer.Value;
 
-        public IHost Host { get; set; }
+        public IWebHost Host { get; set; }
 
         private readonly Lazy<Uri> _rootUriInitializer;
         private IDocumentStore documentStore;
@@ -81,7 +81,7 @@ namespace Toss.Tests.E2E
             Host?.StopAsync();
         }
 
-        protected IHost CreateWebHost()
+        protected IWebHost CreateWebHost()
         {
             var solutionDir = FindClosestDirectoryContaining(
                           "Toss.sln",
