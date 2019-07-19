@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -22,19 +23,23 @@ namespace Toss.Server
             BuildWebHost(args).Build().Run();
         }
 
-        public static IHostBuilder BuildWebHost(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                
-                .ConfigureWebHostDefaults(webBuilder =>
+        public static IWebHostBuilder BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+
+                .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    webBuilder.UseConfiguration(new ConfigurationBuilder()
+                    var env = hostingContext.HostingEnvironment;
+                    config
                         .AddCommandLine(args)
+                        .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                        .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+                        .AddJsonFile("/run/secrets/tossserver", true)//will be used for mounting secrets on docker                        
                         .AddUserSecrets<Startup>()
-                        .AddJsonFile("/run/secrets/tossserver", true)//will be sued for mounting secrets on docker
-                        .AddEnvironmentVariables()
-                        .Build())
-                    .UseKestrel(k => k.AddServerHeader = false)
-                    .UseStartup<Startup>();
-                });
+                        .AddEnvironmentVariables();
+
+                })
+                .UseKestrel(k => k.AddServerHeader = false)
+                .UseStartup<Startup>();
+
     }
 }
