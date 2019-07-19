@@ -17,6 +17,11 @@
             <InputText Class="form-control" @bind-Value="@command.Name" />
             <ValidationMessage For="@(() => command.Name)" />
 
+
+            <label for="Bio">Bio</label>
+            <InputTextArea Id="TxtBio" @bind-Value="@command.Bio"></InputTextArea>
+            <ValidationMessage For="@(() => command.Bio)" />
+
             <SubmitButton CssClass="pure-button pure-button-primary">Save</SubmitButton>
         </EditForm>
     </fieldset>
@@ -29,6 +34,7 @@
         var account = await AccountService.CurrentAccount();
         command.Email = account.Email;
         command.Name = account.Name;
+        command.Bio = account.Bio;
         StateHasChanged();
     }
     async Task PostAccount()

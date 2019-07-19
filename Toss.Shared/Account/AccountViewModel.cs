@@ -8,10 +8,12 @@ namespace Toss.Shared
     public class AccountViewModel
     {
         public bool IsEmailConfirmed { get; set; }
-       
+
         public string Email { get; set; }
 
         public string Name { get; set; }
+
+        public string Bio { get; set; }
 
         public List<string> Hashtags { get; set; } = new List<string>();
 

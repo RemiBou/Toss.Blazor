@@ -320,3 +320,6 @@ h1 {
         fill: none;
         color: #777;
     }
+.user-view .user-bio{
+    padding-left: 10px;
+}

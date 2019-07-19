@@ -1,17 +1,19 @@
 @page "/user/{UserName}"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IMarkdownService markdown
 @layout MainLayout
-
-<div class="pure-g user-view">
-    <div class="pure-u-5-5">
-        <h1>@(UserView?.UserName)</h1>
+@if(UserView != null){
+    <div class="pure-g user-view">
+        <div class="pure-u-5-5">
+            <h1>@(UserView.UserName)</h1>
+        </div>
+        <div class="pure-u-5-5 user-bio">
+            <p>
+                @markdown.ToHtml(UserView.Bio)
+            </p>
+        </div>
     </div>
-    <div class="pure-u-5-5">
-        <p>
-            @(UserView?.Bio)
-        </p>
-    </div>
-</div>
+}
 @code {
     [Parameter]
     private string UserName { get; set; }

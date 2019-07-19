@@ -38,6 +38,7 @@ namespace Toss.Server.Models.Account
             }
 
             var email = user.Email;
+            user.Bio = request.Bio;
             if (request.Email != email)
             {
                 var setEmailResult = await _userManager.SetEmailAsync(user, request.Email);
