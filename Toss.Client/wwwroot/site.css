@@ -116,55 +116,55 @@ body {
 
 
 
-.tag-result {
+.toss-list {
 }
 
 
-    .tag-result .tag-header h1 button, .tag-result .tag-header h1 .connected-tags, .toss-detail h1 .tags {
+    .toss-list .tag-header h1 button, .toss-list .tag-header h1 .connected-tags, .toss-detail h1 .tags {
         font-size: 0.4em;
     }
 
-    .tag-result .toss-preview {
+    .toss-list .toss-preview {
         border-bottom: 1px solid #eee;
         padding: 10px;
     }
 
-        .tag-result .toss-preview .meta {
+        .toss-list .toss-preview .meta {
             color: #808080;
             font-size: 0.8em;
         }
 
 
-            .tag-result .toss-preview .meta .tags .link-button {
+            .toss-list .toss-preview .meta .tags .link-button {
                 background-color: #eee;
                 display: inline-block;
                 margin-right: 5px;
                 font-size: 0.8em;
             }
 
-        .tag-result .toss-preview .tag {
+        .toss-list .toss-preview .tag {
             float: right;
             background-color: #808080;
             color: white;
             padding: 5px;
         }
 
-        .tag-result .toss-preview .content-preview {
+        .toss-list .toss-preview .content-preview {
             margin-bottom: 10px;
             color: rgb(34,34,34);
         }
 
-            .tag-result .toss-preview .content-preview > p {
+            .toss-list .toss-preview .content-preview > p {
                 margin: 0px;
             }
 
-        .tag-result .toss-preview .read-toss {
+        .toss-list .toss-preview .read-toss {
             text-align: center;
             vertical-align: middle;
             padding-top: 1em;
         }
 
-        .tag-result .toss-preview:hover {
+        .toss-list .toss-preview:hover {
             cursor: pointer;
             border-color: #808080;
             border-top: 1px solid #808080;
@@ -172,15 +172,15 @@ body {
             padding-left: 20px;
         }
 
-            .tag-result .toss-preview:hover .read-toss a {
+            .toss-list .toss-preview:hover .read-toss a {
                 background-color: #eee;
             }
 
-    .tag-result .page-next {
+    .toss-list .page-next {
         cursor: pointer;
     }
 
-    .tag-result .page-end, .tag-result .page-next, .tag-result .no-content, .tag-result .loading {
+    .toss-list .page-end, .toss-list .page-next, .toss-list .no-content, .toss-list .loading {
     }
 
 .link-button {
@@ -220,7 +220,7 @@ h1 {
     margin-top: 0px; /* compensated by the padding 10 on main */
 }
 
-.tag-result .tag-header h1 .connected-tags {
+.toss-list .tag-header h1 .connected-tags {
     margin-top: 10px;
 }
 
@@ -320,6 +320,16 @@ h1 {
         fill: none;
         color: #777;
     }
-.user-view .user-bio{
-    padding-left: 10px;
-}
+.user-view{}
+
+    .user-view .user-bio, .user-view .user-toss-list{
+        padding-left: 10px;
+    }
+
+    .user-view .user-bio{
+        border-bottom: 1px solid #e5e5e5;
+    }
+    
+    .user-view .user-bio h2{
+        margin-top:5px;
+    }

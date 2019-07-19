@@ -8,9 +8,56 @@
             <h1>@(UserView.UserName)</h1>
         </div>
         <div class="pure-u-5-5 user-bio">
-            <p>
-                @markdown.ToHtml(UserView.Bio)
-            </p>
+            <h2>
+                Bio
+            </h2>
+            @markdown.ToHtml(UserView.Bio)
+        </div>
+        <div class="pure-u-5-5 toss-list">        
+            @if (Tosses.Any())
+            {
+                foreach (var toss in Tosses)
+                {                   
+                    <OneToss toss="@MapToss(toss)" />
+                }
+                if (!LastPage)
+                {
+                    if (!Loading)
+                    {
+                        <div class="pure-u-5-5">
+                            <div class="message-info page-next" @onclick="@ShowMore">
+                                Click here to load more Toss for  @UserName
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="pure-u-5-5">
+                        <div class="message-warning page-end">
+                            This is all we have for @UserName.
+                        </div>
+                    </div>
+                }
+            }
+            else if (!Loading)
+            {
+
+                <div class="pure-u-5-5">
+                    <div class="message-warning no-content">
+                        @UserName didn't cerate any Toss yet.
+                    </div>
+                </div>
+            }
+            @if (Loading)
+            {
+
+                <div class="pure-u-5-5">
+                    <div class="message-info loading">
+                        Loading
+                    </div>
+                </div>
+            }
         </div>
     </div>
 }
@@ -19,6 +66,14 @@
     private string UserName { get; set; }
 
     private UserViewResult UserView { get; set; }
+
+    private bool Loading { get; set; } = false;
+
+    public bool LastPage { get; set; } = false;
+
+    protected int Page { get; set; } = 0;
+
+    List<UserTossListViewResult> Tosses = new List<UserTossListViewResult>();
 
     protected async override Task OnInitAsync()
     {        
@@ -29,6 +84,37 @@
                 StateHasChanged();
             })
             .Get();
+        await LoadToss();
+    }
 
+    protected async Task LoadToss(){
+        Loading = true;
+        await ClientFactory.Create("/api/toss/user/"+UserName+"/" + Page)
+            .OnOK<List<UserTossListViewResult>>(u =>
+            {
+                if (u.Count < TossLastQuery.TossPerPage)
+                {
+                    LastPage = true;
+                }
+                Tosses.AddRange(u);
+                StateHasChanged();
+                Loading = false;
+            })
+            .Get();
+    }
+
+    protected TossLastQueryItem MapToss(UserTossListViewResult item){
+        return new TossLastQueryItem(){
+            Content = item.Content,
+            CreatedOn = item.CreatedOn,
+            Id = item.Id,
+            UserName = UserName,
+            Tags = item.Tags            
+        };
+    }
+    protected async Task ShowMore()
+    {
+        Page++;
+        await LoadToss();
     }
 }

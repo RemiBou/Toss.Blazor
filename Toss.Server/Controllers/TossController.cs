@@ -101,5 +101,16 @@ namespace Toss.Server.Controllers
             await _mediator.Send(createTossCommand);
             return Ok();
         }
+
+        /// <summary>
+        /// Returns details about a given toss
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("{userName}/{page}"), AllowAnonymous]
+        public async Task<IActionResult> User([FromRoute] UserTossListViewQuery query)
+        {
+            var result = await _mediator.Send(query);
+            return base.Ok(result);
+        }
     }
 }

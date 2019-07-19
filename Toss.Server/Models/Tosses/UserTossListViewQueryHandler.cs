@@ -1,38 +1,36 @@
-﻿using MediatR;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MediatR;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Shared.Tosses;
 
-namespace Toss.Server.Controllers
+namespace Toss.Server.Models.Tosses
 {
-    public class LastTossQueryHandler : IRequestHandler<TossLastQuery, IEnumerable<TossLastQueryItem>>
+    class UserTossListViewQueryHandler : IRequestHandler<UserTossListViewQuery, IEnumerable<UserTossListViewResult>>
     {
-
         private readonly IAsyncDocumentSession _session;
         private readonly RavenDBIdUtil ravenDBIdUtil;
 
-        public LastTossQueryHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDBIdUtil)
+        public UserTossListViewQueryHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDBIdUtil)
         {
             _session = session;
             this.ravenDBIdUtil = ravenDBIdUtil;
         }
 
-        public async Task<IEnumerable<TossLastQueryItem>> Handle(TossLastQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<UserTossListViewResult>> Handle(UserTossListViewQuery request, CancellationToken cancellationToken)
         {
-            List<TossLastQueryItem> list = await _session.Query<TossEntity>()
-                .Where(t => t.Tags.Contains(request.HashTag))
+            List<UserTossListViewResult> list = await _session.Query<TossEntity>()
+                .Where(t => t.UserName == request.UserName)
                 .OrderByDescending(t => t.CreatedOn)
-                .Select(t => new TossLastQueryItem()
+                .Select(t => new UserTossListViewResult()
                 {
                     Content = t.Content.Substring(0, 100),
                     CreatedOn = t.CreatedOn,
                     Id = t.Id,
-                    UserName = t.UserName,
                     Tags = t.Tags
                 })
                 .Paginate(request.Page, TossLastQuery.TossPerPage)
