@@ -25,6 +25,7 @@ using Raven.Identity;
 using Toss.Server.Data;
 using Toss.Server.Extensions;
 using Toss.Server.Models;
+using Toss.Server.Models.Tosses;
 using Toss.Server.Services;
 using Toss.Shared.Account;
 

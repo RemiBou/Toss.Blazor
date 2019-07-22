@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
 using Toss.Shared.Tosses;
-
+using Toss.Server.Models.Tosses;
 namespace Toss.Server.Controllers
 {
     public class LastTossQueryHandler : IRequestHandler<TossLastQuery, IEnumerable<TossLastQueryItem>>

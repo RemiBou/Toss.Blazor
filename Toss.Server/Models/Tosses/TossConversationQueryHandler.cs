@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
@@ -19,7 +20,7 @@ namespace Toss.Server.Models.Tosses
             var currentUser = _httpContextAccessor.HttpContext.User.UserId();
             var tossId = _ravenDbIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.TossId);
             var conversation = await _session.Query<TossConversation>()
-                                    .Where();
+                                    .Where(c => c.TossId == request.TossId);
             // we fail silently, there is no point in managing error when user hacked the desired behavior, this might change in the future
             if (conversation == null)
             {
