@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Toss.Server.Data;
 
-namespace Toss.Server.Data
+namespace Toss.Server.Models.Tosses
 {
     public class TossEntity : RavenDBDocument
     {
