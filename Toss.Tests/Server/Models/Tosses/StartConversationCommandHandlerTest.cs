@@ -7,27 +7,16 @@ using System;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    public class CreateConversationCommandHandlerTest : BaseTest
+    public class StartConversationCommandHandlerTest : BaseTest
     {
         [Fact]
         async Task cannot_create_two_discussion_on_same_toss()
         {
             TossLastQueryItem toss = await CreateTossAndConversation();
-            await Assert.ThrowsAnyAsync<Exception>(() => _mediator.Send(new CreateConversationCommand(toss.Id)));
+            await Assert.ThrowsAnyAsync<Exception>(() => _mediator.Send(new StartConversationCommand(toss.Id)));
         }
 
-        private async Task<TossLastQueryItem> CreateTossAndConversation()
-        {
-            await _mediator.Send(new TossCreateCommand("test bla bla bla bla #test"));
-            await SaveAndWait();
-            var toss = (await _mediator.Send(new TossLastQuery("test"))).First();
-            await CreateNewUserIfNotExists("discusioncreator");
-            await SaveAndWait();
-            await _mediator.Send(new CreateConversationCommand(toss.Id));
-            await SaveAndWait();
-            return toss;
-        }
-
+      
         [Fact]
         async Task cannot_create_discussion_on_our_toss()
         {
@@ -35,7 +24,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await SaveAndWait();
             var toss = (await _mediator.Send(new TossLastQuery("test"))).First();
             await SaveAndWait();
-            await Assert.ThrowsAnyAsync<Exception>(() => _mediator.Send(new CreateConversationCommand(toss.Id)));
+            await Assert.ThrowsAnyAsync<Exception>(() => _mediator.Send(new StartConversationCommand(toss.Id)));
         }
 
         [Fact]
@@ -64,7 +53,7 @@ namespace Toss.Tests.Server.Models.Tosses
             var toss = await CreateTossAndConversation();
             //create an other conversation for same toss
             await CreateNewUserIfNotExists("discusioncreator2");
-            await _mediator.Send(new CreateConversationCommand(toss.Id));
+            await _mediator.Send(new StartConversationCommand(toss.Id));
             await SaveAndWait();
             //this will switch to first user
             await CreateTestUser();
@@ -83,6 +72,20 @@ namespace Toss.Tests.Server.Models.Tosses
 
             Assert.Empty(res.Conversations);
         }
+
+
+        private async Task<TossLastQueryItem> CreateTossAndConversation()
+        {
+            await _mediator.Send(new TossCreateCommand("test bla bla bla bla #test"));
+            await SaveAndWait();
+            var toss = (await _mediator.Send(new TossLastQuery("test"))).First();
+            await CreateNewUserIfNotExists("discusioncreator");
+            await SaveAndWait();
+            await _mediator.Send(new StartConversationCommand(toss.Id));
+            await SaveAndWait();
+            return toss;
+        }
+
 
     }
 }

@@ -10,20 +10,20 @@ using Toss.Shared.Tosses;
 
 namespace Toss.Server.Models.Tosses
 {
-    class SendMessageCommandHandler : IRequestHandler<SendMessageCommand>
+    class SendMessageInConversationCommandHandler : IRequestHandler<SendMessageInConversationCommand>
     {
         private readonly IAsyncDocumentSession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RavenDBIdUtil _ravenDbIdUtil;
 
-        public SendMessageCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
+        public SendMessageInConversationCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
         {
             _session = session ?? throw new ArgumentNullException(nameof(session));
             _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
             _ravenDbIdUtil = ravenDbIdUtil ?? throw new ArgumentNullException(nameof(ravenDbIdUtil));
         }
 
-        public async Task<Unit> Handle(SendMessageCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(SendMessageInConversationCommand request, CancellationToken cancellationToken)
         {
             var conversation = await _session.LoadAsync<TossConversation>(_ravenDbIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.ConversationId));
             // we fail silently, there is no point in managing error when user hacked the desired behavior, this might change in the future

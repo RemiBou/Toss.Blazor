@@ -4,13 +4,13 @@ using MediatR;
 
 namespace Toss.Shared.Tosses
 {
-    public class CreateConversationCommand : IRequest
+    public class StartConversationCommand : IRequest
     {
-        public CreateConversationCommand()
+        public StartConversationCommand()
         {
         }
 
-        public CreateConversationCommand(string tossId)
+        public StartConversationCommand(string tossId)
         {
             TossId = tossId;
         }
