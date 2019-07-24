@@ -8,6 +8,7 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Toss.Server;
+using Toss.Server.Data;
 using Toss.Server.Models;
 using Xunit;
 
@@ -21,6 +22,8 @@ namespace Toss.Tests.Infrastructure
         protected ServiceProviderInitializer serviceProviderInitializer;
         protected IDocumentStore documentStore;
 
+        protected RavenDBIdUtil _ravenDbIdUtil;
+
         public ClaimsPrincipal ClaimPrincipal { get; private set; }
 
         public BaseTest()
@@ -33,10 +36,11 @@ namespace Toss.Tests.Infrastructure
             database: "Toss");
             serviceProviderInitializer.BuildServiceProvider(documentStore);
             _mediator = serviceProviderInitializer.GetInstance<IMediator>();
+            _ravenDbIdUtil = serviceProviderInitializer.GetInstance<RavenDBIdUtil>();
             _userManager = serviceProviderInitializer.GetInstance<UserManager<ApplicationUser>>();
         }
 
-    
+
 
         protected async Task EditCurrentUser(Action<ApplicationUser> toDo)
         {

@@ -4,6 +4,8 @@ namespace Toss.Shared.Tosses
 {
     public class TossConversationQueryResultItem
     {
-        public List<TossConversationQueryResultMessage> Messages { get; set; }
+        public string Id { get; set; }
+        public string CreatorUserName { get; set; }
+        public int MessageCount { get; set; }
     }
 }

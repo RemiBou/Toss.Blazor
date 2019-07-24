@@ -4,6 +4,6 @@ namespace Toss.Shared.Tosses
 {
     public class TossConversationQueryResult
     {
-        public List<TossConversationQueryResultItem> TossConversations { get; set; }
+        public List<TossConversationQueryResultItem> Conversations { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace Toss.Server.Models.Tosses
         public TossConversation(string tossId, string userid)
         {
             TossId = tossId;
-            UserId = userid;
+            CreatorUserId = userid;
             Messages = new List<TossConversationMessage>();
             Id = BuildId(tossId, userid);
         }
@@ -23,7 +23,7 @@ namespace Toss.Server.Models.Tosses
 
         public String TossId { get; private set; }
 
-        public String UserId { get; private set; }
+        public String CreatorUserId { get; private set; }
 
         internal void AddMessage(string currentUser, string message)
         {

@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -14,6 +15,14 @@ namespace Toss.Server.Models.Tosses
         private readonly IAsyncDocumentSession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RavenDBIdUtil _ravenDbIdUtil;
+
+        public SendMessageCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
+        {
+            _session = session ?? throw new ArgumentNullException(nameof(session));
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+            _ravenDbIdUtil = ravenDbIdUtil ?? throw new ArgumentNullException(nameof(ravenDbIdUtil));
+        }
+
         public async Task<Unit> Handle(SendMessageCommand request, CancellationToken cancellationToken)
         {
             var conversation = await _session.LoadAsync<TossConversation>(_ravenDbIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.ConversationId));
@@ -25,7 +34,7 @@ namespace Toss.Server.Models.Tosses
             var toss = await _session.LoadAsync<TossEntity>(conversation.TossId);
             var currentUser = _httpContextAccessor.HttpContext.User.UserId();
             //only conversation creator and toss creator can participate in a conversation
-            if (currentUser != conversation.UserId || currentUser != toss.UserId)
+            if (currentUser != conversation.CreatorUserId || currentUser != toss.UserId)
             {
                 return Unit.Value;
             }

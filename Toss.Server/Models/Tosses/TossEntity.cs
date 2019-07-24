@@ -21,6 +21,11 @@ namespace Toss.Server.Models.Tosses
             CreatedOn = dateOfPost;
         }
 
+        public bool IsCreator(string currentUser)
+        {
+            return this.UserId == currentUser;
+        }
+
         public TossEntity()
         {
         }
