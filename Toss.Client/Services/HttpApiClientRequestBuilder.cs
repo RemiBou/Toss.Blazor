@@ -2,6 +2,7 @@
 using Microsoft.JSInterop;
 using System;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Toss.Shared;
@@ -50,7 +51,7 @@ namespace Toss.Client.Services
             await SetCaptchaToken(data);
             await ExecuteHttpQuery(async () =>
             {
-                string requestJson = JsonSerializer.ToString(data);
+                string requestJson = JsonSerializer.Serialize(data);
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
@@ -133,7 +134,7 @@ namespace Toss.Client.Services
         {
             _onBadRequest = async (HttpResponseMessage r) =>
             {
-                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
+                T response = await JsonSerializer.DeserializeAsync<T>(await r.Content.ReadAsStreamAsync());
                 todo(response);
             };
             return this;
@@ -142,7 +143,7 @@ namespace Toss.Client.Services
         {
             _onOK = async (HttpResponseMessage r) =>
             {
-                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
+                T response = await JsonSerializer.DeserializeAsync<T>(await r.Content.ReadAsStreamAsync());
                 todo(response);
             };
             return this;

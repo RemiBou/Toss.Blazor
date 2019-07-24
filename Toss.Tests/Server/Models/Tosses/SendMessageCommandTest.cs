@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Toss.Tests.Server.Models.Tosses
 {
-    class SendMessageCommandTest : BaseTest
+    public class SendMessageCommandTest : BaseTest
     {
         [Fact]
         public void cannot_send_message_if_not_owner_or_writer()

@@ -14,7 +14,7 @@
     <div class=" pure-form pure-form-stacked">
         @if (_account != null)
         {
-            <EditForm Model="@command" OnValidSubmit="@SendToss">
+            <EditForm Model="@command" OnValidSubmit="SendToss">
                 <fieldset>
 
                     <DataAnnotationsValidator></DataAnnotationsValidator>
@@ -28,7 +28,7 @@
 
 
                     <label class="pure-checkbox" for="sponsoredToss">
-                        <input type="checkbox" @bind="isSponsoredToss" id="sponsoredToss" />
+                        <InputCheckbox @bind-Value="isSponsoredToss" id="sponsoredToss" />
                         New Ad
                     </label>
 
