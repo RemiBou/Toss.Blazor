@@ -62,11 +62,14 @@ namespace Toss.Tests.Server.Models.Tosses
         async Task created_conversation_returned_by_query_for_toss_creator()
         {
             var toss = await CreateTossAndConversation();
+            //create an other conversation for same toss
+            await CreateNewUserIfNotExists("discusioncreator2");
+            await _mediator.Send(new CreateConversationCommand(toss.Id));
+            await SaveAndWait();
             //this will switch to first user
             await CreateTestUser();
             var res = await _mediator.Send(new TossConversationQuery(toss.Id));
-
-            Assert.Single(res.Conversations);
+            Assert.Equal(2,res.Conversations.Count);
         }
 
 
