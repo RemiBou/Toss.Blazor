@@ -11,12 +11,6 @@ namespace Toss.Server.Models.Tosses
             TossId = tossId;
             CreatorUserId = userid;
             Messages = new List<TossConversationMessage>();
-            Id = BuildId(tossId, userid);
-        }
-
-        public static String BuildId(string tossId, string userid)
-        {
-            return String.Format("tossConversations/" + tossId + "/" + userid);
         }
 
         public List<TossConversationMessage> Messages { get; private set; }

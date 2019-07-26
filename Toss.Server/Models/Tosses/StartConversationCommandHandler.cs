@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Server.Services;
@@ -36,13 +37,13 @@ namespace Toss.Server.Models.Tosses
             {
                 throw new InvalidOperationException($"Cannot create conversation when toss creator : {request.TossId}");
             }
-            var newConversation = new TossConversation(toss.Id, currentUser);
-            if (await _session.Advanced.ExistsAsync(newConversation.Id, cancellationToken))
+
+            if (await _session.Query<TossConversation>().AnyAsync(c => c.CreatorUserId == currentUser && c.TossId == toss.Id))
             {
-                throw new InvalidOperationException($"Conversation already exists : {newConversation.Id}");
+                throw new InvalidOperationException($"Conversation already exists. User : {currentUser}, Toss: {toss.Id}");
             }
 
-            await _session.StoreAsync(newConversation);
+            await _session.StoreAsync(new TossConversation(toss.Id, currentUser));
             return Unit.Value;
         }
     }
