@@ -1,15 +1,14 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Raven.TestDriver;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Toss.Server;
 using Toss.Server.Data;
 using Toss.Server.Models;
+using Toss.Server.Services;
 using Xunit;
 
 namespace Toss.Tests.Infrastructure
@@ -19,6 +18,7 @@ namespace Toss.Tests.Infrastructure
 
         protected IMediator _mediator;
         protected UserManager<ApplicationUser> _userManager;
+        protected FakeEmailSender _emailSender;
         protected ServiceProviderInitializer serviceProviderInitializer;
         protected IDocumentStore documentStore;
 
@@ -38,6 +38,7 @@ namespace Toss.Tests.Infrastructure
             _mediator = serviceProviderInitializer.GetInstance<IMediator>();
             _ravenDbIdUtil = serviceProviderInitializer.GetInstance<RavenDBIdUtil>();
             _userManager = serviceProviderInitializer.GetInstance<UserManager<ApplicationUser>>();
+            _emailSender = serviceProviderInitializer.GetInstance<IEmailSender>() as FakeEmailSender;
         }
 
 

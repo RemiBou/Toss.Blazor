@@ -16,7 +16,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await Assert.ThrowsAnyAsync<Exception>(() => _mediator.Send(new StartConversationCommand(toss.Id)));
         }
 
-      
+
         [Fact]
         async Task cannot_create_discussion_on_our_toss()
         {
@@ -58,7 +58,7 @@ namespace Toss.Tests.Server.Models.Tosses
             //this will switch to first user
             await CreateTestUser();
             var res = await _mediator.Send(new TossConversationQuery(toss.Id));
-            Assert.Equal(2,res.Conversations.Count);
+            Assert.Equal(2, res.Conversations.Count);
         }
 
 
@@ -71,6 +71,15 @@ namespace Toss.Tests.Server.Models.Tosses
             var res = await _mediator.Send(new TossConversationQuery(toss.Id));
 
             Assert.Empty(res.Conversations);
+        }
+
+        [Fact]
+        async Task create_conversation_send_email()
+        {
+            var toss = await CreateTossAndConversation();
+            var conversationEmail = _emailSender.newConversations.First();
+            Assert.Equal("username@yopmail.com", conversationEmail.email);
+            Assert.Equal("discusioncreator", conversationEmail.conversationUserName);
         }
 
 

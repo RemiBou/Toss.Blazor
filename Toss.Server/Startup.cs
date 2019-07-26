@@ -107,8 +107,7 @@ namespace Toss.Server
 
             services.AddScoped(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
             services.AddSingleton<RavenDBIdUtil>();
-            services
-                .AddRavenDbIdentity<ApplicationUser>();
+            services.AddRavenDbIdentity<ApplicationUser>();
 
         }
 
