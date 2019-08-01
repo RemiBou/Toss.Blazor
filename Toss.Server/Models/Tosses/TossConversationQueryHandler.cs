@@ -9,35 +9,35 @@ using Toss.Server.Services;
 using Toss.Shared.Tosses;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Queries;
+using Toss.Server.Models.Account;
 
 namespace Toss.Server.Models.Tosses
 {
     class TossConversationQueryHandler : IRequestHandler<TossConversationQuery, TossConversationQueryResult>
     {
         private readonly IAsyncDocumentSession _session;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RavenDBIdUtil _ravenDbIdUtil;
 
+        private readonly IMediator mediator;
 
-
-        public TossConversationQueryHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
+        public TossConversationQueryHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDbIdUtil, IMediator mediator)
         {
             _session = session;
-            _httpContextAccessor = httpContextAccessor;
             _ravenDbIdUtil = ravenDbIdUtil;
+            this.mediator = mediator;
         }
 
         public async Task<TossConversationQueryResult> Handle(TossConversationQuery request, CancellationToken cancellationToken)
         {
-            var currentUser = _httpContextAccessor.HttpContext.User.UserId();
+            var currentUser = await mediator.Send(new CurrentUserQuery());
             var tossId = _ravenDbIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.TossId);
             var toss = await _session.LoadAsync<TossEntity>(tossId);
             IQueryable<TossConversation> queryable = _session.Query<TossConversation>()
                                     .Where(c => c.TossId == tossId);
-            //if user is toss
+
             if (!toss.IsCreator(currentUser))
             {
-                queryable = queryable.Where(c => c.CreatorUserId == currentUser);
+                queryable = queryable.Where(c => c.CreatorUserId == currentUser.Id);
             }
 
             var items = await (from c in queryable
@@ -45,7 +45,8 @@ namespace Toss.Server.Models.Tosses
                                select new TossConversationQueryResultItem()
                                {
                                    Id = c.Id,
-                                   CreatorUserName = u.UserName
+                                   CreatorUserName = u.UserName,
+                                   MessageCount = c.Messages.Count()
                                }).ToListAsync();
             items.ForEach(c => c.Id = _ravenDbIdUtil.GetUrlId(c.Id));
             return new TossConversationQueryResult()

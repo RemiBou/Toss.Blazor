@@ -40,7 +40,7 @@ namespace Toss.Tests.Server.Models.Account
             });
 
             var emailSender = serviceProviderInitializer.GetInstance<IEmailSender>() as FakeEmailSender;
-            Assert.NotNull(emailSender.GetConfirmationLink("toto@yopmail.com"));
+            Assert.NotNull(emailSender.confirmationLinks.First(l => l.email == "toto@yopmail.com").link);
         }
 
     }

@@ -79,6 +79,7 @@ namespace Toss.Tests.Server.Models.Tosses
             var toss = await CreateTossAndConversation();
             var conversationEmail = _emailSender.newConversations.First();
             Assert.Equal("username@yopmail.com", conversationEmail.email);
+            Assert.Equal("username", conversationEmail.tossCreatorUsername);
             Assert.Equal("discusioncreator", conversationEmail.conversationUserName);
         }
 

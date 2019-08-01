@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
+using Toss.Server.Models.Account;
 using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
@@ -13,32 +13,35 @@ namespace Toss.Server.Models.Tosses
     class SendMessageInConversationCommandHandler : IRequestHandler<SendMessageInConversationCommand>
     {
         private readonly IAsyncDocumentSession _session;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RavenDBIdUtil _ravenDbIdUtil;
 
-        public SendMessageInConversationCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
+        private readonly IMediator mediator;
+        private readonly INow now;
+
+        public SendMessageInConversationCommandHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDbIdUtil, IMediator mediator, INow now)
         {
-            _session = session ?? throw new ArgumentNullException(nameof(session));
-            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
-            _ravenDbIdUtil = ravenDbIdUtil ?? throw new ArgumentNullException(nameof(ravenDbIdUtil));
+            _session = session;
+            _ravenDbIdUtil = ravenDbIdUtil;
+            this.mediator = mediator;
+            this.now = now;
         }
 
         public async Task<Unit> Handle(SendMessageInConversationCommand request, CancellationToken cancellationToken)
         {
-            var conversation = await _session.LoadAsync<TossConversation>(_ravenDbIdUtil.GetRavenDbIdFromUrlId<TossEntity>(request.ConversationId));
+            var conversation = await _session.LoadAsync<TossConversation>(_ravenDbIdUtil.GetRavenDbIdFromUrlId<TossConversation>(request.ConversationId));
             // we fail silently, there is no point in managing error when user hacked the desired behavior, this might change in the future
             if (conversation == null)
             {
-                return Unit.Value;
+                throw new ApplicationException($"Conversation {conversation.Id} does not exists");
             }
             var toss = await _session.LoadAsync<TossEntity>(conversation.TossId);
-            var currentUser = _httpContextAccessor.HttpContext.User.UserId();
+            var currentUser = await mediator.Send(new CurrentUserQuery());
             //only conversation creator and toss creator can participate in a conversation
-            if (currentUser != conversation.CreatorUserId || currentUser != toss.UserId)
+            if (conversation.CanSendMessage(toss, currentUser))
             {
-                return Unit.Value;
+                throw new ApplicationException($"{currentUser.Id} can't send message in {conversation.Id}");
             }
-            conversation.AddMessage(currentUser, request.Message);
+            conversation.AddMessage(currentUser, request.Message, this.now.Get());
             return Unit.Value;
         }
     }

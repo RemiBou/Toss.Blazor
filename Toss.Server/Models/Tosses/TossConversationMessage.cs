@@ -4,10 +4,10 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossConversationMessage
     {
-        public TossConversationMessage(string content, string userId)
+        public TossConversationMessage(string content, string userId, DateTimeOffset creationDate)
         {
             Content = content;
-            CreatedOn = DateTimeOffset.Now;
+            CreatedOn = creationDate;
             UserId = userId;
         }
 

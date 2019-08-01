@@ -12,12 +12,12 @@ namespace Toss.Tests.Server.Models.Tosses
 {
     public class SendMessageInConversationCommandHandlerTest : BaseTest
     {
-       
+
 
         [Fact]
         async Task send_message_if_not_toss_creator_or_conversation_creator_throw_exception()
         {
-            var conv =await CreateTossAndConversation();
+            var conv = await CreateTossAndConversation();
             await CreateNewUserIfNotExists("hackermen");
             await Assert.ThrowsAnyAsync<Exception>(() =>
                 _mediator.Send(new SendMessageInConversationCommand(conv.Id, "This is a test")));
@@ -61,7 +61,7 @@ namespace Toss.Tests.Server.Models.Tosses
             MessageInConversationQueryResultItem message = res.Messages.First();
             Assert.Equal("discusioncreator", message.UserName);
             Assert.Equal(FakeNow.Current, message.CreatedOn);
-            Assert.Equal("this is a test", message.Content);
+            Assert.Equal("This is a test", message.Content);
         }
 
 
@@ -94,7 +94,7 @@ namespace Toss.Tests.Server.Models.Tosses
             await SaveAndWait();
             await _mediator.Send(new StartConversationCommand(toss.Id));
             await SaveAndWait();
-            var conversation =await  _mediator.Send(new TossConversationQuery(toss.Id));
+            var conversation = await _mediator.Send(new TossConversationQuery(toss.Id));
             return conversation.Conversations.First();
         }
 

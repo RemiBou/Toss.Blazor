@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using Toss.Server.Data;
+using Toss.Server.Models.Account;
 using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
@@ -14,14 +15,14 @@ namespace Toss.Server.Models.Tosses
     public class StartConversationCommandHandler : IRequestHandler<StartConversationCommand>
     {
         private readonly IAsyncDocumentSession _session;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly RavenDBIdUtil _ravenDbIdUtil;
+        private readonly IMediator mediator;
 
-        public StartConversationCommandHandler(IAsyncDocumentSession session, IHttpContextAccessor httpContextAccessor, RavenDBIdUtil ravenDbIdUtil)
+        public StartConversationCommandHandler(IAsyncDocumentSession session, RavenDBIdUtil ravenDbIdUtil, IMediator mediator)
         {
             _session = session;
-            _httpContextAccessor = httpContextAccessor;
             _ravenDbIdUtil = ravenDbIdUtil;
+            this.mediator = mediator;
         }
 
         public async Task<Unit> Handle(StartConversationCommand request, CancellationToken cancellationToken)
@@ -32,18 +33,18 @@ namespace Toss.Server.Models.Tosses
             {
                 throw new InvalidOperationException($"Toss does not exists : {request.TossId}");
             }
-            var currentUser = _httpContextAccessor.HttpContext.User.UserId();
-            if (currentUser == toss.UserId)
+            var currentUser = await mediator.Send(new CurrentUserQuery());
+            if (currentUser.Id == toss.UserId)
             {
                 throw new InvalidOperationException($"Cannot create conversation when toss creator : {request.TossId}");
             }
 
-            if (await _session.Query<TossConversation>().AnyAsync(c => c.CreatorUserId == currentUser && c.TossId == toss.Id))
+            if (await _session.Query<TossConversation>().AnyAsync(c => c.CreatorUserId == currentUser.Id && c.TossId == toss.Id))
             {
                 throw new InvalidOperationException($"Conversation already exists. User : {currentUser}, Toss: {toss.Id}");
             }
 
-            await _session.StoreAsync(new TossConversation(toss.Id, currentUser));
+            await _session.StoreAsync(new TossConversation(toss, currentUser));
             return Unit.Value;
         }
     }

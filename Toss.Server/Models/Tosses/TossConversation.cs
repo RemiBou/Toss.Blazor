@@ -6,10 +6,10 @@ namespace Toss.Server.Models.Tosses
 {
     public class TossConversation : RavenDBDocument
     {
-        public TossConversation(string tossId, string userid)
+        public TossConversation(TossEntity toss, ApplicationUser user)
         {
-            TossId = tossId;
-            CreatorUserId = userid;
+            TossId = toss.Id;
+            CreatorUserId = user.Id;
             Messages = new List<TossConversationMessage>();
         }
 
@@ -19,9 +19,14 @@ namespace Toss.Server.Models.Tosses
 
         public String CreatorUserId { get; private set; }
 
-        internal void AddMessage(string currentUser, string message)
+        internal void AddMessage(ApplicationUser currentUser, string message, DateTimeOffset creationDate)
         {
-            Messages.Add(new TossConversationMessage(message, currentUser));
+            Messages.Add(new TossConversationMessage(message, currentUser.Id, creationDate));
+        }
+
+        internal bool CanSendMessage(TossEntity toss, ApplicationUser currentUser)
+        {
+            return currentUser.Id != CreatorUserId && currentUser.Id != toss.UserId;
         }
     }
 }

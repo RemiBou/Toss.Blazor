@@ -12,7 +12,7 @@ namespace Toss.Server.Services
     {
         public readonly List<(string email, string userName, string link)> confirmationLinks = new List<(string email, string userName, string link)>();
         public readonly List<(string email, string userName, string link)> resetPasswordLinks = new List<(string email, string userName, string link)>();
-        public readonly List<(string email, string conversationUserName, string tossUrl)> newConversations = new List<(string email, string conversationUserName, string tossUrl)>();
+        public readonly List<(string email, string tossCreatorUsername, string conversationUserName, string tossUrl)> newConversations = new List<(string email, string tossCreatorUsername, string conversationUserName, string tossUrl)>();
 
         public Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
         {
@@ -26,9 +26,9 @@ namespace Toss.Server.Services
             return Task.CompletedTask;
         }
 
-        public Task SendNewConversation(string email, string conversationUserName, string tossUrl)
+        public Task SendNewConversationAsync(string email, string tossCreatorUserName, string conversationUserName, string tossUrl)
         {
-            newConversations.Add((email, conversationUserName, tossUrl));
+            newConversations.Add((email, tossCreatorUserName, conversationUserName, tossUrl));
             return Task.CompletedTask;
 
         }

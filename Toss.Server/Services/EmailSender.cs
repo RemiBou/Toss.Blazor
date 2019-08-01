@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Mailjet.Client;
 using Mailjet.Client.Resources;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json.Linq;
 
@@ -12,20 +13,38 @@ namespace Toss.Server.Services
     public class EmailSender : IEmailSender
     {
         private readonly IConfiguration Configuration;
+        private readonly IHttpContextAccessor contextAccessor;
 
-        public EmailSender(IConfiguration configuration)
+        public EmailSender(IConfiguration configuration, IHttpContextAccessor contextAccessor)
         {
             Configuration = configuration;
+            this.contextAccessor = contextAccessor;
         }
 
 
 
         public async Task SendPasswordForgetAsync(string email, string userName, string passwordResetLink)
         {
-            await SendMailjetTemplate(email,userName, 462997, "TOSS account password reset", new JObject { { "name", userName }, { "confirmation_link", passwordResetLink } });
+            await SendMailjetTemplate(email, userName, 462997, "TOSS account password reset", new JObject { { "name", userName }, { "confirmation_link", passwordResetLink } });
         }
 
-        private async Task SendMailjetTemplate(string email,string userName, int templateId, string subject, JObject templateVariables)
+        public async Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
+        {
+            await SendMailjetTemplate(email, userName, 462653, "Welcome to TOSS, please confirm your email", new JObject { { "name", userName }, { "confirmation_link", confirmationLink } });
+        }
+
+        public async Task SendNewConversationAsync(string email, string tossCreatorUserName, string conversationUserName, string tossUrl)
+        {
+            await SendMailjetTemplate(email, tossCreatorUserName, 943321, $"{conversationUserName} started a conversation with you.",
+             new JObject {
+                 { "name", tossCreatorUserName },
+                 { "toss_url", tossUrl } ,
+                 {"conversationUserName", conversationUserName}
+                });
+        }
+
+
+        private async Task SendMailjetTemplate(string email, string userName, int templateId, string subject, JObject templateVariables)
         {
             var client = new MailjetClient(
                     Configuration.GetValue<string>("MailJetApiKey"),
@@ -61,9 +80,5 @@ namespace Toss.Server.Services
             }
         }
 
-        public async Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
-        {
-            await SendMailjetTemplate(email,userName, 462653, "Welcome to TOSS, please confirm your email", new JObject { { "name", userName }, { "confirmation_link", confirmationLink } });
-        }
     }
 }
