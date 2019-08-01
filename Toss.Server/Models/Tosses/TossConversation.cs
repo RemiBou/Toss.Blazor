@@ -19,9 +19,11 @@ namespace Toss.Server.Models.Tosses
 
         public String CreatorUserId { get; private set; }
 
-        internal void AddMessage(ApplicationUser currentUser, string message, DateTimeOffset creationDate)
+        internal TossConversationMessage AddMessage(ApplicationUser currentUser, string message, DateTimeOffset creationDate)
         {
-            Messages.Add(new TossConversationMessage(message, currentUser.Id, creationDate));
+            TossConversationMessage res = new TossConversationMessage(message, currentUser.Id, creationDate);
+            Messages.Add(res);
+            return res;
         }
 
         internal bool CanSendMessage(TossEntity toss, ApplicationUser currentUser)

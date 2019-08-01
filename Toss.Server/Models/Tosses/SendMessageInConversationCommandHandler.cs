@@ -41,7 +41,8 @@ namespace Toss.Server.Models.Tosses
             {
                 throw new ApplicationException($"{currentUser.Id} can't send message in {conversation.Id}");
             }
-            conversation.AddMessage(currentUser, request.Message, this.now.Get());
+            var msg = conversation.AddMessage(currentUser, request.Message, this.now.Get());
+            await mediator.Publish(new ConversationMessageSended(conversation, msg));
             return Unit.Value;
         }
     }

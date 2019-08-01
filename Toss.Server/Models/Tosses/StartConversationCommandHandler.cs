@@ -1,13 +1,11 @@
+using MediatR;
+using Raven.Client.Documents;
+using Raven.Client.Documents.Session;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
-using Microsoft.AspNetCore.Http;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Session;
 using Toss.Server.Data;
 using Toss.Server.Models.Account;
-using Toss.Server.Services;
 using Toss.Shared.Tosses;
 
 namespace Toss.Server.Models.Tosses
@@ -44,7 +42,9 @@ namespace Toss.Server.Models.Tosses
                 throw new InvalidOperationException($"Conversation already exists. User : {currentUser}, Toss: {toss.Id}");
             }
 
-            await _session.StoreAsync(new TossConversation(toss, currentUser));
+            TossConversation conversation = new TossConversation(toss, currentUser);
+            await _session.StoreAsync(conversation);
+            await mediator.Publish(new ConversationStarted(conversation));
             return Unit.Value;
         }
     }

@@ -32,5 +32,16 @@ namespace Toss.Server.Extensions
             };
             return ub.ToString();
         }
+
+        public static string TossLink(this IUrlHelper urlHelper, string tossId, string scheme)
+        {
+            var host = urlHelper.ActionContext.HttpContext.Request.Host;
+            var ub = new UriBuilder(scheme, host.Host)
+            {
+                Path = $"toss/"+tossId,
+                Port = host.Port.GetValueOrDefault(80)
+            };
+            return ub.ToString();
+        }
     }
 }
