@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using System;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -38,6 +40,7 @@ namespace Toss.Client.Services
 
         public async Task Post(byte[] data)
         {
+
             await ExecuteHttpQuery(async () =>
             {
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
@@ -100,9 +103,18 @@ namespace Toss.Client.Services
             httpRequestMessage.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return httpRequestMessage;
         }
-        public async Task Get()
+        public async Task Get(object data = null)
         {
-            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Get, _uri))));
+            var uriBuilder = new UriBuilder(_uri);
+
+            var jsonObject = JsonDocument.Parse(JsonSerializer.Serialize(data));
+            var uriParameters = new NameValueCollection();
+            foreach (var k in jsonObject.RootElement.EnumerateObject())
+            {
+                uriParameters.Add(k.Name, k.Value.GetRawText());
+            }
+            uriBuilder.Query = uriParameters.ToString();
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Get, uriBuilder.ToString()))));
         }
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {

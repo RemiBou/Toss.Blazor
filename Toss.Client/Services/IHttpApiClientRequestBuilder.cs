@@ -5,7 +5,7 @@ namespace Toss.Client.Services
 {
     public interface IHttpApiClientRequestBuilder
     {
-        Task Get();
+        Task Get(object data = null);
         HttpApiClientRequestBuilder OnBadRequest(Action todo);
         HttpApiClientRequestBuilder OnBadRequest(Func<Task> todo);
         HttpApiClientRequestBuilder OnBadRequest<T>(Action<T> todo);
