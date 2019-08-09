@@ -44,7 +44,7 @@
     DateTimeOffset? maxDate;
     protected override async Task OnInitAsync()
     {
-        await ClientFactory.Create("/api/toss/list?ItemCount=15")
+        await ClientFactory.Create("/api/toss/list")
             .OnOK<TossListAdminItems>(r =>
             {
                 Tosses = r.Result;
@@ -66,7 +66,7 @@
     }
     protected async Task LoadMore()
     {
-        await ClientFactory.Create(string.Format("/api/toss/list?ItemCount=15&maxDate={0:yyyy-MM-ddTHH:mm:ss.fffZ}", maxDate))
+        await ClientFactory.Create("/api/toss/list")
                    .OnOK<TossListAdminItems>(r =>
                    {
                        Tosses.AddRange(r.Result);
@@ -75,7 +75,7 @@
                        else
                            maxDate = null;
                    })
-                   .Get();
+                   .Get(new TossListAdminQuery(15, maxDate));
 
     }
 }

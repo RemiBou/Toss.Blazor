@@ -20,7 +20,7 @@
 
     protected async override Task OnParametersSetAsync()
     {
-        await httpBuilder.Create("/api/toss/connectedTags/" + Hashtag)
+        await httpBuilder.Create($"/api/toss/connectedTags/{Hashtag}")
              .OnOK<ConnectedTags>(c =>
              {
                  this.connectedTags = c;

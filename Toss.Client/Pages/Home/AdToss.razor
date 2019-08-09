@@ -22,12 +22,14 @@
         {
             return;
         }
-        await ClientFactory.Create("/api/toss/sponsored?hashtag=" + tag)
+        await ClientFactory.Create("/api/toss/sponsored")
             .OnOK<TossLastQueryItem>(l =>
            {
                 sponsoredToss = l;
                 StateHasChanged();
             })
-            .Get();
+            .Get(new{
+                hashtag=tag
+            });
     }
 }

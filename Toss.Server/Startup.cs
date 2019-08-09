@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
@@ -136,7 +138,12 @@ namespace Toss.Server
         private void AddWebDependencies(IServiceCollection services)
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-            services.AddResponseCompression();
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+            });
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -195,12 +202,9 @@ namespace Toss.Server
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-
-                app.UseResponseCompression();
                 app.UseHsts(hsts => hsts.MaxAge(365));
-
             }
-
+            app.UseResponseCompression();
             var supportedCultures = new[] {
                 new CultureInfo ("en"),
                 new CultureInfo ("fr"),

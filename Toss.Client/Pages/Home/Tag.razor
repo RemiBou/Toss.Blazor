@@ -146,7 +146,7 @@
             return;//
         }
         Loading = true;
-        await ClientFactory.Create("/api/toss/last?query.HashTag=" + tag + "&query.Page=" + Page)
+        await ClientFactory.Create("/api/toss/last")
             .OnOK<List<TossLastQueryItem>>(l =>
             {
                 Tosses.Add(l);
@@ -158,7 +158,7 @@
                 }
                 StateHasChanged();
             })
-            .Get();
+            .Get(new TossLastQuery(DisplayedTag, Page));
     }
 
     protected async Task ShowMore()

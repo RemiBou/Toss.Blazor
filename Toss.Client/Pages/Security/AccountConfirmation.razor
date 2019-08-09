@@ -3,6 +3,7 @@
 @inject IUriHelper UriHelper
 @inject IMessageService messageService
 @layout MainLayout
+
 @functions {
     [Parameter]
     private string userId { get; set; }
@@ -10,7 +11,7 @@
     private string code { get; set; }
     protected override async Task OnInitAsync()
     {
-        await ClientFactory.Create($"/api/account/confirmEmail?userId={userId}&code={code}")
+        await ClientFactory.Create("/api/account/confirmEmail")
             .OnOK("Your email address is now confirmed, you can loggin", "/login")
             .OnBadRequest(() =>
            {
@@ -18,7 +19,11 @@
                 UriHelper.NavigateTo("/logout");
 
             })
-            .Get();
+            .Get(new ConfirmEmailCommand()
+            {
+                UserId=userId,
+                Code=code
+            });
         StateHasChanged();
     }
 }
