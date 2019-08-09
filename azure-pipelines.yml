@@ -10,12 +10,12 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: 'Install SDK'
   inputs:
     version: '3.0.100-preview7-012821'
 #we need dotnet core v for ravendb in tests
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: 'Install runtime for ravendb embedded'
   inputs:
     packageType: runtime
