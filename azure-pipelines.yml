@@ -15,7 +15,7 @@ steps:
   inputs:
     version: '3.0.100-preview7-012821'
 #we need dotnet core v for ravendb in tests
-- task: DotNetCoreINstaller v2
+- task: DotNetCoreInstaller@0
   displayName: 'Install SDK for tests'
   inputs:
     version: '2.2.401'
