@@ -16,9 +16,10 @@ steps:
     version: '3.0.100-preview7-012821'
 #we need dotnet core v for ravendb in tests
 - task: DotNetCoreInstaller@0
-  displayName: 'Install SDK for tests'
+  displayName: 'Install runtime for ravendb embedded'
   inputs:
-    version: '2.2.401'
+    packageType: runtime
+    version: '2.2.6
 
 - script: dotnet build Toss.sln --configuration $(buildConfiguration)
   displayName: 'dotnet build Toss.sln'
