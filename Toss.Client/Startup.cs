@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Components.Builder;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.JSInterop;
@@ -18,35 +19,16 @@ namespace Toss.Client
         {
 
             services.AddSingleton<IJsInterop, JsInterop>();
-            services.Add(new ServiceDescriptor(
-                    typeof(IHttpApiClientRequestBuilderFactory),
-                    typeof(HttpApiClientRequestBuilderFactory),
-                    ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(
-                    typeof(IAccountService),
-                    typeof(AccountService),
-                    ServiceLifetime.Scoped));
-            services.Add(new ServiceDescriptor(
-                     typeof(IBrowserCookieService),
-                     typeof(BrowserCookieService),
-                     ServiceLifetime.Singleton));
-            services.Add(new ServiceDescriptor(
-                    typeof(II18nService),
-                    typeof(RemoteI18nService),
-                    ServiceLifetime.Singleton));
-            services.Add(new ServiceDescriptor(
-                typeof(IModelValidator),
-                typeof(ModelValidator),
-                ServiceLifetime.Singleton));
-            services.Add(new ServiceDescriptor(
-                typeof(IMarkdownService),
-                typeof(MarkdownService),
-                ServiceLifetime.Singleton));
-            services.Add(new ServiceDescriptor(
-                typeof(IExceptionNotificationService),
-                typeof(ExceptionNotificationService),
-                ServiceLifetime.Singleton));
+            services.AddScoped<IHttpApiClientRequestBuilderFactory, HttpApiClientRequestBuilderFactory>();
+            services.AddSingleton<IAccountService, AccountService>();
+            services.AddSingleton<IBrowserCookieService, BrowserCookieService>();
+            services.AddSingleton<II18nService, RemoteI18nService>();
+            services.AddSingleton<IModelValidator, ModelValidator>();
+            services.AddSingleton<IMarkdownService, MarkdownService>();
+            services.AddSingleton<IExceptionNotificationService,ExceptionNotificationService>();
             services.AddSingleton<IMessageService, MessageService>();
+            services.AddAuthorizationCore();
+            services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddEnvironmentConfiguration<Startup>(() => 
                 new EnvironmentChooser("Development")
                     .Add("localhost", "Development")
@@ -55,13 +37,9 @@ namespace Toss.Client
         }
 
         public void Configure(IComponentsApplicationBuilder app)
-        {
-
-
-            
+        {   
             app.Services.GetRequiredService<IJSRuntime>().InvokeAsync<string[]>("navigatorLanguages")
-                .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
-                ;
+                .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault());
             app.AddComponent<App>("app");
             app.InitEnvironmentConfiguration();
         }
