@@ -33,7 +33,7 @@
 @functions{
     HashSet<TossLastQueryItem> AboutItems = new HashSet<TossLastQueryItem>();
 
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         //we get the about content directly from github so it doesnt use our bandwidth and is up to date
         var content = await httpClient.GetStringAsync("https://raw.githubusercontent.com/RemiBou/Toss.Blazor/master/ABOUT.md");

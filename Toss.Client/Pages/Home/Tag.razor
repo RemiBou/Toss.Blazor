@@ -1,7 +1,7 @@
 ﻿@page "/tag/{tag}"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
-@inject IUriHelper uriHelper;
+@inject NavigationManager uriHelper;
 @inject IMessageService messageService;
 @layout MainLayout
 
@@ -99,7 +99,7 @@
 
     protected int Page { get; set; } = 0;
 
-    protected async override Task OnInitAsync()
+    protected async override Task OnInitializedAsync()
     {
         currentAccount = await AccountService.CurrentAccount();
 
@@ -113,7 +113,7 @@
         }
     }
 
-    public override async Task SetParametersAsync(ParameterCollection parameters)
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
 
         if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("tag")))

@@ -1,7 +1,7 @@
 ﻿@inject IExceptionNotificationService exceptionNotificationService;
 @inject IAccountService accountService;
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IUriHelper urlHelper;
+@inject NavigationManager urlHelper;
 @implements IDisposable;
 @inject IMessageService messageService;
 <div class="pure-g">
@@ -64,11 +64,11 @@
     AddHashtagCommand addHashtagCommand = new AddHashtagCommand();
 
     private AccountViewModel _account;
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         this.exceptionNotificationService.OnException += HandleExceptions;
         this.accountService.SubscribeOnCurrentAccountChanged(this.OnAccountChanged);
-        base.OnInit();
+        base.OnInitialized();
     }
 
     private void OnAccountChanged(object sender, AccountViewModel account)

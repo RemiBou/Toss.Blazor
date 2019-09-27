@@ -77,7 +77,7 @@
 
     List<UserTossListViewResult> Tosses = new List<UserTossListViewResult>();
 
-    protected async override Task OnInitAsync()
+    protected async override Task OnInitializedAsync()
     {        
         await ClientFactory.Create($"/api/account/view/{UserName}")
             .OnOK<UserViewResult>(u =>

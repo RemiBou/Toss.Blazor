@@ -24,7 +24,7 @@
 </table>
 @functions {
 List<AdminAccountListItem> Users = new List<AdminAccountListItem>();
-protected override async Task OnInitAsync()
+protected override async Task OnInitializedAsync()
 {
     await ClientFactory.Create("/api/account/list")
         .OnOK<List<AdminAccountListItem>>(r =>

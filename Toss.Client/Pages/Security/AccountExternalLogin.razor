@@ -24,7 +24,7 @@
 @functions {
     ServerSideValidator serverSideValidator;
     ExternalLoginConfirmationCommand command = new ExternalLoginConfirmationCommand();
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         await ClientFactory.Create("/api/account/externalLoginDetails")
             .OnOK<ExternalLoginConfirmationCommand>(a => command = a)
