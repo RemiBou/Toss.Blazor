@@ -1,5 +1,5 @@
 ﻿@inherits InputBase<string>
-<input @bind="@CurrentValue" autocomplete="@Autocomplete" placeholder="@Placeholder" type="@Type" id="@FieldIdentifier" class="@CssClass" />
+<input @bind="@CurrentValue" autocomplete="@Autocomplete" placeholder="@Placeholder" type="@Type" id="@Id" class="@CssClass" />
 
 @functions{
     [Parameter]
@@ -10,6 +10,9 @@
 
     [Parameter]
     public string Placeholder {get;set;}
+
+    [Parameter]
+    public string Id { get; set; }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
     {
