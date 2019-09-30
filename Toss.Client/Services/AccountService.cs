@@ -25,34 +25,18 @@ namespace Toss.Client.Services {
                 await http.Create ("/api/account/details")
                     .OnOK<AccountViewModel> ((a) => {
                         _currentAccount = a;
-                        RaiseEvent ();
                     })
                     .Get ();
             }
             return _currentAccount;
         }
 
-        private void RaiseEvent () {
-            this.OnCurrentAccountChanged?.Invoke (this, _currentAccount);
-        }
 
         public async Task Logout () {
             await http.Create ("/api/account/logout")
                 .OnOK ("You have successfuly logged off.", "/login")
                 .Post ();
             _currentAccount = null;
-            RaiseEvent ();
-        }
-
-        public async Task<Dictionary<string, List<string>>> Login (LoginCommand loginCommand) {
-            Dictionary<string, List<string>> _errors = null;
-            await http.Create ("/api/account/login")
-                .OnBadRequest<Dictionary<string, List<string>>> (errors => _errors = errors)
-                .OnOK (() => {
-                    uriHelper.NavigateTo ("/");
-                })
-                .Post (loginCommand);
-            return _errors;
         }
 
         public void SubscribeOnCurrentAccountChanged (EventHandler<AccountViewModel> handler) {
@@ -66,7 +50,6 @@ namespace Toss.Client.Services {
             .OnOK(() =>
             {
                 _currentAccount.Hashtags.Add(command.NewHashTag);
-                RaiseEvent();
                 successCallback();
             })
             .OnBadRequest<Dictionary<string, List<string>>>(badRequestCallBack)
@@ -79,7 +62,6 @@ namespace Toss.Client.Services {
                 .OnOK(() =>
                 {
                     _currentAccount.Hashtags.Remove(command.HashTag);
-                    RaiseEvent();
                     successCallback();
                 })
                 .Post(command);

@@ -21,7 +21,6 @@ namespace Toss.Client.Services {
 
         void SubscribeOnCurrentAccountChanged (EventHandler<AccountViewModel> handler);
 
-        Task<Dictionary<string, List<string>>> Login (LoginCommand loginCommand);
         Task AddHashTag(AddHashtagCommand command, Action successCallback, Action<Dictionary<string, List<string>>> badRequestCallBack);
         Task RemoveHashTag(RemoveHashTagCommand command, Action successCallback);
     }
