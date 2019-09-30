@@ -10,6 +10,7 @@ using System.Security.Claims;
 using MediatR;
 using Toss.Server.Models.Account;
 using Toss.Shared.Account;
+using System.Collections.Generic;
 
 namespace Toss.Server.Controllers
 {
@@ -183,6 +184,7 @@ namespace Toss.Server.Controllers
         {
             return await _mediator.ExecuteCommandReturnActionResult(command);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> Logout()

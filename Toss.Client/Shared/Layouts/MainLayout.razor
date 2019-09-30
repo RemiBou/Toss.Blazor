@@ -32,14 +32,7 @@
             </li>
             <AuthorizeView>
                 <Authorized>
-                    @foreach (var hashTag in _account.Hashtags ?? new List<string>())
-                    {
-                        <li class="pure-menu-item">
-                            <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
-                                #@hashTag
-                            </NavLink>
-                        </li>
-                    }
+                    <UserHashtag></UserHashtag>
                 </Authorized>
             </AuthorizeView>
             <li class="pure-menu-item">

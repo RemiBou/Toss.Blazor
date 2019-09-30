@@ -11,6 +11,8 @@ namespace Toss.Client.Services
 {
     public class ApiAuthenticationStateProvider : AuthenticationStateProvider
     {
+
+        public AccountViewModel Account { get; private set; }
         private readonly IHttpApiClientRequestBuilderFactory httpFactory;
 
         public ApiAuthenticationStateProvider(IHttpApiClientRequestBuilderFactory httpFactory)
@@ -19,16 +21,16 @@ namespace Toss.Client.Services
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            AccountViewModel account = null;
+            
             await httpFactory.Create("/api/account/details")
                        .OnOK<AccountViewModel>((a) => {
-                           account = a;
+                           Account = a;
                        })
                        .Get();
-            var identity = account  != null ?
+            var identity = Account != null ?
                 new ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.Email, account.Email),
-                    new Claim(ClaimTypes.Name, account.Name),}, "apiauth") :
+                    new Claim(ClaimTypes.Email, Account.Email),
+                    new Claim(ClaimTypes.Name, Account.Name),}, "apiauth") :
                 new ClaimsIdentity();
 
             return new AuthenticationState(new ClaimsPrincipal(identity));
