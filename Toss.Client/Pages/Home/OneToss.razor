@@ -41,12 +41,10 @@
     </div>
 </div>
 @functions{
-    [Parameter]
-    bool isAdverstisment { get; set; }
-    [Parameter]
-    TossLastQueryItem toss { get; set; }
-    
-    protected void ShowDetail()
+    [Parameter] public bool isAdverstisment { get; set; }
+    [Parameter] public TossLastQueryItem toss { get; set; }
+
+    protected void ShowDetail(EventArgs e)
     {
         this.uriHelper.NavigateTo("/toss/" + toss.Id);
     }

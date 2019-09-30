@@ -82,11 +82,10 @@
     }
 </div>
 @functions{
+    [Parameter] public string tag { get; set; } = "";
 
     List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
-    [Parameter]
-    private string tag { get; set; } = "";
 
 
     private string DisplayedTag;
@@ -166,7 +165,7 @@
         Page++;
         await GetTosstag();
     }
-    protected async Task AddHashtag()
+    protected async Task AddHashtag(MouseEventArgs ev)
     {
         await AccountService.AddHashTag(
             new AddHashtagCommand(tag),
@@ -177,7 +176,7 @@
 
     }
 
-    protected async Task RemoveHashTag()
+    protected async Task RemoveHashTag(MouseEventArgs e)
     {
         await AccountService.RemoveHashTag(
                 new RemoveHashTagCommand(tag),

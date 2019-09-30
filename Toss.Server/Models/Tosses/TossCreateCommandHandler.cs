@@ -18,17 +18,15 @@ namespace Toss.Server.Controllers
     public class TossCreateCommandHandler : IRequestHandler<TossCreateCommand>
     {
         private readonly IAsyncDocumentSession _session;
-        private readonly UserManager<ApplicationUser> userManager;
         private readonly IStripeClient stripeClient;
         private readonly IMediator mediator;
         private readonly INow now;
 
         private readonly IHttpContextAccessor httpContextAccessor;
 
-        public TossCreateCommandHandler(IAsyncDocumentSession session, UserManager<ApplicationUser> userManager, IStripeClient stripeClient, IMediator mediator, INow now, IHttpContextAccessor httpContextAccessor)
+        public TossCreateCommandHandler(IAsyncDocumentSession session,  IStripeClient stripeClient, IMediator mediator, INow now, IHttpContextAccessor httpContextAccessor)
         {
             _session = session;
-            this.userManager = userManager;
             this.stripeClient = stripeClient;
             this.mediator = mediator;
             this.now = now;

@@ -9,11 +9,11 @@
         <div class="input-group-append">
             @if (_account != null)
             {
-                <button class="btn btn-outline-secondary" id="BtnAddHashTag" @onclick="@(async () => await AddHashtag())" type="button">
+                <button class="btn btn-outline-secondary" id="BtnAddHashTag" @onclick="@(async (e) => await AddHashtag())" type="button">
                     <i class="fas fa-plus"></i>
                 </button>
             }
-            <button class="btn btn-outline-secondary" id="BtnSeeHashTag" @onclick="@(() => SeeHashtag())" type="button">
+            <button class="btn btn-outline-secondary" id="BtnSeeHashTag" @onclick="@((e) => SeeHashtag())" type="button">
                 <i class="fas fa-eye"></i>
             </button>
         </div>
@@ -41,7 +41,7 @@
     string newHashtag;
 
     [Parameter]
-    private string CurrentTag { get; set; } = "";
+    public string CurrentTag { get; set; } = "";
 
 
     protected string GetUrl(string hashtag)
