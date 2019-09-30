@@ -1,6 +1,6 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
-@inject IUriHelper UriHelper
+@inject NavigationManager UriHelper
 
 <div class="pure-form  pure-form-stacked">
     <fieldset>
@@ -29,7 +29,7 @@
 @functions {
     ServerSideValidator serverSideValidator;
     EditAccountCommand command = new EditAccountCommand();
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         var account = await AccountService.CurrentAccount();
         command.Email = account.Email;

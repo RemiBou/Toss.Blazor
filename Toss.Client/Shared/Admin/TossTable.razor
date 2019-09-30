@@ -42,7 +42,7 @@
     int TossCount = 0;
     List<TossListAdminItem> Tosses = new List<TossListAdminItem>();
     DateTimeOffset? maxDate;
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         await ClientFactory.Create("/api/toss/list")
             .OnOK<TossListAdminItems>(r =>

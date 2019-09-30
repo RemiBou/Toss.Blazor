@@ -25,7 +25,7 @@ else
     private List<string> informations = new List<string>();
     private List<string> errors = new List<string>();
     private bool loading = false;
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         messageService.OnLoading += (o, l) =>
         {
@@ -52,6 +52,6 @@ else
                 StateHasChanged();
             });
         };
-        base.OnInit();
+        base.OnInitialized();
     }
 }

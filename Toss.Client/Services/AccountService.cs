@@ -9,10 +9,10 @@ namespace Toss.Client.Services {
     public class AccountService : IAccountService {
         private readonly IHttpApiClientRequestBuilderFactory http;
         public event EventHandler<AccountViewModel> OnCurrentAccountChanged;
-        private readonly IUriHelper uriHelper;
+        private readonly NavigationManager uriHelper;
 
         private AccountViewModel _currentAccount;
-        public AccountService (IHttpApiClientRequestBuilderFactory http, IUriHelper uriHelper) {
+        public AccountService (IHttpApiClientRequestBuilderFactory http, NavigationManager uriHelper) {
             this.http = http;
             this.uriHelper = uriHelper;
         }

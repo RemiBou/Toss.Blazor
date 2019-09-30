@@ -20,7 +20,7 @@ namespace Toss.Client.Services
             serviceCollection.AddSingleton<IConfiguration>((s) =>
             {
                 EnvironmentChooser environementChooser = environmentChooserFactory();
-                Uri uri = new Uri(s.GetRequiredService<IUriHelper>().GetAbsoluteUri());
+                Uri uri = new Uri(s.GetRequiredService<NavigationManager>().ToAbsoluteUri("").ToString());
                 System.Reflection.Assembly assembly = typeof(TResource).Assembly;
                 string environment = environementChooser.GetCurrent(uri);
                 string[] ressourceNames = new[]

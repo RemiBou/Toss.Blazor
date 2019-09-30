@@ -1,7 +1,7 @@
 ﻿@page "/"
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
-@inject IUriHelper uriHelper;
+@inject NavigationManager uriHelper;
 @layout MainLayout
 
 <div class=" message-info">
@@ -17,7 +17,7 @@
 
     private AccountViewModel currentAccount;
 
-    protected async override Task OnInitAsync()
+    protected async override Task OnInitializedAsync()
     {
         currentAccount = await AccountService.CurrentAccount();
 

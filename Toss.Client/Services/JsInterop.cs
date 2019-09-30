@@ -34,7 +34,7 @@ namespace Toss.Client.Services
 
         public async Task OpenStripe(IStripeCallBack stripeCallBack, int amountInCts)
         {
-            await jsRuntime.InvokeAsync<string>("stripeCheckout", DotNetObjectRef.Create(stripeCallBack), amountInCts);
+            await jsRuntime.InvokeAsync<string>("stripeCheckout", DotNetObjectReference.Create(stripeCallBack), amountInCts);
         }
     }
 }

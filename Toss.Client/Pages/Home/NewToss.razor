@@ -2,7 +2,7 @@
 @inject IHttpApiClientRequestBuilderFactory ClientFactory
 @implements IStripeCallBack
 @inject IJsInterop JsInterop;
-@inject IUriHelper urlHelper;
+@inject NavigationManager urlHelper;
 @inject IMessageService messageService;
 @inject IAccountService accountService;
 @layout MainLayout
@@ -92,9 +92,9 @@
     ServerSideValidator serverSideValidator;
 
     private AccountViewModel _account;
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
-        base.OnInit();
+        base.OnInitialized();
 
         this.accountService.SubscribeOnCurrentAccountChanged(this.OnAccountChanged);
     }

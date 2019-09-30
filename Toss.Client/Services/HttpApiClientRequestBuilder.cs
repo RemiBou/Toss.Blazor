@@ -14,7 +14,7 @@ namespace Toss.Client.Services {
     public class HttpApiClientRequestBuilder : IHttpApiClientRequestBuilder {
         private readonly string _relativeUri;
         private readonly string _uri;
-        private readonly IUriHelper _uriHelper;
+        private readonly NavigationManager _uriHelper;
         private readonly HttpClient _httpClient;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
@@ -24,7 +24,7 @@ namespace Toss.Client.Services {
 
         public HttpApiClientRequestBuilder (HttpClient httpClient,
             string uri,
-            IUriHelper uriHelper,
+            NavigationManager uriHelper,
             IBrowserCookieService browserCookieService, IJsInterop jsInterop, IMessageService messageService) {
             _relativeUri = uri;
             _uri = uriHelper.ToAbsoluteUri (uri).ToString ();

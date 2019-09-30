@@ -39,7 +39,8 @@ namespace Toss.Client
         public void Configure(IComponentsApplicationBuilder app)
         {   
             app.Services.GetRequiredService<IJSRuntime>().InvokeAsync<string[]>("navigatorLanguages")
-                .ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault());
+                .AsTask().ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
+                ;
             app.AddComponent<App>("app");
             app.InitEnvironmentConfiguration();
         }

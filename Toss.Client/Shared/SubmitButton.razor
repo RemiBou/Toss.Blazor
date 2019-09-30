@@ -16,10 +16,10 @@
 
     [Parameter]
     private string Id { get; set; }
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         this.mesageService.OnLoading += DisableButton;
-        base.OnInit();
+        base.OnInitialized();
     }
     public void DisableButton(object sender, bool loading)
     {

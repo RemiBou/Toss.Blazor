@@ -1,6 +1,6 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject IAccountService AccountService;
-@inject IUriHelper urlHelper;
+@inject NavigationManager urlHelper;
 @inject IMessageService messageService;
 
 <div class="form-group" id="BlockHashTagBar">
@@ -53,7 +53,7 @@
         return "/tag/" + hashtag;
 
     }
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         _account = await AccountService.CurrentAccount();
 
