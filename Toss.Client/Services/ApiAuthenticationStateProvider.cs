@@ -21,9 +21,10 @@ namespace Toss.Client.Services
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            
+
             await httpFactory.Create("/api/account/details")
-                       .OnOK<AccountViewModel>((a) => {
+                       .OnOK<AccountViewModel>((a) =>
+                       {
                            Account = a;
                        })
                        .Get();
@@ -32,7 +33,6 @@ namespace Toss.Client.Services
                     new Claim(ClaimTypes.Email, Account.Email),
                     new Claim(ClaimTypes.Name, Account.Name),}, "apiauth") :
                 new ClaimsIdentity();
-
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }
 

@@ -1,4 +1,5 @@
-﻿@inject IExceptionNotificationService exceptionNotificationService;
+﻿@using Toss.Client.Pages.Home
+@inject IExceptionNotificationService exceptionNotificationService;
 @inject IAccountService accountService;
 @inject IHttpApiClientRequestBuilderFactory ClientFactory;
 @inject NavigationManager urlHelper;
@@ -34,6 +35,9 @@
                 <Authorized>
                     <UserHashtag></UserHashtag>
                 </Authorized>
+                <NotAuthorized>
+                    Not logged
+                </NotAuthorized>
             </AuthorizeView>
             <li class="pure-menu-item">
                 <div class="pure-form">

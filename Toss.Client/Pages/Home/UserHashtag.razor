@@ -1,8 +1,8 @@
 ﻿@inject ApiAuthenticationStateProvider AuthenticationStateProvider;
 @implements IDisposable
-@if (_account != null)
+@if (_account != null && _account.Hashtags != null)
 {
-    @foreach (var hashTag in _account.Hashtags ?? new List<string>())
+    @foreach (var hashTag in _account.Hashtags)
     {
         <li class="pure-menu-item">
             <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
@@ -18,12 +18,10 @@
     {
         _account = AuthenticationStateProvider.Account;
         AuthenticationStateProvider.AuthenticationStateChanged += RefreshAccount;
-
-
     }
+
     private void RefreshAccount(Task<AuthenticationState> newAuthStateTask)
     {
-
         _account = AuthenticationStateProvider.Account;
         StateHasChanged();
     }

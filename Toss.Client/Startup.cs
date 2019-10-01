@@ -29,8 +29,9 @@ namespace Toss.Client
             services.AddSingleton<IExceptionNotificationService,ExceptionNotificationService>();
             services.AddSingleton<IMessageService, MessageService>();
             services.AddAuthorizationCore();
-            services.AddSingleton<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             services.AddSingleton<ApiAuthenticationStateProvider>();
+            services.AddSingleton<AuthenticationStateProvider>((s) => s.GetRequiredService< ApiAuthenticationStateProvider>());
+            
             services.AddEnvironmentConfiguration<Startup>(() => 
                 new EnvironmentChooser("Development")
                     .Add("localhost", "Development")
