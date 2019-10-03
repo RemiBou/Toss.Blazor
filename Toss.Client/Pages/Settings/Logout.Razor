@@ -1,11 +1,18 @@
-﻿@inject IAccountService accountService;
+﻿@inject IMessageService _messageService;
+@inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider;
+@inject IHttpApiClientRequestBuilderFactory Http;
+
 <div class="pure-form">
     <button type="button" @onclick="@LogOff" class="pure-button button-warning" id="BtnLogout">Log out</button>
 </div>
-@functions{
+@code{
     protected async Task LogOff()
     {
-        await accountService.Logout();
-
+        await Http.Create("/api/account/logout")
+            .OnOK(() => {
+                _messageService.Info("You have successfuly logged off.");
+                ApiAuthenticationStateProvider.MarkUserAsLoggedOut();
+            })
+            .Post();
     }
 }

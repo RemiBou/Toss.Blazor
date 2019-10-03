@@ -1,8 +1,7 @@
-﻿@inject ApiAuthenticationStateProvider AuthenticationStateProvider;
-@implements IDisposable
-@if (_account != null && _account.Hashtags != null)
+﻿@inherits TossComponentBase
+@if (Account != null && Account.Hashtags != null)
 {
-    @foreach (var hashTag in _account.Hashtags)
+    @foreach (var hashTag in Account.Hashtags)
     {
         <li class="pure-menu-item">
             <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
@@ -12,22 +11,4 @@
     }
 }
 @code {
-    private AccountViewModel _account;
-
-    protected override void OnInitialized()
-    {
-        _account = AuthenticationStateProvider.Account;
-        AuthenticationStateProvider.AuthenticationStateChanged += RefreshAccount;
-    }
-
-    private void RefreshAccount(Task<AuthenticationState> newAuthStateTask)
-    {
-        _account = AuthenticationStateProvider.Account;
-        StateHasChanged();
-    }
-
-    void IDisposable.Dispose()
-    {
-        AuthenticationStateProvider.AuthenticationStateChanged -= RefreshAccount;
-    }
 }

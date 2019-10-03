@@ -1,10 +1,10 @@
 ﻿@page "/new"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory
+@inject IHttpApiClientRequestBuilderFactory Http
+@inherits TossComponentBase
 @implements IStripeCallBack
 @inject IJsInterop JsInterop;
 @inject NavigationManager urlHelper;
 @inject IMessageService messageService;
-@inject IAccountService accountService;
 @layout MainLayout
 
 <div class="new-toss">
@@ -12,7 +12,7 @@
         New Toss
     </h1>
     <div class=" pure-form pure-form-stacked">
-        @if (_account != null)
+        @if (Account != null)
         {
             <EditForm Model="@command" OnValidSubmit="SendToss">
                 <fieldset>
@@ -67,7 +67,7 @@
         }
     </div>
 </div>
-@functions{
+@code{
 
     bool isSponsoredToss
     {
@@ -91,17 +91,11 @@
     TossCreateCommand command = new TossCreateCommand();
     ServerSideValidator serverSideValidator;
 
-    private AccountViewModel _account;
     protected override void OnInitialized()
     {
         base.OnInitialized();
 
-        this.accountService.SubscribeOnCurrentAccountChanged(this.OnAccountChanged);
-    }
-    private void OnAccountChanged(object sender, AccountViewModel account)
-    {
-        this._account = account;
-        this.StateHasChanged();
+     
     }
     protected async Task SendToss()
     {
@@ -115,7 +109,7 @@
     }
     private async Task DoSendToss()
     {
-        await ClientFactory.Create("/api/toss/create")
+        await Http.Create("/api/toss/create")
             .OnOK(() =>
             {
                 command = new TossCreateCommand();

@@ -1,6 +1,7 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IAccountService AccountService;
+﻿@inject IHttpApiClientRequestBuilderFactory Http;
 @inject NavigationManager UriHelper
+@inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider
+@inject IMessageService MessageService;
 
 <div class="pure-form  pure-form-stacked">
     <fieldset>
@@ -26,22 +27,24 @@
         </EditForm>
     </fieldset>
 </div>
-@functions {
+@code {
     ServerSideValidator serverSideValidator;
     EditAccountCommand command = new EditAccountCommand();
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        var account = await AccountService.CurrentAccount();
-        command.Email = account.Email;
-        command.Name = account.Name;
-        command.Bio = account.Bio;
+        command.Email = ApiAuthenticationStateProvider.Account.Email;
+        command.Name = ApiAuthenticationStateProvider.Account.Name;
+        command.Bio = ApiAuthenticationStateProvider.Account.Bio;
         StateHasChanged();
     }
     async Task PostAccount()
     {
-        await ClientFactory.Create("/api/account/edit")
+        await Http.Create("/api/account/edit")
             .OnBadRequest<Dictionary<string, List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
-            .OnOK("Informations saved successfully")
+            .OnOK(() => {
+                MessageService.Info("Your account was updated successfully");
+                ApiAuthenticationStateProvider.RefreshCurrentUser();
+            })
             .Post(command);
         StateHasChanged();
     }

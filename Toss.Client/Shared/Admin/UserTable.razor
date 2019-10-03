@@ -1,4 +1,4 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+﻿@inject IHttpApiClientRequestBuilderFactory Http;
 <h5>Users <small class="text-muted">@Users.Count users in the DB</small></h5>
 <table class="table">
     <thead>
@@ -22,11 +22,11 @@
         }
     </tbody>
 </table>
-@functions {
+@code {
 List<AdminAccountListItem> Users = new List<AdminAccountListItem>();
 protected override async Task OnInitializedAsync()
 {
-    await ClientFactory.Create("/api/account/list")
+    await Http.Create("/api/account/list")
         .OnOK<List<AdminAccountListItem>>(r =>
         {
             Users = r;

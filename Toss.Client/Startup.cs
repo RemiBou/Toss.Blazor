@@ -21,26 +21,25 @@ namespace Toss.Client
 
             services.AddSingleton<IJsInterop, JsInterop>();
             services.AddScoped<IHttpApiClientRequestBuilderFactory, HttpApiClientRequestBuilderFactory>();
-            services.AddSingleton<IAccountService, AccountService>();
             services.AddSingleton<IBrowserCookieService, BrowserCookieService>();
             services.AddSingleton<II18nService, RemoteI18nService>();
             services.AddSingleton<IModelValidator, ModelValidator>();
             services.AddSingleton<IMarkdownService, MarkdownService>();
-            services.AddSingleton<IExceptionNotificationService,ExceptionNotificationService>();
+            services.AddSingleton<IExceptionNotificationService, ExceptionNotificationService>();
             services.AddSingleton<IMessageService, MessageService>();
             services.AddAuthorizationCore();
             services.AddSingleton<ApiAuthenticationStateProvider>();
-            services.AddSingleton<AuthenticationStateProvider>((s) => s.GetRequiredService< ApiAuthenticationStateProvider>());
-            
-            services.AddEnvironmentConfiguration<Startup>(() => 
+            services.AddSingleton<AuthenticationStateProvider>((s) => s.GetRequiredService<ApiAuthenticationStateProvider>());
+
+            services.AddEnvironmentConfiguration<Startup>(() =>
                 new EnvironmentChooser("Development")
                     .Add("localhost", "Development")
                     .Add("tossproject.com", "Production", false));
-            
+
         }
 
         public void Configure(IComponentsApplicationBuilder app)
-        {   
+        {
             app.Services.GetRequiredService<IJSRuntime>().InvokeAsync<string[]>("navigatorLanguages")
                 .AsTask().ContinueWith(t => CultureInfo.DefaultThreadCurrentCulture = t.Result.Select(c => CultureInfo.GetCultureInfo(c)).FirstOrDefault())
                 ;

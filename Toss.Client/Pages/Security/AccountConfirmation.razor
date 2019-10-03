@@ -1,17 +1,17 @@
 ﻿@page "/account/confirmationEmail/{userId}/{code}"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IHttpApiClientRequestBuilderFactory Http;
 @inject NavigationManager UriHelper
 @inject IMessageService messageService
 @layout MainLayout
 
-@functions {
+@code {
     [Parameter]
     public string userId { get; set; }
     [Parameter]
     public string code { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        await ClientFactory.Create("/api/account/confirmEmail")
+        await Http.Create("/api/account/confirmEmail")
             .OnOK("Your email address is now confirmed, you can loggin", "/login")
             .OnBadRequest(() =>
            {

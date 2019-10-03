@@ -36,7 +36,7 @@ namespace Toss.Client.Services
             return new AuthenticationState(new ClaimsPrincipal(identity));
         }
 
-        public void MarkUserAsAuthenticated()
+        public void RefreshCurrentUser()
         {
             NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
         }

@@ -1,6 +1,6 @@
 ﻿@using Toss.Shared.Account
 @page "/account/externalLogin"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IHttpApiClientRequestBuilderFactory Http;
 @layout MainLayout
 <h1>Associate your @command.Provider account.</h1>
 <div class="message-info">
@@ -21,19 +21,19 @@
     </EditForm>
 </div>
 
-@functions {
+@code {
     ServerSideValidator serverSideValidator;
     ExternalLoginConfirmationCommand command = new ExternalLoginConfirmationCommand();
     protected override async Task OnInitializedAsync()
     {
-        await ClientFactory.Create("/api/account/externalLoginDetails")
+        await Http.Create("/api/account/externalLoginDetails")
             .OnOK<ExternalLoginConfirmationCommand>(a => command = a)
             .Get();
         StateHasChanged();
     }
     async Task ExternalLoginConfirm()
     {
-        await ClientFactory.Create("/api/account/externalLoginConfirmation")
+        await Http.Create("/api/account/externalLoginConfirmation")
             .OnBadRequest<Dictionary<string, List<string>>>(errors => serverSideValidator.DisplayErrors(errors))
             .OnOK("Account successfully created", "/")
             .Post(command);

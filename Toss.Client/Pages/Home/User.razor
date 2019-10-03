@@ -1,5 +1,5 @@
 @page "/user/{UserName}"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IHttpApiClientRequestBuilderFactory Http;
 @inject IMarkdownService markdown
 @layout MainLayout
 @if(UserView != null){
@@ -79,7 +79,7 @@
 
     protected async override Task OnInitializedAsync()
     {        
-        await ClientFactory.Create($"/api/account/view/{UserName}")
+        await Http.Create($"/api/account/view/{UserName}")
             .OnOK<UserViewResult>(u =>
             {
                 UserView = u;
@@ -91,7 +91,7 @@
 
     protected async Task LoadToss(){
         Loading = true;
-        await ClientFactory.Create($"/api/toss/user/{UserName}/{Page}")
+        await Http.Create($"/api/toss/user/{UserName}/{Page}")
             .OnOK<List<UserTossListViewResult>>(u =>
             {
                 if (u.Count < TossLastQuery.TossPerPage)

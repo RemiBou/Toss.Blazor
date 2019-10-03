@@ -1,7 +1,7 @@
 ﻿@inherits InputBase<string>
 <input @bind="@CurrentValue" autocomplete="@Autocomplete" placeholder="@Placeholder" type="@Type" id="@Id" class="@CssClass" />
 
-@functions{
+@code{
     [Parameter]
     public string Autocomplete { get; set; }
 

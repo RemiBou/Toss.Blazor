@@ -1,6 +1,5 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+﻿@inject IHttpApiClientRequestBuilderFactory Http;
 @inject NavigationManager UriHelper
-@inject IAccountService AccountService;
 @inject ApiAuthenticationStateProvider AuthenticationStateProvider;
 <div class="pure-form  pure-form-stacked">
     <fieldset>
@@ -36,19 +35,19 @@
     </fieldset>
 </div>
 
-@functions{
+@code{
     LoginCommand command = new LoginCommand();
     ServerSideValidator serverSideValidator;
     async Task<bool> TryLogin()
     {
 
-        await ClientFactory.Create("/api/account/login")
+        await Http.Create("/api/account/login")
                .OnBadRequest<Dictionary<string, List<string>>>(
                     errors => serverSideValidator.DisplayErrors(errors)
                 )
                .OnOK(() =>
                {
-                   AuthenticationStateProvider.MarkUserAsAuthenticated();
+                   AuthenticationStateProvider.RefreshCurrentUser();
                    UriHelper.NavigateTo("/");
                })
                .Post(command);

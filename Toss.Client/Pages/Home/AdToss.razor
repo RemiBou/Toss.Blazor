@@ -1,10 +1,10 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
+﻿@inject IHttpApiClientRequestBuilderFactory Http
 @if (sponsoredToss != null)
 {
 
     <OneToss toss="@sponsoredToss" isAdverstisment="true"></OneToss>
 }
-@functions{
+@code{
     TossLastQueryItem sponsoredToss;
 
     [Parameter]
@@ -22,7 +22,7 @@
         {
             return;
         }
-        await ClientFactory.Create("/api/toss/sponsored")
+        await Http.Create("/api/toss/sponsored")
             .OnOK<TossLastQueryItem>(l =>
            {
                 sponsoredToss = l;

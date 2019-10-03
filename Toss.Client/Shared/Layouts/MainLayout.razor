@@ -1,7 +1,6 @@
 ﻿@using Toss.Client.Pages.Home
 @inject IExceptionNotificationService exceptionNotificationService;
-@inject IAccountService accountService;
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IHttpApiClientRequestBuilderFactory Http;
 @inject NavigationManager urlHelper;
 @implements IDisposable;
 @inject IMessageService messageService;
@@ -35,9 +34,6 @@
                 <Authorized>
                     <UserHashtag></UserHashtag>
                 </Authorized>
-                <NotAuthorized>
-                    Not logged
-                </NotAuthorized>
             </AuthorizeView>
             <li class="pure-menu-item">
                 <div class="pure-form">
@@ -53,7 +49,7 @@
 <div class="main">
     @Body
 </div>
-@functions {
+@code {
 
     [Parameter] public RenderFragment Body { get; set; }
 
