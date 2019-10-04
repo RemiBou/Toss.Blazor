@@ -10,10 +10,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
+- task: UseDotNet@2
   displayName: 'Install SDK'
   inputs:
-    version: '3.0.100-preview6-012264'
+    version: '3.0.100'
+#we need dotnet core v for ravendb in tests
+- task: UseDotNet@2
+  displayName: 'Install runtime for ravendb embedded'
+  inputs:
+    packageType: runtime
+    version: '2.2.6'
+
 - script: dotnet build Toss.sln --configuration $(buildConfiguration)
   displayName: 'dotnet build Toss.sln'
 - script: dotnet test ./Toss.Tests/Toss.Tests.csproj  --configuration $(buildConfiguration) --no-build  -v q --logger trx;LogFileName=test.trx

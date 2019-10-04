@@ -4,12 +4,11 @@
 @displayValue
 
 
-@functions{
-    [Parameter]
-    string key { get; set; }
+@code{
+    [Parameter] public string key { get; set; }
 
     public string displayValue { get; set; }
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         await i18n.Get(key).ContinueWith(t =>
         {

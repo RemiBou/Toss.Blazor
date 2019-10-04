@@ -20,13 +20,13 @@
         }
     </div>
 }
-@functions{
+@code{
     private List<BestTagsResult> tags;
-    protected async override Task OnInitAsync()
+    protected async override Task OnInitializedAsync()
     {
         await httpBuilder.Create("/api/toss/bestTags")
             .OnOK<List<BestTagsResult>>(r => this.tags = r)
             .Get();
-        await base.OnInitAsync();
+        await base.OnInitializedAsync();
     }
 }

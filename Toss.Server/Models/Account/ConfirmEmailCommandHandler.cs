@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Data;
@@ -12,16 +13,20 @@ namespace Toss.Server.Models.Account
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RavenDBIdUtil _ravenDBIdUtil;
+        private readonly ILogger<ConfirmEmailCommandHandler> logger;
 
-        public ConfirmEmailCommandHandler(UserManager<ApplicationUser> userManager, RavenDBIdUtil ravenDBIdUtil)
+        public ConfirmEmailCommandHandler(UserManager<ApplicationUser> userManager, RavenDBIdUtil ravenDBIdUtil, ILogger<ConfirmEmailCommandHandler> logger)
         {
             _userManager = userManager;
             _ravenDBIdUtil = ravenDBIdUtil;
+            this.logger = logger;
         }
 
         public async Task<CommandResult> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(this._ravenDBIdUtil.GetRavenDbIdFromUrlId<ApplicationUser>( request.UserId));
+            string userId = this._ravenDBIdUtil.GetRavenDbIdFromUrlId<ApplicationUser>(request.UserId);
+            var user = await _userManager.FindByIdAsync(userId);
+            logger.LogInformation("Handle. UserId =  " + request.UserId + ", Code = " + request.Code);
             if (user == null)
             {
                 return new CommandResult("User", "User does not exists");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Toss.Client.Services
 {
-    public static class IUrlHelperExtension
+    public static class NavigationManagerExtension
     {
         //public static string BuildUrl<T>(object parameters) where T : ComponentBase
         //{

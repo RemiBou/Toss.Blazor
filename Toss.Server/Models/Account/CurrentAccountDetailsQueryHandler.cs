@@ -11,18 +11,17 @@ namespace Toss.Server.Models.Account
 {
     public class CurrentAccountDetailsQueryHandler : IRequestHandler<CurrentAccountDetailsQuery, AccountViewModel>
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public CurrentAccountDetailsQueryHandler(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
+        public CurrentAccountDetailsQueryHandler(IMediator mediator)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
+            _mediator = mediator;
         }
 
         public async Task<AccountViewModel> Handle(CurrentAccountDetailsQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            new CurrentUserQuery();
+            var user = await _mediator.Send(new CurrentUserQuery());
 
             if (user == null)
             {

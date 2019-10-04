@@ -10,17 +10,17 @@ namespace Toss.Server.Models.Account
     public class RemoveHashTagCommandHandler : IRequestHandler<RemoveHashTagCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMediator mediator;
 
-        public RemoveHashTagCommandHandler(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public RemoveHashTagCommandHandler(UserManager<ApplicationUser> userManager, IMediator mediator)
         {
             _userManager = userManager;
-            this.httpContextAccessor = httpContextAccessor;
+            this.mediator = mediator;
         }
 
         public async Task<CommandResult> Handle(RemoveHashTagCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+            var user = await mediator.Send(new CurrentUserQuery());
             user.RemoveHashTag(request.HashTag);
             await _userManager.UpdateAsync(user);
             return CommandResult.Success();

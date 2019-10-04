@@ -1,5 +1,5 @@
 ﻿@page "/register"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory
+@inject IHttpApiClientRequestBuilderFactory Http
 @inject IMessageService messageService
 @layout MainLayout
 <h1>Create a Toss account</h1>
@@ -28,13 +28,13 @@
     </EditForm>
 </div>
 <Toss.Client.Pages.Login.LoginExternal></Toss.Client.Pages.Login.LoginExternal>
-@functions{
+@code{
 
     RegisterCommand command = new RegisterCommand();
     ServerSideValidator serverSideValidator;
     async Task CreateAccount(EditContext context)
     {
-        await ClientFactory.Create("/api/account/register")
+        await Http.Create("/api/account/register")
             .OnBadRequest<Dictionary<string, List<string>>>(errors =>
             {
 

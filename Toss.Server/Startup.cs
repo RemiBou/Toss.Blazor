@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using MediatR;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
@@ -25,6 +27,7 @@ using Raven.Identity;
 using Toss.Server.Data;
 using Toss.Server.Extensions;
 using Toss.Server.Models;
+using Toss.Server.Models.Tosses;
 using Toss.Server.Services;
 using Toss.Shared.Account;
 
@@ -106,8 +109,7 @@ namespace Toss.Server
 
             services.AddScoped(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
             services.AddSingleton<RavenDBIdUtil>();
-            services
-                .AddRavenDbIdentity<ApplicationUser>();
+            services.AddRavenDbIdentity<ApplicationUser>();
 
         }
 
@@ -136,7 +138,12 @@ namespace Toss.Server
         private void AddWebDependencies(IServiceCollection services)
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
-            services.AddResponseCompression();
+            services.AddResponseCompression(options =>
+            {
+                options.Providers.Add<BrotliCompressionProvider>();
+                options.Providers.Add<GzipCompressionProvider>();
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+            });
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
@@ -172,17 +179,7 @@ namespace Toss.Server
             });
         }
 
-        static Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(int statusCode, Func<Microsoft.AspNetCore.Authentication.RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
-            context =>
-            {
-
-                if (context.Request.Path.StartsWithSegments("/api"))
-                {
-                    context.Response.StatusCode = statusCode;
-                    return Task.CompletedTask;
-                }
-                return existingRedirector(context);
-            };
+       
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
@@ -195,12 +192,9 @@ namespace Toss.Server
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-
-                app.UseResponseCompression();
                 app.UseHsts(hsts => hsts.MaxAge(365));
-
             }
-
+            app.UseResponseCompression();
             var supportedCultures = new[] {
                 new CultureInfo ("en"),
                 new CultureInfo ("fr"),

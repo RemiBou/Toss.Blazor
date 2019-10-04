@@ -2,21 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="6.0.1" />
-    <PackageReference Include="Moq" Version="4.11.0-rc1" />
-    <PackageReference Include="RavenDB.Client" Version="4.2.0-rc-42005" />
-    <PackageReference Include="RavenDB.Embedded" Version="4.1.3" />
-    <PackageReference Include="RavenDB.TestDriver" Version="4.1.3" />    
-    <PackageReference Include="Selenium.Chrome.WebDriver" Version="74.0.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Moq" Version="4.13.0" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.3" />
+    <PackageReference Include="RavenDB.Embedded" Version="4.2.3" />
+    <PackageReference Include="RavenDB.TestDriver" Version="4.2.3" />    
+    <PackageReference Include="Selenium.Chrome.WebDriver" Version="76.0.0" />
     <PackageReference Include="Selenium.Support" Version="4.0.0-alpha01" />
     <PackageReference Include="Selenium.WebDriver" Version="4.0.0-alpha01" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="Microsoft.AspNetCore.App" Version="3.0.0-preview3-19153-02" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

@@ -1,14 +1,14 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
+﻿@inject IHttpApiClientRequestBuilderFactory Http
 @if (sponsoredToss != null)
 {
 
     <OneToss toss="@sponsoredToss" isAdverstisment="true"></OneToss>
 }
-@functions{
+@code{
     TossLastQueryItem sponsoredToss;
 
     [Parameter]
-    private string tag { get; set; } = "";
+    public string tag { get; set; } = "";
 
     protected override async Task OnParametersSetAsync()
     {
@@ -22,12 +22,14 @@
         {
             return;
         }
-        await ClientFactory.Create("/api/toss/sponsored?hashtag=" + tag)
+        await Http.Create("/api/toss/sponsored")
             .OnOK<TossLastQueryItem>(l =>
            {
                 sponsoredToss = l;
                 StateHasChanged();
             })
-            .Get();
+            .Get(new{
+                hashtag=tag
+            });
     }
 }

@@ -1,13 +1,10 @@
-﻿using MediatR;
-using Raven.Client.Documents;
+﻿using Raven.Client.Documents;
 using Raven.Client.Documents.Session;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Toss.Server.Data;
+using Toss.Server.Models.Tosses;
 using Toss.Server.Services;
 using Toss.Shared.Tosses;
 using Toss.Tests.Infrastructure;

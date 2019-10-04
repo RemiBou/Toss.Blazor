@@ -14,7 +14,7 @@ namespace Toss.Client.Services
         [CascadingParameter] EditContext CurrentEditContext { get; set; }
 
         /// <inheritdoc />
-        protected override void OnInit()
+        protected override void OnInitialized()
         {
             if (CurrentEditContext == null)
             {
@@ -32,7 +32,7 @@ namespace Toss.Client.Services
         {
             foreach (var err in errors)
             {
-                _messageStore.AddRange(CurrentEditContext.Field(err.Key), err.Value);
+                _messageStore.Add(CurrentEditContext.Field(err.Key), err.Value);
             }        
             CurrentEditContext.NotifyValidationStateChanged();
         }

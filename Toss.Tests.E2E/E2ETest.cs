@@ -53,7 +53,7 @@ namespace Toss.Tests.E2E
                 _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
 
                 //validate subscription
-                var confirmationLink = _serverFixture.EmailSender.GetConfirmationLink(SubscribeEmail);
+                var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
                 Browser.Navigate().GoToUrl(confirmationLink);
                 DisableRecaptcha();
                 _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));

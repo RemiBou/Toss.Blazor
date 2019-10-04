@@ -1,6 +1,6 @@
 ﻿
 @inject IMarkdownService markdown
-@inject IUriHelper uriHelper;
+@inject NavigationManager navigationManager;
 <div class="pure-u-5-5  toss-preview" @onclick="@ShowDetail">
     <div class="pure-g">
         <div class="pure-u-24-24">
@@ -40,14 +40,12 @@
         </div>
     </div>
 </div>
-@functions{
-    [Parameter]
-    bool isAdverstisment { get; set; }
-    [Parameter]
-    TossLastQueryItem toss { get; set; }
-    
-    protected void ShowDetail()
+@code{
+    [Parameter] public bool isAdverstisment { get; set; }
+    [Parameter] public TossLastQueryItem toss { get; set; }
+
+    protected void ShowDetail(EventArgs e)
     {
-        this.uriHelper.NavigateTo("/toss/" + toss.Id);
+        this.navigationManager.NavigateTo("/toss/" + toss.Id);
     }
 }

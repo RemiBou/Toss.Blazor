@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using Toss.Server.Models.Tosses;
 
 namespace Toss.Server.Data
 {

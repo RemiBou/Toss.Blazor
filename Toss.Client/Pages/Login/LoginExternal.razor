@@ -1,5 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory Http;
-@inject IUriHelper UriHelper;
+@inject NavigationManager navigationManager;
 <div class="pure-form">
     <fieldset>
         <legend>Use another service to log in.</legend>
@@ -17,9 +17,9 @@
         }
     </fieldset>
 </div>
-@functions{
+@code{
     IEnumerable<SigninProviderViewModel> loginProviders = new SigninProviderViewModel[0];
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
         await Http.Create("/api/account/loginProviders")
             .OnOK<SigninProviderViewModel[]>((a) => loginProviders = a)

@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
-using System;
+﻿using System;
+using System.Collections;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Net.Http;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Toss.Shared;
 
 namespace Toss.Client.Services
@@ -12,7 +16,7 @@ namespace Toss.Client.Services
     {
         private readonly string _relativeUri;
         private readonly string _uri;
-        private readonly IUriHelper _uriHelper;
+        private readonly NavigationManager _navigationManager;
         private readonly HttpClient _httpClient;
         private Func<HttpResponseMessage, Task> _onBadRequest;
         private Func<HttpResponseMessage, Task> _onOK;
@@ -22,12 +26,12 @@ namespace Toss.Client.Services
 
         public HttpApiClientRequestBuilder(HttpClient httpClient,
             string uri,
-            IUriHelper uriHelper,
+            NavigationManager navigationManager,
             IBrowserCookieService browserCookieService, IJsInterop jsInterop, IMessageService messageService)
         {
             _relativeUri = uri;
-            _uri = uriHelper.ToAbsoluteUri(uri).ToString();
-            _uriHelper = uriHelper;
+            _uri = navigationManager.ToAbsoluteUri(uri).ToString();
+            _navigationManager = navigationManager;
             _httpClient = httpClient;
 
             _browserCookieService = browserCookieService;
@@ -37,6 +41,7 @@ namespace Toss.Client.Services
 
         public async Task Post(byte[] data)
         {
+
             await ExecuteHttpQuery(async () =>
             {
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
@@ -50,7 +55,7 @@ namespace Toss.Client.Services
             await SetCaptchaToken(data);
             await ExecuteHttpQuery(async () =>
             {
-                string requestJson = JsonSerializer.ToString(data);
+                string requestJson = JsonSerializer.Serialize(data);
                 return await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Post, _uri)
                 {
                     Content = new StringContent(requestJson, System.Text.Encoding.UTF8, "application/json")
@@ -99,9 +104,14 @@ namespace Toss.Client.Services
             httpRequestMessage.Headers.Add("X-Requested-With", "XMLHttpRequest");
             return httpRequestMessage;
         }
-        public async Task Get()
+        public async Task Get(object data = null)
         {
-            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Get, _uri))));
+            var uriBuilder = new UriBuilder(_uri);
+            if (data != null)
+            {
+                uriBuilder.Query = ToQueryString(data);
+            }
+            await ExecuteHttpQuery(async () => await _httpClient.SendAsync(await PrepareMessageAsync(new HttpRequestMessage(HttpMethod.Get, uriBuilder.ToString()))));
         }
         private async Task ExecuteHttpQuery(Func<Task<HttpResponseMessage>> httpCall)
         {
@@ -133,7 +143,7 @@ namespace Toss.Client.Services
         {
             _onBadRequest = async (HttpResponseMessage r) =>
             {
-                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
+                T response = await JsonSerializer.DeserializeAsync<T>(await r.Content.ReadAsStreamAsync());
                 todo(response);
             };
             return this;
@@ -142,7 +152,7 @@ namespace Toss.Client.Services
         {
             _onOK = async (HttpResponseMessage r) =>
             {
-                T response = JsonSerializer.Parse<T>(await r.Content.ReadAsStringAsync());
+                T response = await JsonSerializer.DeserializeAsync<T>(await r.Content.ReadAsStreamAsync());
                 todo(response);
             };
             return this;
@@ -184,18 +194,56 @@ namespace Toss.Client.Services
         public HttpApiClientRequestBuilder OnOK(string successMessage, string navigateTo = null)
         {
             OnOK(() =>
-           {
-               if (!string.IsNullOrEmpty(successMessage))
-                   _messageService.Info(successMessage);
-               if (!string.IsNullOrEmpty(navigateTo))
-                   _uriHelper.NavigateTo(navigateTo);
-           });
+            {
+                if (!string.IsNullOrEmpty(successMessage))
+                    _messageService.Info(successMessage);
+                if (!string.IsNullOrEmpty(navigateTo))
+                    _navigationManager.NavigateTo(navigateTo);
+            });
             return this;
         }
 
         public void SetHeader(string key, string value)
         {
             _httpClient.DefaultRequestHeaders.Add(key, value);
+        }
+
+        private static string ToQueryString(object request, string separator = ",")
+        {
+            if (request == null)
+                throw new ArgumentNullException("request");
+
+            // Get all properties on the object
+            var properties = request.GetType().GetProperties()
+                .Where(x => x.CanRead)
+                .Where(x => x.GetValue(request, null) != null)
+                .ToDictionary(x => x.Name, x => x.GetValue(request, null));
+
+            // Get names for all IEnumerable properties (excl. string)
+            var propertyNames = properties
+                .Where(x => !(x.Value is string) && x.Value is IEnumerable)
+                .Select(x => x.Key)
+                .ToList();
+
+            // Concat all IEnumerable properties into a comma separated string
+            foreach (var key in propertyNames)
+            {
+                var valueType = properties[key].GetType();
+                var valueElemType = valueType.IsGenericType ?
+                    valueType.GetGenericArguments()[0] :
+                    valueType.GetElementType();
+                if (valueElemType.IsPrimitive || valueElemType == typeof(string))
+                {
+                    var enumerable = properties[key] as IEnumerable;
+                    properties[key] = string.Join(separator, enumerable.Cast<object>());
+                }
+            }
+
+            // Concat all key/value pairs into a string separated by ampersand
+            return string.Join("&", properties
+                .Select(x => string.Concat(
+                   Uri.EscapeDataString(x.Key), "=",
+                   Uri.EscapeDataString(x.Value.ToString()))));
         }
     }
 }

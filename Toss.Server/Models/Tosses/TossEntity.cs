@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Toss.Server.Data;
 
-namespace Toss.Server.Data
+namespace Toss.Server.Models.Tosses
 {
     public class TossEntity : RavenDBDocument
     {
@@ -18,6 +19,11 @@ namespace Toss.Server.Data
             Content = content;
             UserId = userId;
             CreatedOn = dateOfPost;
+        }
+
+        public bool IsCreator(ApplicationUser currentUser)
+        {
+            return this.UserId == currentUser.Id;
         }
 
         public TossEntity()

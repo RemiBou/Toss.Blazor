@@ -5,21 +5,19 @@
 
     @ChildContent
 </button>
-@functions{
+@code{
     private bool loading = false;
-    [Parameter]
-
-    private RenderFragment ChildContent { get; set; }
+    [Parameter] public RenderFragment ChildContent { get; set; }
 
     [Parameter]
-    private string CssClass { get; set; }
+    public string CssClass { get; set; }
 
     [Parameter]
-    private string Id { get; set; }
-    protected override void OnInit()
+    public string Id { get; set; }
+    protected override void OnInitialized()
     {
         this.mesageService.OnLoading += DisableButton;
-        base.OnInit();
+        base.OnInitialized();
     }
     public void DisableButton(object sender, bool loading)
     {

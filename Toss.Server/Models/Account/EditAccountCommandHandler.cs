@@ -16,25 +16,22 @@ namespace Toss.Server.Models.Account
     public class EditAccountCommandHandler : IRequestHandler<EditAccountCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IMediator mediator;
 
         public EditAccountCommandHandler(
             UserManager<ApplicationUser> userManager,
-            IHttpContextAccessor httpContextAccessor,
             IMediator mediator)
         {
             _userManager = userManager;
-            _httpContextAccessor = httpContextAccessor;
             this.mediator = mediator;
         }
 
         public async Task<CommandResult> Handle(EditAccountCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.GetUserAsync(_httpContextAccessor.HttpContext.User);
+            var user = await mediator.Send(new CurrentUserQuery());
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(_httpContextAccessor.HttpContext.User)}'.");
+                throw new ApplicationException($"Unable to load user");
             }
 
             var email = user.Email;

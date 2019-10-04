@@ -1,15 +1,18 @@
 ﻿@inherits InputBase<string>
 <input @bind="@CurrentValue" autocomplete="@Autocomplete" placeholder="@Placeholder" type="@Type" id="@Id" class="@CssClass" />
 
-@functions{
+@code{
     [Parameter]
-    protected string Autocomplete { get; set; }
+    public string Autocomplete { get; set; }
 
     [Parameter]
-    protected string Type { get; set; }
+    public string Type { get; set; }
 
     [Parameter]
-    protected string Placeholder {get;set;}
+    public string Placeholder {get;set;}
+
+    [Parameter]
+    public string Id { get; set; }
 
     protected override bool TryParseValueFromString(string value, out string result, out string validationErrorMessage)
     {

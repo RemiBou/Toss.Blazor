@@ -11,12 +11,12 @@ namespace Toss.Server.Models.Account
     public class AddHashtagCommandHandler : IRequestHandler<AddHashtagCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public AddHashtagCommandHandler(UserManager<ApplicationUser> userManager, IHttpContextAccessor httpContextAccessor)
+        public AddHashtagCommandHandler(UserManager<ApplicationUser> userManager, IMediator mediator)
         {
             _userManager = userManager;
-            this.httpContextAccessor = httpContextAccessor;
+            this._mediator = mediator;
         }
 
         public async Task<CommandResult> Handle(AddHashtagCommand request, CancellationToken cancellationToken)
@@ -25,7 +25,7 @@ namespace Toss.Server.Models.Account
             {
                 return new CommandResult("newTag", "You must send a new tag");
             }
-            var user = await _userManager.GetUserAsync(httpContextAccessor.HttpContext.User);
+            var user = await _mediator.Send(new CurrentUserQuery());
             if (user.AlreadyHasHashTag(request.NewHashTag))
             {
                 return new CommandResult("newTag", "You already have this hashtag");

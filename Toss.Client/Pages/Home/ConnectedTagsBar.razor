@@ -11,16 +11,16 @@
         }
     </div>
 }
-@functions{
+@code{
 
     [Parameter]
-    protected String Hashtag { get; set; }
+    public String Hashtag { get; set; }
 
     private ConnectedTags connectedTags;
 
     protected async override Task OnParametersSetAsync()
     {
-        await httpBuilder.Create("/api/toss/connectedTags/" + Hashtag)
+        await httpBuilder.Create($"/api/toss/connectedTags/{Hashtag}")
              .OnOK<ConnectedTags>(c =>
              {
                  this.connectedTags = c;

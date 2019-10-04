@@ -1,5 +1,5 @@
 @page "/user/{UserName}"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
+@inject IHttpApiClientRequestBuilderFactory Http;
 @inject IMarkdownService markdown
 @layout MainLayout
 @if(UserView != null){
@@ -7,12 +7,14 @@
         <div class="pure-u-5-5">
             <h1>@(UserView.UserName)</h1>
         </div>
-        <div class="pure-u-5-5 user-bio">
-            <h2>
-                Bio
-            </h2>
-            @markdown.ToHtml(UserView.Bio)
-        </div>
+        @if(UserView.Bio != null){
+            <div class="pure-u-5-5 user-bio">
+                <h2>
+                    Bio
+                </h2>
+                @markdown.ToHtml(UserView.Bio)
+            </div>
+        }
         <div class="pure-u-5-5 toss-list">        
             @if (Tosses.Any())
             {
@@ -63,7 +65,7 @@
 }
 @code {
     [Parameter]
-    private string UserName { get; set; }
+    public string UserName { get; set; }
 
     private UserViewResult UserView { get; set; }
 
@@ -75,9 +77,9 @@
 
     List<UserTossListViewResult> Tosses = new List<UserTossListViewResult>();
 
-    protected async override Task OnInitAsync()
+    protected async override Task OnInitializedAsync()
     {        
-        await ClientFactory.Create("/api/account/view/"+UserName)
+        await Http.Create($"/api/account/view/{UserName}")
             .OnOK<UserViewResult>(u =>
             {
                 UserView = u;
@@ -89,7 +91,7 @@
 
     protected async Task LoadToss(){
         Loading = true;
-        await ClientFactory.Create("/api/toss/user/"+UserName+"/" + Page)
+        await Http.Create($"/api/toss/user/{UserName}/{Page}")
             .OnOK<List<UserTossListViewResult>>(u =>
             {
                 if (u.Count < TossLastQuery.TossPerPage)

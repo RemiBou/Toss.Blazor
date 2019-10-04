@@ -1,4 +1,4 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory
+﻿@inject IHttpApiClientRequestBuilderFactory Http
 @inject IMessageService messageService;
 <h5>Tosses <small class="text-muted">@TossCount tosses in the DB</small></h5>
 <table class="table">
@@ -38,13 +38,13 @@
         }
     </tbody>
 </table>
-@functions {
+@code {
     int TossCount = 0;
     List<TossListAdminItem> Tosses = new List<TossListAdminItem>();
     DateTimeOffset? maxDate;
-    protected override async Task OnInitAsync()
+    protected override async Task OnInitializedAsync()
     {
-        await ClientFactory.Create("/api/toss/list?ItemCount=15")
+        await Http.Create("/api/toss/list")
             .OnOK<TossListAdminItems>(r =>
             {
                 Tosses = r.Result;
@@ -56,7 +56,7 @@
     }
     protected async Task Delete(TossListAdminItem toss)
     {
-        await ClientFactory.Create("/api/toss/delete")
+        await Http.Create("/api/toss/delete")
                    .OnOK<TossListAdminItems>( r =>
                    {
                        messageService.Info( "Toss deleted with success");
@@ -66,7 +66,7 @@
     }
     protected async Task LoadMore()
     {
-        await ClientFactory.Create(string.Format("/api/toss/list?ItemCount=15&maxDate={0:yyyy-MM-ddTHH:mm:ss.fffZ}", maxDate))
+        await Http.Create("/api/toss/list")
                    .OnOK<TossListAdminItems>(r =>
                    {
                        Tosses.AddRange(r.Result);
@@ -75,7 +75,7 @@
                        else
                            maxDate = null;
                    })
-                   .Get();
+                   .Get(new TossListAdminQuery(15, maxDate));
 
     }
 }

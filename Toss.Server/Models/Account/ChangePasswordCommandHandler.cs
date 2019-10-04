@@ -8,34 +8,32 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Toss.Server.Controllers;
-using Toss.Server.Extensions;
-using Toss.Shared;
 using Toss.Shared.Account;
 
 namespace Toss.Server.Models.Account
 {
-    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand,CommandResult> 
+    public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordCommand, CommandResult>
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IMediator _mediator;
 
-        public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<AccountController> logger, IHttpContextAccessor httpContextAccessor)
+        public ChangePasswordCommandHandler(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<ChangePasswordCommandHandler> logger, IMediator mediator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
-            _httpContextAccessor = httpContextAccessor;
+            _mediator = mediator;
         }
 
         public async Task<CommandResult> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var httpUser = _httpContextAccessor.HttpContext.User;
-            var user = await _userManager.GetUserAsync(httpUser);
+
+            var user = await _mediator.Send(new CurrentUserQuery());
             if (user == null)
             {
-                throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(httpUser)}'.");
+                throw new ApplicationException($"Unable to load user");
             }
             if (string.IsNullOrEmpty(user.PasswordHash))
             {
@@ -57,15 +55,15 @@ namespace Toss.Server.Models.Account
                     {"PasswordRequiresUpper","NewPassword" },
 
                 };
-            var formatedErrors = changePasswordResult.Errors
-                .Select(e =>
-                {
-                    var key = e.Code;
-                    keyMapping.TryGetValue(key, out key);
-                    return new { Key = key, e.Description };
-                }
-                ).ToLookup(e => e.Key, e => e.Description)
-                .ToDictionary(l => l.Key, l => l.ToList());
+                var formatedErrors = changePasswordResult.Errors
+                    .Select(e =>
+                    {
+                        var key = e.Code;
+                        keyMapping.TryGetValue(key, out key);
+                        return new { Key = key, e.Description };
+                    }
+                    ).ToLookup(e => e.Key, e => e.Description)
+                    .ToDictionary(l => l.Key, l => l.ToList());
                 return new CommandResult(formatedErrors);
             }
 

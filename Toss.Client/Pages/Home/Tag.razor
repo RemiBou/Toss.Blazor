@@ -1,8 +1,8 @@
 ﻿@page "/tag/{tag}"
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IAccountService AccountService;
-@inject IUriHelper uriHelper;
+@inject IHttpApiClientRequestBuilderFactory Http;
+@inject NavigationManager navigationManager;
 @inject IMessageService messageService;
+@inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider;
 @layout MainLayout
 
 <div class="pure-g toss-list">
@@ -11,9 +11,8 @@
 
         <h1>
             #@tag
-            @if (currentAccount != null)
-            {
-                if (!currentAccount.Hashtags.Contains(tag))
+            <AuthorizeView>
+                @if (!context.User.HashTags().Contains(tag))
                 {
                     <button @onclick="@AddHashtag" id="BtnAddHashTag">
                         <Icon Title="Add" IconType="plus"></Icon>
@@ -25,7 +24,7 @@
                         <Icon Title="Remove" IconType="minus"></Icon>
                     </button>
                 }
-            }
+            </AuthorizeView>
             <ConnectedTagsBar Hashtag="@tag"></ConnectedTagsBar>
         </h1>
 
@@ -81,29 +80,18 @@
         </div>
     }
 </div>
-@functions{
+@code{
+    [Parameter] public string tag { get; set; } = "";
 
     List<List<TossLastQueryItem>> Tosses = new List<List<TossLastQueryItem>>();
 
-    [Parameter]
-    private string tag { get; set; } = "";
-
-
     private string DisplayedTag;
-
-    private AccountViewModel currentAccount;
 
     private bool Loading { get; set; } = false;
 
     public bool LastPage { get; set; } = false;
 
     protected int Page { get; set; } = 0;
-
-    protected async override Task OnInitAsync()
-    {
-        currentAccount = await AccountService.CurrentAccount();
-
-    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -113,7 +101,7 @@
         }
     }
 
-    public override async Task SetParametersAsync(ParameterCollection parameters)
+    public override async Task SetParametersAsync(ParameterView parameters)
     {
 
         if (string.IsNullOrEmpty(parameters.GetValueOrDefault<string>("tag")))
@@ -146,11 +134,10 @@
             return;//
         }
         Loading = true;
-        await ClientFactory.Create("/api/toss/last?query.HashTag=" + tag + "&query.Page=" + Page)
+        await Http.Create("/api/toss/last")
             .OnOK<List<TossLastQueryItem>>(l =>
             {
                 Tosses.Add(l);
-
                 Loading = false;
                 if (l.Count < TossLastQuery.TossPerPage)
                 {
@@ -158,7 +145,7 @@
                 }
                 StateHasChanged();
             })
-            .Get();
+            .Get(new TossLastQuery(DisplayedTag, Page));
     }
 
     protected async Task ShowMore()
@@ -166,23 +153,29 @@
         Page++;
         await GetTosstag();
     }
-    protected async Task AddHashtag()
+    protected async Task AddHashtag(MouseEventArgs ev)
     {
-        await AccountService.AddHashTag(
-            new AddHashtagCommand(tag),
-            () => messageService.Info("Hashtag added with success"),
-            e => messageService.Error(string.Join(",", e["NewHashTag"]))
-        );
-        StateHasChanged();
+        await Http.Create("/api/account/addHashTag")
+            .OnOK(() =>
+            {
+                ApiAuthenticationStateProvider.RefreshCurrentUser();
+                messageService.Info("Hashtag added with success");
+            })
+            .OnBadRequest<Dictionary<string, List<string>>>(
+                e => messageService.Error(string.Join(",", e["newTag"]))
+            )
+            .Post(new AddHashtagCommand(tag)); 
 
     }
 
-    protected async Task RemoveHashTag()
+    protected async Task RemoveHashTag(MouseEventArgs e)
     {
-        await AccountService.RemoveHashTag(
-                new RemoveHashTagCommand(tag),
-                () => messageService.Info("Hashtag removed with success")
-            );
-        StateHasChanged();
+        await Http.Create("/api/account/removeHashTag")
+            .OnOK(() =>
+            {
+                ApiAuthenticationStateProvider.RefreshCurrentUser();
+                messageService.Info("Hashtag removed with success");
+            })
+            .Post(new RemoveHashTagCommand(tag));
     }
 }

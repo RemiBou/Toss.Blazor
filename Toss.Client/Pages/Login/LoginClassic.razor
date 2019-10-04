@@ -1,6 +1,6 @@
-﻿@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IUriHelper UriHelper
-@inject IAccountService AccountService;
+﻿@inject IHttpApiClientRequestBuilderFactory Http;
+@inject NavigationManager navigationManager
+@inject ApiAuthenticationStateProvider AuthenticationStateProvider;
 <div class="pure-form  pure-form-stacked">
     <fieldset>
         <legend>
@@ -29,23 +29,28 @@
                 Remember me
             </label>
             <SubmitButton CssClass="pure-button  pure-button-primary" Id="BtnLogin">Log in</SubmitButton>
-            <NavLink  href="/register" id="LinkRegister">Create an account</NavLink>
+            <NavLink href="/register" id="LinkRegister">Create an account</NavLink>
             <NavLink href="/account/forgotPassword">Forgot your password?</NavLink>
         </EditForm>
     </fieldset>
 </div>
 
-@functions{
+@code{
     LoginCommand command = new LoginCommand();
     ServerSideValidator serverSideValidator;
     async Task<bool> TryLogin()
     {
 
-        var errors = await AccountService.Login(command);
-        if (errors != null && errors.Any())
-        {
-            serverSideValidator.DisplayErrors(errors);
-        }
+        await Http.Create("/api/account/login")
+               .OnBadRequest<Dictionary<string, List<string>>>(
+                    errors => serverSideValidator.DisplayErrors(errors)
+                )
+               .OnOK(() =>
+               {
+                   AuthenticationStateProvider.RefreshCurrentUser();
+                   navigationManager.NavigateTo("/");
+               })
+               .Post(command);
         StateHasChanged();
         return false;
     }

@@ -1,46 +1,40 @@
-﻿@inject IExceptionNotificationService exceptionNotificationService;
-@inject IAccountService accountService;
-@inject IHttpApiClientRequestBuilderFactory ClientFactory;
-@inject IUriHelper urlHelper;
+﻿@using Toss.Client.Pages.Home
+@inject IExceptionNotificationService exceptionNotificationService;
+@inject IHttpApiClientRequestBuilderFactory Http;
+@inject NavigationManager navigationManager;
 @implements IDisposable;
 @inject IMessageService messageService;
 <div class="pure-g">
     <div class="top-menu pure-menu pure-u-5-5 pure-menu-horizontal pure-menu-scrollable">
         <a href="#" class="pure-menu-link pure-menu-heading">Toss</a>
         <ul class="pure-menu-list">
-            @if (_account != null)
-            {
-                <li class="pure-menu-item">
-                    <NavLink href="/account" class="pure-menu-link" id="LinkAccount">
-                        <Icon Title="Account" IconType="person"></Icon>
-                    </NavLink>
-                </li>
 
-            }
-            else
-            {
-                <li class="pure-menu-item">
-                    <NavLink href="/login" class="pure-menu-link" id="LinkLogin">
-                        Login
-                    </NavLink>
-                </li>
-            }
+            <AuthorizeView>
+                <Authorized>
+                    <li class="pure-menu-item">
+                        <NavLink href="/account" class="pure-menu-link" id="LinkAccount">
+                            <Icon Title="Account" IconType="person"></Icon>
+                        </NavLink>
+                    </li>
+                </Authorized>
+                <NotAuthorized>
+                    <li class="pure-menu-item">
+                        <NavLink href="/login" class="pure-menu-link" id="LinkLogin">
+                            Login
+                        </NavLink>
+                    </li>
+                </NotAuthorized>
+            </AuthorizeView>
             <li class="pure-menu-item">
                 <NavLink href="/new" class="pure-menu-link" id="LinkNewToss">
                     <Icon Title="New Toss" IconType="edit"></Icon>
                 </NavLink>
             </li>
-            @if (_account != null)
-            {
-                @foreach (var hashTag in _account.Hashtags ?? new List<string>())
-                {
-                    <li class="pure-menu-item">
-                        <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
-                            #@hashTag
-                        </NavLink>
-                    </li>
-                }
-            }
+            <AuthorizeView>
+                <Authorized>
+                    <UserHashtag></UserHashtag>
+                </Authorized>
+            </AuthorizeView>
             <li class="pure-menu-item">
                 <div class="pure-form">
                     <EditForm OnValidSubmit="SeeHashtag" Model="@addHashtagCommand">
@@ -55,27 +49,19 @@
 <div class="main">
     @Body
 </div>
-@functions {
+@code {
 
-    [Parameter]
-    RenderFragment Body { get; set; }
+    [Parameter] public RenderFragment Body { get; set; }
 
 
     AddHashtagCommand addHashtagCommand = new AddHashtagCommand();
 
-    private AccountViewModel _account;
-    protected override void OnInit()
+    protected override void OnInitialized()
     {
         this.exceptionNotificationService.OnException += HandleExceptions;
-        this.accountService.SubscribeOnCurrentAccountChanged(this.OnAccountChanged);
-        base.OnInit();
+        base.OnInitialized();
     }
 
-    private void OnAccountChanged(object sender, AccountViewModel account)
-    {
-        this._account = account;
-        this.StateHasChanged();
-    }
     private void HandleExceptions(object sender, string s)
     {
         messageService.Error(s);
@@ -87,6 +73,6 @@
     }
     protected void SeeHashtag()
     {
-        urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
+        navigationManager.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
     }
 }

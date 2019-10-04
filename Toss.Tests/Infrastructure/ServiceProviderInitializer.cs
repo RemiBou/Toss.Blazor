@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -8,14 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Raven.Client.Documents;
-using Raven.Client.Documents.Conventions;
-using Raven.Client.Documents.Indexes;
-using Raven.Identity;
 using System.Collections.Generic;
 using System.Security.Claims;
 using Toss.Server;
-using Toss.Server.Data;
 using Toss.Server.Models;
 
 namespace Toss.Tests.Infrastructure
@@ -79,10 +73,10 @@ namespace Toss.Tests.Infrastructure
         {
             HttpContextAccessor = new Mock<IHttpContextAccessor>();
             HttpContextMock = new Mock<HttpContext>();
-            DefaultConnectionInfo connectionInfo = new DefaultConnectionInfo(new FeatureCollection())
-            {
-                RemoteIpAddress = new System.Net.IPAddress(0x2414188f)
-            };
+            var connectionInfoMock = new Mock<ConnectionInfo>();
+            connectionInfoMock.SetupGet(c => c.RemoteIpAddress).Returns(new System.Net.IPAddress(0x2414188f));
+            ConnectionInfo connectionInfo = connectionInfoMock.Object;
+
             HttpContextMock.SetupGet(c => c.Connection).Returns(connectionInfo);
             HttpContextMock.SetupGet(c => c.Items).Returns(new Dictionary<object, object>());
 

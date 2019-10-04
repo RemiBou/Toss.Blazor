@@ -26,9 +26,9 @@
         </div>
     }
 </div>
-@functions{
+@code{
     [Parameter]
-    protected string TossId { get; set; }
+    public string TossId { get; set; }
     private TossDetail tossDetail
     {
         get;
@@ -37,7 +37,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        await httpBuilder.Create("/api/toss/detail/" + TossId)
+        await httpBuilder.Create($"/api/toss/detail/{TossId}")
               .OnOK<TossDetail>(r =>
              {
                  this.tossDetail = r;

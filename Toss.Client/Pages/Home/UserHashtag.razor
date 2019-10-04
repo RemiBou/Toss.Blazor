@@ -1,0 +1,10 @@
+﻿<AuthorizeView>
+    @foreach (var hashTag in context.User.HashTags())
+    {
+        <li class="pure-menu-item">
+            <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
+                #@hashTag
+            </NavLink>
+        </li>
+    }
+</AuthorizeView>

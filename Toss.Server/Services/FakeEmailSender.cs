@@ -10,30 +10,29 @@ namespace Toss.Server.Services
     /// </summary>
     public class FakeEmailSender : IEmailSender
     {
-        private readonly List<Tuple<string, string, string>> confirationLinks = new List<Tuple<string, string, string>>();
-        private readonly List<Tuple<string, string, string>> resetPasswordLinks = new List<Tuple<string, string, string>>();
+        public readonly List<(string email, string userName, string link)> confirmationLinks = new List<(string email, string userName, string link)>();
+        public readonly List<(string email, string userName, string link)> resetPasswordLinks = new List<(string email, string userName, string link)>();
+        public readonly List<(string email, string tossCreatorUsername, string conversationUserName, string tossUrl)> newConversations = new List<(string email, string tossCreatorUsername, string conversationUserName, string tossUrl)>();
 
         public Task SendEmailConfirmationAsync(string email, string userName, string confirmationLink)
         {
-            confirationLinks.Add(new Tuple<string, string, string>(email, userName, confirmationLink));
+            confirmationLinks.Add((email, userName, confirmationLink));
             return Task.CompletedTask;
         }
 
         public Task SendPasswordForgetAsync(string email, string userName, string passwordResetLink)
         {
-            resetPasswordLinks.Add(new Tuple<string, string, string>(email, userName, passwordResetLink));
+            resetPasswordLinks.Add((email, userName, passwordResetLink));
             return Task.CompletedTask;
         }
 
-        /// <summary>
-        /// Returns the last confirmation link found for given email
-        /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        public string GetConfirmationLink(string email)
+        public Task SendNewConversationAsync(string email, string tossCreatorUserName, string conversationUserName, string tossUrl)
         {
-            return confirationLinks.LastOrDefault(t => t.Item1 == email)?.Item3;
+            newConversations.Add((email, tossCreatorUserName, conversationUserName, tossUrl));
+            return Task.CompletedTask;
+
         }
+
     }
 
     public class FakeStripeClient : IStripeClient
