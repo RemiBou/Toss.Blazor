@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Toss.Client.Services;
 
@@ -35,6 +36,12 @@ namespace Toss.Client
                 new EnvironmentChooser("Development")
                     .Add("localhost", "Development")
                     .Add("tossproject.com", "Production", false));
+
+            services.AddAuthorizationCore(options =>
+                {
+                    options.AddPolicy("HasLocalAccount", policy =>
+                        policy.RequireAssertion(ctx => ctx.User.FindFirst(ClaimTypes.AuthenticationMethod)?.Value == "internal"));
+                });
 
         }
 

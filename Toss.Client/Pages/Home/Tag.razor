@@ -1,8 +1,6 @@
-﻿
-@inherits TossComponentBase
-@page "/tag/{tag}"
+﻿@page "/tag/{tag}"
 @inject IHttpApiClientRequestBuilderFactory Http;
-@inject NavigationManager uriHelper;
+@inject NavigationManager navigationManager;
 @inject IMessageService messageService;
 @inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider;
 @layout MainLayout
@@ -13,9 +11,8 @@
 
         <h1>
             #@tag
-            @if (Account != null)
-            {
-                if (!Account.Hashtags.Contains(tag))
+            <AuthorizeView>
+                @if (!context.User.HashTags().Contains(tag))
                 {
                     <button @onclick="@AddHashtag" id="BtnAddHashTag">
                         <Icon Title="Add" IconType="plus"></Icon>
@@ -27,7 +24,7 @@
                         <Icon Title="Remove" IconType="minus"></Icon>
                     </button>
                 }
-            }
+            </AuthorizeView>
             <ConnectedTagsBar Hashtag="@tag"></ConnectedTagsBar>
         </h1>
 

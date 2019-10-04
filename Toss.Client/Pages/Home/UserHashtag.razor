@@ -1,7 +1,5 @@
-﻿@inherits TossComponentBase
-@if (Account != null && Account.Hashtags != null)
-{
-    @foreach (var hashTag in Account.Hashtags)
+﻿<AuthorizeView>
+    @foreach (var hashTag in context.User.HashTags())
     {
         <li class="pure-menu-item">
             <NavLink href=@("/tag/"+hashTag) Match="NavLinkMatch.All" class="pure-menu-link  tag-link">
@@ -9,6 +7,4 @@
             </NavLink>
         </li>
     }
-}
-@code {
-}
+</AuthorizeView>

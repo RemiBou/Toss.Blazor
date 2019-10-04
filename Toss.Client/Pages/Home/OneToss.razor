@@ -1,6 +1,6 @@
 ﻿
 @inject IMarkdownService markdown
-@inject NavigationManager uriHelper;
+@inject NavigationManager navigationManager;
 <div class="pure-u-5-5  toss-preview" @onclick="@ShowDetail">
     <div class="pure-g">
         <div class="pure-u-24-24">
@@ -46,6 +46,6 @@
 
     protected void ShowDetail(EventArgs e)
     {
-        this.uriHelper.NavigateTo("/toss/" + toss.Id);
+        this.navigationManager.NavigateTo("/toss/" + toss.Id);
     }
 }

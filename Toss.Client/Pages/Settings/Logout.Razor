@@ -1,6 +1,7 @@
 ﻿@inject IMessageService _messageService;
 @inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider;
 @inject IHttpApiClientRequestBuilderFactory Http;
+@inject NavigationManager navigationManager
 
 <div class="pure-form">
     <button type="button" @onclick="@LogOff" class="pure-button button-warning" id="BtnLogout">Log out</button>
@@ -11,7 +12,9 @@
         await Http.Create("/api/account/logout")
             .OnOK(() => {
                 _messageService.Info("You have successfuly logged off.");
+                navigationManager.NavigateTo("/");
                 ApiAuthenticationStateProvider.MarkUserAsLoggedOut();
+                
             })
             .Post();
     }

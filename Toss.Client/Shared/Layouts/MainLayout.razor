@@ -1,7 +1,7 @@
 ﻿@using Toss.Client.Pages.Home
 @inject IExceptionNotificationService exceptionNotificationService;
 @inject IHttpApiClientRequestBuilderFactory Http;
-@inject NavigationManager urlHelper;
+@inject NavigationManager navigationManager;
 @implements IDisposable;
 @inject IMessageService messageService;
 <div class="pure-g">
@@ -56,7 +56,6 @@
 
     AddHashtagCommand addHashtagCommand = new AddHashtagCommand();
 
-    private AccountViewModel _account;
     protected override void OnInitialized()
     {
         this.exceptionNotificationService.OnException += HandleExceptions;
@@ -74,6 +73,6 @@
     }
     protected void SeeHashtag()
     {
-        urlHelper.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
+        navigationManager.NavigateTo("/tag/" + addHashtagCommand.NewHashTag);
     }
 }

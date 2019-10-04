@@ -1,5 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory Http;
-@inject NavigationManager UriHelper
+@inject NavigationManager navigationManager
 @inject ApiAuthenticationStateProvider ApiAuthenticationStateProvider
 @inject IMessageService MessageService;
 
@@ -28,13 +28,17 @@
     </fieldset>
 </div>
 @code {
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
     ServerSideValidator serverSideValidator;
     EditAccountCommand command = new EditAccountCommand();
-    protected override void OnInitialized()
+    protected  override async Task OnInitializedAsync()
     {
-        command.Email = ApiAuthenticationStateProvider.Account.Email;
-        command.Name = ApiAuthenticationStateProvider.Account.Name;
-        command.Bio = ApiAuthenticationStateProvider.Account.Bio;
+        var user = (await authenticationStateTask).User;
+        command.Email = user.Email();
+        command.Name = user.Name();
+        command.Bio = user.Bio();
         StateHasChanged();
     }
     async Task PostAccount()

@@ -1,5 +1,5 @@
 ﻿@inject IHttpApiClientRequestBuilderFactory Http;
-@inject NavigationManager UriHelper
+@inject NavigationManager navigationManager
 @inject ApiAuthenticationStateProvider AuthenticationStateProvider;
 <div class="pure-form  pure-form-stacked">
     <fieldset>
@@ -48,7 +48,7 @@
                .OnOK(() =>
                {
                    AuthenticationStateProvider.RefreshCurrentUser();
-                   UriHelper.NavigateTo("/");
+                   navigationManager.NavigateTo("/");
                })
                .Post(command);
         StateHasChanged();
