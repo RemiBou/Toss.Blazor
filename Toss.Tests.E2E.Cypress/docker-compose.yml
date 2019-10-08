@@ -1,11 +1,10 @@
+# taken from https://github.com/cypress-io/cypress-example-docker-compose
 version: '3'
 services:
   web:   
     build: 
       context: ..
     restart: always
-    ports:
-      - "8088:80"
     environment: 
       - GoogleClientId=AAA
       - GoogleClientSecret=AAA
@@ -16,8 +15,17 @@ services:
       - RavenDBDataBase=Tests
       - StripeSecretKey=
       - test=true
+    depends_on: 
+      - ravendb
   ravendb:
     image: ravendb/ravendb
-    ports:
-      - 888:8080
+  cypress:
+    image: cypress/included:3.4.1
+    depends_on:
+      - web
+    environment:
+      - CYPRESS_baseUrl=http://web
+    working_dir: /e2e
+    volumes:
+      - ./:/e2e
   
