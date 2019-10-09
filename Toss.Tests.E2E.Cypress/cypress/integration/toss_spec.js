@@ -18,18 +18,12 @@ describe('Toss Full Test', function () {
     const SubscribeLogin = "tossunittests";
 
     it('Full process', function () {
-        //cy.server();
-        cy.visit(
-            "/",
-            Object.assign({}, {
-                onBeforeLoad(win) {
-                    delete win.fetch;
-                },
-            })
-        );
-        //cy.route('POST', '/api/account/register').as('register');
+        cy.server();
 
-        cy.get("#LinkLogin").click();
+        cy.visit("/");
+        cy.route('POST', '/api/account/register').as('register');
+        //this could be lagging as ravendb is starting
+        cy.get("#LinkLogin", { timeout: 20000 }).click();
         //register
         cy.get("#LinkRegister").click();
         cy.get("#NewEmail").type(SubscribeEmail);
@@ -37,15 +31,10 @@ describe('Toss Full Test', function () {
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
         cy.get("#BtnRegister").click();
-        cy.wait(2000);
-        /*cy.wait('@register');
+        cy.wait('@register', { timeout: 20000 });
         cy.get('@register').then(function (xhr) {
             expect(xhr.status).to.eq(200);
-        })*/
-        //solution 1 : call pi that returns confirm url
-        //solution 2 : make url in test guessable
-        //solution 3 : visit email service
-        // _webDriveWaitDefault.Until(b => b.FindElement(By.Id("NewEmail")).GetAttribute("value") == "");
+        });
 
         // //validate subscription
         // var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
