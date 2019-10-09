@@ -23,3 +23,13 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('visitWithDelWinFetch', (path, opts = {}) => {
+    cy.visit(
+        path,
+        Object.assign(opts, {
+            onBeforeLoad(win) {
+                delete win.fetch;
+            },
+        })
+    );
+});

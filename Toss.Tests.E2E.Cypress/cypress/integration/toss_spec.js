@@ -1,12 +1,34 @@
 /// <reference types="Cypress" />
-describe('Toss Full Test', function () {
 
+describe('Toss Full Test', function () {
+    let polyfill;
+
+    before(() => {
+        const polyfillUrl = 'https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js';
+        cy.request(polyfillUrl).then(response => {
+            polyfill = response.body;
+        });
+    });
+    Cypress.on('window:before:load', win => {
+        delete win.fetch;
+        win.eval(polyfill);
+    });
     const SubscribeEmail = "toss-unittests@yopmail.com";
     const SubscribePassword = "tossUnittests123456!!";
     const SubscribeLogin = "tossunittests";
 
     it('Full process', function () {
-        cy.visit("/");
+        //cy.server();
+        cy.visit(
+            "/",
+            Object.assign({}, {
+                onBeforeLoad(win) {
+                    delete win.fetch;
+                },
+            })
+        );
+        //cy.route('POST', '/api/account/register').as('register');
+
         cy.get("#LinkLogin").click();
         //register
         cy.get("#LinkRegister").click();
@@ -15,6 +37,11 @@ describe('Toss Full Test', function () {
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
         cy.get("#BtnRegister").click();
+        cy.wait(2000);
+        /*cy.wait('@register');
+        cy.get('@register').then(function (xhr) {
+            expect(xhr.status).to.eq(200);
+        })*/
         //solution 1 : call pi that returns confirm url
         //solution 2 : make url in test guessable
         //solution 3 : visit email service

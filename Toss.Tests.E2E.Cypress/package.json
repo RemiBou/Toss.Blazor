@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "whatwg-fetch": "^3.0.0"
+  },
   "devDependencies": {
     "cypress": "^3.4.1"
   },

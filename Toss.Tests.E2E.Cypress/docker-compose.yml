@@ -17,6 +17,8 @@ services:
       - test=true
     depends_on: 
       - ravendb
+    ports:
+      - 80:80
   ravendb:
     image: ravendb/ravendb
   cypress:
