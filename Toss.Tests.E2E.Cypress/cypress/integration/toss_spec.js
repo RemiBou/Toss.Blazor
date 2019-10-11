@@ -12,6 +12,9 @@ describe('Toss Full Test', function () {
     Cypress.on('window:before:load', win => {
         delete win.fetch;
         win.eval(polyfill);
+        win.runCaptcha = function (actionName) { return Promise.resolve('test'); }
+        cy.spy(win.console, "log")
+        cy.spy(win.console, "error")
     });
     const SubscribeEmail = "toss-unittests@yopmail.com";
     const SubscribePassword = "tossUnittests123456!!";
@@ -19,8 +22,8 @@ describe('Toss Full Test', function () {
 
     it('Full process', function () {
         cy.server();
-
         cy.visit("/");
+
         cy.route('POST', '/api/account/register').as('register');
         //this could be lagging as ravendb is starting
         cy.get("#LinkLogin", { timeout: 20000 }).click();
@@ -31,7 +34,7 @@ describe('Toss Full Test', function () {
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
         cy.get("#BtnRegister").click();
-        cy.wait('@register', { timeout: 20000 });
+        cy.wait('@register');
         cy.get('@register').then(function (xhr) {
             expect(xhr.status).to.eq(200);
         });
