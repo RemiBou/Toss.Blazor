@@ -28,8 +28,10 @@ stripeCheckout = function (callBackInstance, amount) {
     });
     return Promise.resolve();
 };
-
+disableCaptcha = false;
 runCaptcha = function (actionName) {
+    if (disableCaptcha)
+        return Promise.resolve(actionName);
     return new Promise((resolve, reject) => {
         grecaptcha.ready(function () {
             grecaptcha.execute('6LcySnsUAAAAAKFZn_ve4gTT5kr71EXVkQ_QsGot', { action: actionName })

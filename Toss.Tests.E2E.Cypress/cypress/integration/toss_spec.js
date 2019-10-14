@@ -12,17 +12,16 @@ describe('Toss Full Test', function () {
     Cypress.on('window:before:load', win => {
         delete win.fetch;
         win.eval(polyfill);
-        win.runCaptcha = function (actionName) { return Promise.resolve('test'); }
-        cy.spy(win.console, "log")
-        cy.spy(win.console, "error")
     });
     const SubscribeEmail = "toss-unittests@yopmail.com";
     const SubscribePassword = "tossUnittests123456!!";
     const SubscribeLogin = "tossunittests";
 
-    it('Full process', function () {
+    it('Full process', function (win) {
         cy.server();
         cy.visit("/");
+
+
 
         cy.route('POST', '/api/account/register').as('register');
         //this could be lagging as ravendb is starting
@@ -33,11 +32,23 @@ describe('Toss Full Test', function () {
         cy.get("#NewName").type(SubscribeLogin);
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
-        cy.get("#BtnRegister").click();
-        cy.wait('@register');
-        cy.get('@register').then(function (xhr) {
-            expect(xhr.status).to.eq(200);
-        });
+
+        cy.window()
+            .then(win => {
+                win.disableCaptcha = true;
+                //win.runCaptcha = new function (action) { return Promise.resolve(action) };
+                //console.log
+            })
+            .then(
+                () => {
+                    cy.get("#BtnRegister").click();
+                    cy.wait('@register');
+                    cy.get('@register').then(function (xhr) {
+                        expect(xhr.status).to.eq(200);
+                    });
+
+                }
+            );
 
         // //validate subscription
         // var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
