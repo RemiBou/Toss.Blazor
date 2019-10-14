@@ -35,9 +35,7 @@ describe('Toss Full Test', function () {
 
         cy.window()
             .then(win => {
-                win.disableCaptcha = true;
-                //win.runCaptcha = new function (action) { return Promise.resolve(action) };
-                //console.log
+                win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
             })
             .then(
                 () => {
