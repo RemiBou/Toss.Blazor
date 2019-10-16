@@ -18,13 +18,16 @@ describe('Toss Full Test', function () {
     const SubscribePassword = "tossTests123456!!";
     const SubscribeLogin = "tosstests" + uuid;
 
-    it('Full process', function (win) {
+    it('Full process', function () {
         cy.server();
+        cy.route('POST', '/api/account/register').as('register');
         cy.visit("/");
 
+        cy.window()
+            .then(win => {
+                win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
+            });
 
-
-        cy.route('POST', '/api/account/register').as('register');
         //this could be lagging as ravendb is starting
         cy.get("#LinkLogin", { timeout: 20000 }).click();
         //register
@@ -34,8 +37,10 @@ describe('Toss Full Test', function () {
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
 
+
         cy.window()
             .then(win => {
+                // disables runCaptcha
                 win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
             })
             .then(
@@ -44,11 +49,11 @@ describe('Toss Full Test', function () {
                     cy.wait('@register');
                     cy.get('@register').then(function (xhr) {
                         expect(xhr.status).to.eq(200);
+                        expect(xhr.response.headers['x-test-confirmationlink']).to.not.empty;
                     });
 
                 }
             );
-
         // //validate subscription
         // var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
         // Browser.Navigate().GoToUrl(confirmationLink);
