@@ -2,6 +2,7 @@
 
 describe('Toss Full Test', function () {
     let polyfill;
+    const uuid = Cypress._.random(0, 1e6)
 
     before(() => {
         const polyfillUrl = 'https://unpkg.com/whatwg-fetch@3.0.0/dist/fetch.umd.js';
@@ -13,9 +14,9 @@ describe('Toss Full Test', function () {
         delete win.fetch;
         win.eval(polyfill);
     });
-    const SubscribeEmail = "toss-unittests@yopmail.com";
-    const SubscribePassword = "tossUnittests123456!!";
-    const SubscribeLogin = "tossunittests";
+    const SubscribeEmail = "tosstests" + uuid + "@yopmail.com";
+    const SubscribePassword = "tossTests123456!!";
+    const SubscribeLogin = "tosstests" + uuid;
 
     it('Full process', function (win) {
         cy.server();
