@@ -328,3 +328,7 @@ ASALocalRun/
 .mfractor/
 /Toss.E2ETest/client-secrets.json
 license.json
+
+# Cypress
+screenshots
+videos

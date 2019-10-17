@@ -36,24 +36,12 @@ describe('Toss Full Test', function () {
         cy.get("#NewName").type(SubscribeLogin);
         cy.get("#NewPassword").type(SubscribePassword);
         cy.get("#NewConfirmPassword").type(SubscribePassword);
-
-
-        cy.window()
-            .then(win => {
-                // disables runCaptcha
-                win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
-            })
-            .then(
-                () => {
-                    cy.get("#BtnRegister").click();
-                    cy.wait('@register');
-                    cy.get('@register').then(function (xhr) {
-                        expect(xhr.status).to.eq(200);
-                        expect(xhr.response.headers['x-test-confirmationlink']).to.not.empty;
-                    });
-
-                }
-            );
+        cy.get("#BtnRegister").click();
+        cy.wait('@register');
+        cy.get('@register').then(function (xhr) {
+            expect(xhr.status).to.eq(200);
+            expect(xhr.response.headers['x-test-confirmationlink']).to.not.empty;
+        });
         // //validate subscription
         // var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
         // Browser.Navigate().GoToUrl(confirmationLink);
