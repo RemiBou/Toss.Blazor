@@ -20,16 +20,15 @@ describe('Toss Full Test', function () {
 
     it('Full process', function () {
         cy.server();
+        //used for listenning to register api call and getting the recirction url from the http headers
         cy.route('POST', '/api/account/register').as('register');
         cy.visit("/");
 
-        cy.window()
-            .then(win => {
-                win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
-            });
+        disableCaptcha();
 
-        //this could be lagging as ravendb is starting
+        //this could be long as ravendb is starting
         cy.get("#LinkLogin", { timeout: 20000 }).click();
+
         //register
         cy.get("#LinkRegister").click();
         cy.get("#NewEmail").type(SubscribeEmail);
@@ -41,26 +40,26 @@ describe('Toss Full Test', function () {
         cy.get('@register').then(function (xhr) {
             expect(xhr.status).to.eq(200);
             expect(xhr.response.headers['x-test-confirmationlink']).to.not.empty;
+            cy.log("Redirect URL : " + xhr.response.headers['x-test-confirmationlink']);
+            cy.visit(xhr.response.headers['x-test-confirmationlink']);
+            disableCaptcha();
+            //login
+            cy.get("#UserName").type(SubscribeEmail);
+            cy.get("#Password").type(SubscribePassword);
+            cy.get("#BtnLogin").click();
+            //publish toss
+            cy.get("#LinkNewToss").click();
+            var newTossContent = "lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
+            cy.get("#TxtNewToss").type(newTossContent);
+            cy.get("#BtnNewToss").click();
         });
-        // //validate subscription
-        // var confirmationLink = _serverFixture.EmailSender.confirmationLinks.First(l => l.email == SubscribeEmail).link;
-        // Browser.Navigate().GoToUrl(confirmationLink);
-        // DisableRecaptcha();
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
 
         // //log in
-        // Browser.FindElement(By.Id("UserName")).SendKeys(SubscribeEmail);
-        // Browser.FindElement(By.Id("Password")).SendKeys(SubscribePassword);
-        // Browser.FindElement(By.Id("BtnLogin")).Click();
+
         // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
 
         // //publish toss
-        // Browser.FindElement(By.Id("LinkNewToss")).Click();
-        // _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
-        // string newTossContent = @"lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
-        // Browser.FindElement(By.Id("TxtNewToss")).SendKeys(newTossContent);
-        // Browser.FindElement(By.Id("BtnNewToss")).Click();
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
+
 
         // //add new toss x 2
         // Browser.FindElement(By.Id("LinkNewToss")).Click();
@@ -91,3 +90,10 @@ describe('Toss Full Test', function () {
         // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
     })
 })
+
+function disableCaptcha() {
+    cy.window()
+        .then(win => {
+            win.runCaptcha = new win.Function(['action'], 'return Promise.resolve(action)');
+        });
+}
