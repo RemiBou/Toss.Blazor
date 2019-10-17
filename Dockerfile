@@ -8,10 +8,9 @@ COPY ./Toss.Client/Toss.Client.csproj ./Toss.Client/
 COPY ./Toss.Server/Toss.Server.csproj ./Toss.Server/
 COPY ./Toss.Shared/Toss.Shared.csproj ./Toss.Shared/
 COPY ./Toss.Tests/Toss.Tests.csproj ./Toss.Tests/
-RUN dotnet restore ./Toss.Client/Toss.Client.csproj
-RUN dotnet restore ./Toss.Server/Toss.Server.csproj
-RUN dotnet restore ./Toss.Shared/Toss.Shared.csproj
-RUN dotnet restore ./Toss.Tests/Toss.Tests.csproj
+COPY ./Toss.Tests.E2E/Toss.Tests.E2E.csproj ./Toss.Tests.E2E/
+COPY ./Toss.sln ./
+RUN dotnet restore ./Toss.sln
 COPY ./Toss.Client ./Toss.Client
 COPY ./Toss.Server ./Toss.Server
 COPY ./Toss.Shared ./Toss.Shared
