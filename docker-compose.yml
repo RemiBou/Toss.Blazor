@@ -1,33 +1,34 @@
+# taken from https://github.com/cypress-io/cypress-example-docker-compose
 version: '3.5'
-secrets:
-  tossserver2:
-    # secret location on mac
-     file: ~/.microsoft/usersecrets/ae68635e-649c-4f23-a39b-24a5ea3987f4/secrets.json
-    # secret location on windows
-    # file: $APPDATA\Microsoft\UserSecrets\ae68635e-649c-4f23-a39b-24a5ea3987f4\secrets.json
-  #raven_license:
-  #  file: ./Hosting/RavenDB/license.json
-services:    
-  web:
-    image: localhost:5000/toss
-    build:
+services:
+  web:   
+    build: 
       context: .
-      dockerfile: Dockerfile
-    environment:
-      RavenDBEndpoint: "http://ravendb:8080"
-    ports:
-      - 80:80
-    secrets:
-      - source: tossserver2
-        target: tossserver
-
+    restart: always
+    environment: 
+      - GoogleClientId=AAA
+      - GoogleClientSecret=AAA
+      - MailJetApiKey=
+      - MailJetApiSecret=
+      - MailJetSender=
+      - RavenDBEndpoint=http://ravendb:8080
+      - RavenDBDataBase=Tests
+      - StripeSecretKey=
+      - test=true
+    depends_on: 
+      - ravendb
+    # uncomment these lines for debugging e2e or hosting toss in docker
+    #ports:
+    #  - 80:80
   ravendb:
     image: ravendb/ravendb
-    volumes: 
-      - ./Hosting/RavenDB:/root/ravendb
+  cypress:
+    image: cypress/included:3.4.1
+    depends_on:
+      - web
     environment:
-      RAVEN_ARGS: "--Setup.Mode=None -c /root/ravendb/settings.json"     
-    ports:
-      - 888:8080
-   # secrets:
-   #   - raven_license
+      - CYPRESS_baseUrl=http://web
+    working_dir: /e2e
+    volumes:
+      - ./Toss.Tests.E2E.Cypress/:/e2e
+  

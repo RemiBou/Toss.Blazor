@@ -22,6 +22,8 @@ describe('Toss Full Test', function () {
         cy.server();
         //used for listenning to register api call and getting the recirction url from the http headers
         cy.route('POST', '/api/account/register').as('register');
+        cy.route('POST', '/api/account/login').as('login');
+        cy.route('POST', '/api/toss/create').as('create');
         cy.visit("/");
 
         disableCaptcha();
@@ -47,47 +49,35 @@ describe('Toss Full Test', function () {
             cy.get("#UserName").type(SubscribeEmail);
             cy.get("#Password").type(SubscribePassword);
             cy.get("#BtnLogin").click();
+            cy.wait('@login');
             //publish toss
             cy.get("#LinkNewToss").click();
             var newTossContent = "lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum lorem ipsum #test";
             cy.get("#TxtNewToss").type(newTossContent);
             cy.get("#BtnNewToss").click();
+            cy.wait('@create');
+
+            //publish toss x2
+            cy.get("#LinkNewToss").click();
+            var newTossContent2 = " lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto";
+            cy.get("#TxtNewToss").type(newTossContent2);
+            cy.get("#BtnNewToss").click();
+            cy.wait('@create');
+
+
+            //add new hashtag
+            cy.get("#TxtAddHashTag").type("test");
+            cy.get("#TxtAddHashTag").type("{enter}");
+            cy.get("#BtnAddHashTag").click();
+            cy.get(".toss-preview").first().click();
+            cy.get(".toss-detail .toss-content").should("contain", newTossContent);
+
+            // logout
+            cy.get("#LinkAccount").click();
+
+            cy.get("#BtnLogout").click();
+            cy.url().should("eq", Cypress.config().baseUrl + "/");
         });
-
-        // //log in
-
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
-
-        // //publish toss
-
-
-        // //add new toss x 2
-        // Browser.FindElement(By.Id("LinkNewToss")).Click();
-        // _webDriveWaitDefault.Until(b => b.FindElement(By.Id("TxtNewToss")).Displayed);
-        // Browser.FindElement(By.Id("TxtNewToss")).SendKeys(@" lorem ipsum lorem ipsumlorem ipsum lorem ipsumlorem ipsum  lorem ipsumlorem ipsum lorem ipsum #toto");
-        // Browser.FindElement(By.Id("BtnNewToss")).Click();
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/"));
-
-        // //add new hashtag
-        // Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(@"test");
-        // Browser.FindElement(By.Id("TxtAddHashTag")).SendKeys(Environment.NewLine);
-        // Browser.FindElement(By.Id("BtnAddHashTag")).Click();
-        // _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".tag-link")).Any());
-
-        // //filter on hashtag
-        // Browser.FindElement(By.CssSelector(".tag-link")).Click();
-
-        // // read first toss
-        // _webDriveWaitDefault.Until(b => b.FindElements(By.CssSelector(".toss-preview")).Any());
-        // Browser.FindElement(By.CssSelector(".toss-preview")).Click();
-        // _webDriveWaitDefault.Until(b => b.FindElement(By.CssSelector(".toss-detail .toss-content")).Text == newTossContent);
-
-        // //sign out
-        // Browser.FindElement(By.Id("LinkAccount")).Click();
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/account"));
-        // ScrollToView(By.Id("BtnLogout"));
-        // Browser.FindElement(By.Id("BtnLogout")).Click();
-        // _webDriveWaitDefault.Until(b => b.Url.EndsWith("/login"));
     })
 })
 
