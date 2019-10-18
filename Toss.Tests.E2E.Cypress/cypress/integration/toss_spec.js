@@ -46,7 +46,7 @@ describe('Toss Full Test', function () {
             cy.visit(xhr.response.headers['x-test-confirmationlink']);
             disableCaptcha();
             //login
-            cy.get("#UserName").type(SubscribeEmail);
+            cy.get("#UserName", { timeout: 20000 }).type(SubscribeEmail);
             cy.get("#Password").type(SubscribePassword);
             cy.get("#BtnLogin").click();
             cy.wait('@login');

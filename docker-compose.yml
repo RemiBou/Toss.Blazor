@@ -16,10 +16,9 @@ services:
       - StripeSecretKey=
       - test=true
     depends_on: 
-      - ravendb
-    # uncomment these lines for debugging e2e or hosting toss in docker
-    #ports:
-    #  - 80:80
+      - ravendb    
+    ports:
+      - 80:80
   ravendb:
     image: ravendb/ravendb
   cypress:
