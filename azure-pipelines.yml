@@ -1,5 +1,7 @@
 pool:
   name: Azure Pipelines
+  vmImage: ubuntu-16.04
+
 steps:
 - task: DockerCompose@0
   displayName: 'Run a Docker Compose command'
