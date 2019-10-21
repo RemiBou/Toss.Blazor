@@ -24,6 +24,7 @@
              -
             @tossDetail.CreatedOn.ToString("f")
         </div>
+        <OneTossConversation TossId="@TossId"></OneTossConversation>
     }
 </div>
 @code{
@@ -41,7 +42,6 @@
               .OnOK<TossDetail>(r =>
              {
                  this.tossDetail = r;
-                 StateHasChanged();
              })
               .Get();
 

@@ -21,6 +21,8 @@ services:
       - 80:80
   ravendb:
     image: ravendb/ravendb
+    ports:
+      - 888:8080
   cypress:
     image: cypress/included:3.4.1
     depends_on:

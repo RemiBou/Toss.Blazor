@@ -51,7 +51,8 @@ namespace Toss.Server.Models.Tosses
             items.ForEach(c => c.Id = _ravenDbIdUtil.GetUrlId(c.Id));
             return new TossConversationQueryResult()
             {
-                Conversations = items
+                Conversations = items,
+                TossCreatorUserId = toss.UserId
             };
         }
     }

@@ -112,5 +112,12 @@ namespace Toss.Server.Controllers
             var result = await _mediator.Send(query);
             return base.Ok(result);
         }
+
+        [HttpGet("conversations/{tossId}")]
+        public async Task<IActionResult> Conversations([FromRoute] TossConversationQuery query)
+        {
+            return base.Ok(await _mediator.Send(query));
+
+        }
     }
 }

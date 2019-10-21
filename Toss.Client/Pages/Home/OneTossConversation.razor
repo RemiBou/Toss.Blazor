@@ -1,0 +1,33 @@
+@inject IHttpApiClientRequestBuilderFactory httpBuilder
+
+<div class="toss-conversations">
+    <h2>Conversations</h2>
+    @if(conversation != null){
+        foreach(var conversation in conversation.Conversations){            
+            <div class="toss-conversation">
+                @conversation.Id - @conversation.CreatorUserName - @conversation.MessageCount
+            </div>
+        }
+    }    
+</div>
+@code{
+    [Parameter]
+    public string TossId { get; set; }
+
+    [CascadingParameter]
+    private CascadingAuthenticationState AuthenticationState{get;set;}
+
+    private TossConversationQueryResult conversation;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await httpBuilder.Create($"/api/toss/conversations/{TossId}")
+              .OnOK<TossConversationQueryResult>(r =>
+             {
+                 this.conversation = r;
+             })
+              .Get();
+
+    }
+
+}
