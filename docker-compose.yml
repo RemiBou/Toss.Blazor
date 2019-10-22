@@ -2,10 +2,11 @@
 version: '3.5'
 services:
   web:   
+    image: remibou/toss:latest
     build: 
       context: .
       cache_from: 
-        - remibou/toss
+        - remibou/toss:latest
     restart: always
     environment: 
       - GoogleClientId=AAA

@@ -1,6 +1,5 @@
 
 FROM mcr.microsoft.com/dotnet/core/runtime:2.2.7-alpine as runtime227
-
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0.100-alpine AS build
 # import sdk from 2.2.7 because we need it for running ravendb embedded
 COPY --from=runtime227 /usr/share/dotnet /usr/share/dotnet 

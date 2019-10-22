@@ -1,4 +1,3 @@
-.dockerignore
 .env
 .git
 .gitignore
@@ -10,3 +9,4 @@ docker-compose.*.yml
 */obj
 videos
 screenshots
+Dockerfile
