@@ -4,6 +4,8 @@ services:
   web:   
     build: 
       context: .
+      cache_from: 
+        - remibou/toss
     restart: always
     environment: 
       - GoogleClientId=AAA
