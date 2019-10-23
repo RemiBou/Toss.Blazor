@@ -6,7 +6,7 @@ services:
     build: 
       context: .
       cache_from: 
-        - remibou/toss:latest
+        - remibou/toss:builder
     restart: always
     environment: 
       - GoogleClientId=AAA
