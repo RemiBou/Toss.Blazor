@@ -17,12 +17,13 @@ steps:
     arguments: --cache-from remibou/toss:builder --target build
     Dockerfile: Dockerfile
     buildContext: .
-    
+
 - task: Docker@2
   displayName: Push Builder image
   inputs:
     command: push
     tags: remibou/toss:builder
+    containerRegistry: 'dockerhub remibou'
 
 - task: DockerCompose@0
   displayName: 'Run a Docker Compose command'
