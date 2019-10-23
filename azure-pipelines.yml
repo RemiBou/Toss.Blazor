@@ -12,6 +12,7 @@ steps:
 
 # we pull the latest version of the builder for using it in cache-from arguments
 - task: Bash@3
+  displayName: Docker pull builder image
   inputs:
       targetType: 'inline'
       script: docker pull remibou/toss:builder
@@ -38,7 +39,7 @@ steps:
 
 # we build the full image
 - task: Docker@2
-  displayName: Build Builder image
+  displayName: Build Full image
   inputs:
     command: build
     repository: remibou/toss
@@ -48,7 +49,7 @@ steps:
     buildContext: .
 
 - task: DockerCompose@0
-  displayName: 'Run a Docker Compose command'
+  displayName: Run E2E (Cypress) tests
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryEndpoint: 'dockerhub remibou'
@@ -56,7 +57,7 @@ steps:
     dockerComposeCommand: 'up --renew-anon-volumes --exit-code-from cypress'
 
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish Pipeline Artifact'
+  displayName: 'Publish Cypress videos'
   inputs:
     targetPath: Toss.Tests.E2E.Cypress/cypress/videos/
     artifact: 'Cypress videos'
