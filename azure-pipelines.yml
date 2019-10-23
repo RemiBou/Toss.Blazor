@@ -13,6 +13,7 @@ steps:
 # we pull the latest version of the builder for using it in cache-from arguments
 - task: Bash@3
   inputs:
+      targetType: 'inline'
       script: docker pull remibou/toss:builder
 
 # we build only the builder part
