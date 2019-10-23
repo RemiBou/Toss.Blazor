@@ -23,6 +23,7 @@ steps:
   inputs:
     command: push
     tags: remibou/toss:builder
+    repository: remibou/toss
     containerRegistry: 'dockerhub remibou'
 
 - task: DockerCompose@0
