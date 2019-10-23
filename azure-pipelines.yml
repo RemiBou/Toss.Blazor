@@ -13,7 +13,8 @@ steps:
   displayName: Build Builder image
   inputs:
     command: build
-    tags: remibou/toss:builder
+    repository: remibou/toss
+    tags: builder
     arguments: --cache-from remibou/toss:builder --target build
     Dockerfile: Dockerfile
     buildContext: .
@@ -22,8 +23,8 @@ steps:
   displayName: Push Builder image
   inputs:
     command: push
-    tags: remibou/toss:builder
     repository: remibou/toss
+    tags: builder
     containerRegistry: 'dockerhub remibou'
 
 - task: DockerCompose@0
