@@ -7,6 +7,10 @@
     <ApplicationInsightsResourceId>/subscriptions/de7c3336-53cb-4bb2-958b-e78c5dfbf1e8/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Toss.Server</ApplicationInsightsResourceId>
     <ApplicationInsightsAnnotationResourceId>/subscriptions/de7c3336-53cb-4bb2-958b-e78c5dfbf1e8/resourcegroups/Default-ApplicationInsights-EastUS/providers/microsoft.insights/components/Toss.Server</ApplicationInsightsAnnotationResourceId>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- extends watching group to include *.razor files -->
+    <Watch Include="..\Toss.Client\**\*.razor" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Mailjet.Api" Version="1.2.2" />
@@ -23,11 +27,13 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
+    <PackageReference Include="Westwind.AspnetCore.LiveReload" Version="0.1.5.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Toss.Client\Toss.Client.csproj" />
+    <ProjectReference Include="..\Toss.Client\Toss.Client.csproj" Watch="true" />
     <ProjectReference Include="..\Toss.Shared\Toss.Shared.csproj" />
+    <ProjectReference Include="..\Westwind.AspnetCore.LiveReload\Westwind.AspnetCore.LiveReload\Westwind.AspNetCore.LiveReload.csproj" />
   </ItemGroup>
 
   <ItemGroup>

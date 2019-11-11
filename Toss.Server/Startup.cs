@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using Raven.Client.Documents;
 using Raven.Client.Documents.Conventions;
@@ -30,6 +31,7 @@ using Toss.Server.Models;
 using Toss.Server.Models.Tosses;
 using Toss.Server.Services;
 using Toss.Shared.Account;
+using Westwind.AspNetCore.LiveReload;
 
 namespace Toss.Server
 {
@@ -57,7 +59,12 @@ namespace Toss.Server
             }
             AddWebDependencies(services);
             AddMediatRDependencies(services);
-
+            services.AddLiveReload(config =>
+            {
+                config.LiveReloadEnabled = true;
+                config.ClientFileExtensions = ".css,.js,.htm,.html";
+                config.FolderToMonitor = "~/../";
+            });
         }
 
         private static void AddMediatRDependencies(IServiceCollection services)
@@ -179,12 +186,13 @@ namespace Toss.Server
             });
         }
 
-       
+
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
 
             var testorDev = env.EnvironmentName.Equals("Development") || Configuration.GetValue<string>("test") != null;
+
             if (testorDev)
             {
                 app.UseDeveloperExceptionPage();
@@ -225,6 +233,8 @@ namespace Toss.Server
                     //fluentCspOptions.UpgradeInsecureRequests();
                 }
             });
+
+            app.UseLiveReload();
 
             app.UseReferrerPolicy(opts => opts.NoReferrer());
             app.UseStaticFiles();

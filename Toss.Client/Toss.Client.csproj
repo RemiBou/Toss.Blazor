@@ -4,6 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RazorLangVersion>3.0</RazorLangVersion>
     <ReferenceBlazorBuildLocally>true</ReferenceBlazorBuildLocally>
+    <BlazorLinkOnBuild  Condition="'$(Configuration)'!='Release'">false</BlazorLinkOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <!-- extends watching group to include *.razor files -->

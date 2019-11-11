@@ -1,0 +1,3 @@
+[submodule "Westwind.AspnetCore.LiveReload"]
+	path = Westwind.AspnetCore.LiveReload
+	url = https://github.com/RickStrahl/Westwind.AspnetCore.LiveReload.git
