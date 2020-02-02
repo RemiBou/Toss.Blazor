@@ -59,11 +59,12 @@ namespace Toss.Server
             }
             AddWebDependencies(services);
             AddMediatRDependencies(services);
+
             services.AddLiveReload(config =>
             {
-                config.LiveReloadEnabled = true;
-                config.ClientFileExtensions = ".css,.js,.htm,.html";
-                config.FolderToMonitor = "~/../";
+                // optional - use config instead
+                //config.LiveReloadEnabled = true;
+                //config.FolderToMonitor = Path.GetFullname(Path.Combine(Env.ContentRootPath,"..")) ;
             });
         }
 
@@ -186,7 +187,10 @@ namespace Toss.Server
             });
         }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> b07fcee600bb26061ddc26d1e1a8e11a672f8954
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
@@ -237,6 +241,7 @@ namespace Toss.Server
             app.UseLiveReload();
 
             app.UseReferrerPolicy(opts => opts.NoReferrer());
+            app.UseLiveReload();
             app.UseStaticFiles();
             app.UseClientSideBlazorFiles<Toss.Client.Program>();
             app.UseXDownloadOptions();

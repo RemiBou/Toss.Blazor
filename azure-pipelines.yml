@@ -3,16 +3,61 @@ pool:
   vmImage: ubuntu-16.04
 
 steps:
+# we build and push the builder stage so we can reuse this image as cache source
+- task: Docker@2
+  displayName: Login to Docker Hub
+  inputs:
+    command: login
+    containerRegistry: 'dockerhub remibou'
+
+# we pull the latest version of the builder for using it in cache-from arguments
+- task: Bash@3
+  displayName: Docker pull builder image
+  inputs:
+      targetType: 'inline'
+      script: docker pull remibou/toss:builder
+
+# we build only the builder part
+- task: Docker@2
+  displayName: Build Builder image
+  inputs:
+    command: build
+    repository: remibou/toss
+    tags: builder
+    arguments: --cache-from remibou/toss:builder --target build
+    Dockerfile: Dockerfile
+    buildContext: .
+
+# we push only the builder part for future usage
+- task: Docker@2
+  displayName: Push Builder image
+  inputs:
+    command: push
+    repository: remibou/toss
+    tags: builder
+    containerRegistry: 'dockerhub remibou'
+
+# we build the full image
+- task: Docker@2
+  displayName: Build Full image
+  inputs:
+    command: build
+    repository: remibou/toss
+    tags: latest
+    arguments: --cache-from remibou/toss:builder
+    Dockerfile: Dockerfile
+    buildContext: .
+
 - task: DockerCompose@0
-  displayName: 'Run a Docker Compose command'
+  displayName: Run E2E (Cypress) tests
   inputs:
     containerregistrytype: 'Container Registry'
     dockerRegistryEndpoint: 'dockerhub remibou'
     dockerComposeFile: 'docker-compose.yml'
-    dockerComposeCommand: 'up --renew-anon-volumes --exit-code-from cypress --build'
+    dockerComposeCommand: 'up --renew-anon-volumes --exit-code-from cypress'
 
 - task: PublishPipelineArtifact@1
-  displayName: 'Publish Pipeline Artifact'
+  displayName: 'Publish Cypress videos'
   inputs:
     targetPath: Toss.Tests.E2E.Cypress/cypress/videos/
     artifact: 'Cypress videos'
