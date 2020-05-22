@@ -59,13 +59,6 @@ namespace Toss.Server
             }
             AddWebDependencies(services);
             AddMediatRDependencies(services);
-
-            services.AddLiveReload(config =>
-            {
-                // optional - use config instead
-                //config.LiveReloadEnabled = true;
-                //config.FolderToMonitor = Path.GetFullname(Path.Combine(Env.ContentRootPath,"..")) ;
-            });
         }
 
         private static void AddMediatRDependencies(IServiceCollection services)
@@ -117,8 +110,6 @@ namespace Toss.Server
 
             services.AddScoped(s => s.GetRequiredService<IDocumentStore>().OpenAsyncSession());
             services.AddSingleton<RavenDBIdUtil>();
-            services.AddRavenDbIdentity<ApplicationUser>();
-
         }
 
         private static void AddFakeDependencies(IServiceCollection services)
@@ -167,6 +158,8 @@ namespace Toss.Server
                     o.ClientId = Configuration["GoogleClientId"];
                     o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
+            services.AddIdentity<ApplicationUser, IdentityRole>() // Adds an identity system to ASP.NET Core
+                    .AddRavenDbIdentityStores<ApplicationUser>();
             services.AddMvc(
                 options =>
                 {
@@ -187,10 +180,6 @@ namespace Toss.Server
             });
         }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> b07fcee600bb26061ddc26d1e1a8e11a672f8954
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
@@ -228,7 +217,7 @@ namespace Toss.Server
                     .ConnectSources(s => s.Self().CustomSources("https://raw.githubusercontent.com/RemiBou/Toss.Blazor/master/ABOUT.md"))
                     .StyleSources(s => s.Self().CustomSources("https://unpkg.com/purecss@1.0.0/build/pure-min.css"))
                     .FontSources(s => s.Self().CustomSources("use.fontawesome.com"))
-                    .FrameSources(s => s.CustomSources("https://www.google.com/recaptcha/"))
+                    .FrameSources(s => s.CustomSources("https://www.google.com/recaptcha/", "https://developers.google.com/"))
                     .ScriptSources(s => s.Self().UnsafeEval().UnsafeInline().CustomSources("checkout.stripe.com", "https://www.google.com/recaptcha/", "cdnjs.cloudflare.com", "https://www.gstatic.com/recaptcha/"))
                     .ReportUris(r => r.Uris("https://toss.report-uri.com/r/d/csp/reportOnly", "https://toss.report-uri.com/r/d/csp/wizard"))
                     .BlockAllMixedContent();
@@ -238,12 +227,9 @@ namespace Toss.Server
                 }
             });
 
-            app.UseLiveReload();
-
             app.UseReferrerPolicy(opts => opts.NoReferrer());
-            app.UseLiveReload();
             app.UseStaticFiles();
-            app.UseClientSideBlazorFiles<Toss.Client.Program>();
+            app.UseBlazorFrameworkFiles();
             app.UseXDownloadOptions();
             app.UseXContentTypeOptions();
             app.UseXXssProtection(options => options.EnabledWithBlockMode());
@@ -261,14 +247,13 @@ namespace Toss.Server
             });
 
             app.UseAuthentication();
-            app.UseAuthorization();
 
             app.UseRouting();
-
+            app.UseAuthorization();
             app.UseEndpoints(routes =>
             {
                 routes.MapDefaultControllerRoute();
-                routes.MapFallbackToClientSideBlazor<Toss.Client.Program>("index.html");
+                routes.MapFallbackToFile("index.html");
 
             });
 

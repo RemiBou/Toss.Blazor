@@ -107,7 +107,7 @@ namespace Toss.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("{userName}/{page}"), AllowAnonymous]
-        public async Task<IActionResult> User([FromRoute] UserTossListViewQuery query)
+        public new async Task<IActionResult> User([FromRoute] UserTossListViewQuery query)
         {
             var result = await _mediator.Send(query);
             return base.Ok(result);
