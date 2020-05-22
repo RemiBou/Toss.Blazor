@@ -17,16 +17,15 @@
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.14.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0" />
-    <PackageReference Include="NWebsec.AspNetCore.Middleware" Version="2.0.0" />
+    <PackageReference Include="NWebsec.AspNetCore.Middleware" Version="3.0.0" />
     <PackageReference Include="RavenDB.Client" Version="4.2.102" />
     <PackageReference Include="RavenDB.Identity" Version="7.0.1" />
     <PackageReference Include="Scrutor" Version="3.2.1" />
     <PackageReference Include="Stripe.net" Version="37.4.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.4" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.3" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.4" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="3.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
-    <PackageReference Include="Westwind.AspnetCore.LiveReload" Version="0.2.3" />
   </ItemGroup>
 
   <ItemGroup>

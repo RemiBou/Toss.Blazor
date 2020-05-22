@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>
       ae68635e-649c-4f23-a39b-24a5ea3987f4
     </UserSecretsId>
@@ -13,11 +13,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Moq" Version="4.13.0" />
-    <PackageReference Include="RavenDB.Client" Version="4.2.4" />
-    <PackageReference Include="RavenDB.Embedded" Version="4.2.4" />
-    <PackageReference Include="RavenDB.TestDriver" Version="4.2.4" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="Moq" Version="4.14.1" />
+    <PackageReference Include="RavenDB.Client" Version="4.2.102" />
+    <PackageReference Include="RavenDB.Embedded" Version="4.2.102" />
+    <PackageReference Include="RavenDB.TestDriver" Version="4.2.102" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
