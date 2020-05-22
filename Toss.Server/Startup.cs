@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -126,7 +127,7 @@ namespace Toss.Server
         {
             services.AddSingleton<ICaptchaValidator>(s => new CaptchaValidator(
                Configuration["GoogleCaptchaSecret"],
-               s.GetRequiredService<IHttpClientFactory>(),
+               s.GetRequiredService<IHttpClientFactory>(), 
                s.GetRequiredService<IHttpContextAccessor>()));
             services.AddTransient<IRandom, RandomTrue>();
             services.AddTransient<IEmailSender, EmailSender>();
@@ -158,7 +159,8 @@ namespace Toss.Server
                     o.ClientId = Configuration["GoogleClientId"];
                     o.ClientSecret = Configuration["GoogleClientSecret"];
                 });
-            services.AddIdentity<ApplicationUser, IdentityRole>() // Adds an identity system to ASP.NET Core
+            services.AddIdentity<ApplicationUser, Raven.Identity.IdentityRole>()
+                    .AddDefaultTokenProviders()
                     .AddRavenDbIdentityStores<ApplicationUser>();
             services.AddMvc(
                 options =>

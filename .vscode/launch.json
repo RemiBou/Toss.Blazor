@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Toss.Server/bin/Debug/netcoreapp3.0/Toss.Server.dll",
+            "program": "${workspaceFolder}/Toss.Server/bin/Debug/netcoreapp3.1/Toss.Server.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "stopAtEntry": false,
